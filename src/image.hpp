@@ -37,10 +37,11 @@ namespace Application::Helper {
 	// handle
 	using IMD = std::shared_ptr<ImageData>;
 
-	class Image final {
+	class Image {
 	public:
 		// loads texture
 		IMD create(std::string_view filePath, SDL_Renderer *ren, SDL_Color *key = nullptr);
+		// loads render target
 		IMD create(unsigned int width, unsigned int height, SDL_Renderer *ren);
 		// how should we make Pack work? should it be like this?:
 		// void create(std::string_view dirPath, SDL_Renderer *ren, int rows = 0, int cols = 0); 
@@ -85,11 +86,11 @@ namespace Application::Helper {
 
 			 /// <summary>
 			 /// Packs {x amount} of images of the same width and height into an atlas
+			 /// gif extraction (individual frames) must be in a folder in /assets/ with nothing else in it.
 			 /// @rows: the number of rows the canvas should have if explicitly added
 			 /// @cols: the number of columns the canvas should have if explicitly added
 			 /// </summary>
 			Pack(std::string_view dirPath, SDL_Renderer *ren, int rows = 0, int cols = 0) {
-				//ptr = std::make_unique<Image>();
 				std::vector<std::string_view> pathList;
 				IMD newImage = {nullptr};
 				// we want the directory path, not an actual file
@@ -100,7 +101,6 @@ namespace Application::Helper {
 				for (int i = 0; i < pathList.size(); ++i) {
 					newImage = ptr->create(pathList[i], ren);
 					SDL_QueryTexture(newImage->ptr.get(), nullptr, nullptr, &newImage->imageWidth, &newImage->imageHeight);
-					//newImage->queryImage(*newImage); // SDL_QueryTexture
 					imageList.insert({newImage, i});
 				}
 				// our 1D/2D array is now prepped, now we need to align it on our atlas texture
@@ -120,6 +120,7 @@ namespace Application::Helper {
 				} else {
 					// expand the width to create a large-width based canvas
 					canvas = ptr->create(newImage->imageWidth * static_cast<unsigned int>(pathList.size()), newImage->imageHeight, ren);
+					// unload our list onto the canvas
 				}
 				// add canvas to Image container
 				ptr->add("canvas", canvas);
@@ -133,7 +134,8 @@ namespace Application::Helper {
 
 		private:
 			Image *ptr {nullptr};
-			std::unordered_map<IMD, unsigned int> imageList {}; // as long they have ID's, it doesn't matter since we will reorganize it
+			// as long they have ID's, it doesn't matter since we will reorganize it
+			std::unordered_map<IMD, unsigned int> imageList {};
 			//std::map<IMD, unsigned int> imageList {};
 			//std::map<std::unique_ptr<SDL_Texture, Utilities::Memory>, uint32_t> imageList;
 			int packWidth {0};

@@ -37,6 +37,7 @@ namespace Application::Helper {
 		return newImage;
 	}
 
+	// load render target
 	IMD Image::create(uint32_t width, uint32_t height, SDL_Renderer *ren) {
 		IMD newImage = std::make_shared<ImageData>();
 		newImage->ptr = std::shared_ptr<SDL_Texture>(SDL_CreateTexture(ren, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, width, height), SDL_DestroyTexture);

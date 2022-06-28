@@ -1,5 +1,9 @@
 #include "uinterface.hpp"
 
-namespace Helper {
+namespace Application::Helper {
+	void UInterface::createButton() {}
 
-} // namespace Helper
+	void UInterface::setButtonTexture(SDL_Texture *tex) {}
+
+	void UInterface::update(double dt) {}
+} // namespace Application::Helper

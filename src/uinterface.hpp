@@ -11,6 +11,5 @@ namespace Application::Helper {
 		void update(double dt);
 
 	private:
-
 	};
 } // namespace Application::Helper
