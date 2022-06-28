@@ -11,20 +11,4 @@ namespace Application::Helper::Utilities {
 	};
 
 	template <typename T> using PTR = std::unique_ptr<T, Memory>;
-}
-	/*
-	template <class ... T> struct PTR { 
-		PTR(T*...) {}  
-		std::unique_ptr<T *> ret() {return std::make_unique<T *>(val);}
-		T *val;
-	};
-	*/
-	//template <typename T> std::unique_ptr<T, Memory> WPTR = {T, Memory};
-	//sing PTR = decltype([] {return std::unique_ptr<T, Memory>});
-	/*
-	template <typename T> struct Video {};
-
-	template <typename T> Video<T> WPTR(const T &ptr) {
-		return Video<T>(ptr);
-	}
-	*/
+} // namespace Application::Helper::Utilities
