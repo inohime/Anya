@@ -9,7 +9,7 @@
 #include <sstream>
 
 // low memory | low cpu utilization app (not the lowest since added features and no optimizations)
-// at its current state, it takes 3.8mb on debug, too high.
+// at its current state, it takes 3.6mb on debug, too high.
 namespace Application {
 	using namespace Helper::Utilities;
 

@@ -1,21 +1,7 @@
 #include "animation.hpp"
 
-void Animation::addAnimation(std::string_view name, int frames, int x, int y, int w, int h) {
-}
-/*
-constexpr uint32_t Animation::getCurrentFrame() {
-	return currentFrame;
-}
+namespace Application::Helper {
+	void Animation::addAnimation(std::string_view name, int frames, int x, int y, int w, int h) {}
 
-void Animation::setCurrentFrame(std::string_view frameName) {
-	currentFrame = frames[frameName];
-}
-
-void Animation::stopAnimation() {
-
-}
-*/
-
-void Animation::update(double dt) {
-
-}
+	void Animation::update(double dt) {}
+} // namespace Application::Helper

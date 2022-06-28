@@ -20,8 +20,6 @@ namespace fs = std::filesystem;
  * Pack -> creates a texture atlas full of image objects and constructs them into a 1D array (or 2D, depending on requirements)
 */
 
-// swap to unique pointer later
-
 namespace Application::Helper {
 	struct MessageData final {
 		std::basic_string<char> msg {};
@@ -68,21 +66,21 @@ namespace Application::Helper {
 		// worry about Atlas Packer later
 		class Pack final {
 		public:
-			/**  should work like this :
+			/** should work like this :
 			 *
-			 *   extracted gif images are placed sequentially on the texture atlas
-			 *
-			 *	-----------------------------
-			 *	| 0	| 1	| 2	| 3	| 4	| 5	| 6	|
-			 *	-----------------------------
-			 *	1D array: images are on an x axis only (rows)
+			 *  extracted gif images are placed sequentially on the texture atlas
 			 *
 			 *	-----------------------------
-			 *	| 0	| 1	| 2	| 3	| 4	| 5	| 6	|
+			 *	| 0 | 1 | 2 | 3 | 4 | 5 | 6 |
 			 *	-----------------------------
-			 *	| 7	| 8	| 9	| 10 | 11 | 12  |
+			 *  1D array: images are on an x axis only (rows)
+			 *
 			 *	-----------------------------
-			 *	2D array: images are on both x and y axis (rows and columns)
+			 *	| 0 | 1 | 2 | 3 | 4 | 5 | 6 |
+			 *	-----------------------------
+			 *	| 7 | 8 | 9 | 10 | 11 | 12  |
+			 *	-----------------------------
+			 *  2D array: images are on both x and y axis (rows and columns)
 			 */
 
 			 /// <summary>
