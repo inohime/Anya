@@ -40,7 +40,7 @@ namespace Application {
 		ptr = std::make_unique<Helper::Image>();
 
 		// load assets
-		image = ptr->create(path + "assets/beep_1.png", renderer.get());
+		background = ptr->create(path + "assets/beep_1.png", renderer.get());
 		
 		// create buttons here
 		// add animation for gifs
@@ -79,7 +79,7 @@ namespace Application {
 		SDL_SetRenderDrawColor(renderer.get(), 10, 10, 25, 255);
 		SDL_RenderClear(renderer.get());
 		
-		ptr->draw(image, renderer.get(), 0, 0);
+		ptr->draw(background, renderer.get(), 0, 0);
 		ptr->draw(msg, renderer.get(), static_cast<int>(windowWidth / 5.5), static_cast<int>(windowHeight / 1.6));
 
 		SDL_RenderPresent(renderer.get());

@@ -44,10 +44,11 @@ namespace Application {
 		int delay {1000 / FPS};
 
 	private:
+		std::unique_ptr<Helper::UInterface> ui {nullptr};
 		std::unique_ptr<Helper::Image> ptr {nullptr};
 		std::basic_string<char> path {};
 		std::basic_stringstream<char> str {};
-		Helper::IMD image {nullptr};
+		Helper::IMD background {nullptr};
 		Helper::IMD msg {nullptr};
 	};
 } // namespace Application

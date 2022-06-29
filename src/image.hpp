@@ -22,6 +22,7 @@ namespace fs = std::filesystem;
 
 namespace Application::Helper {
 	struct MessageData final {
+		MessageData &operator=(MessageData &) {return *this;}
 		std::basic_string<char> msg {};
 		std::basic_string<char> fontFile {};
 		const SDL_Color &col {};
@@ -87,9 +88,9 @@ namespace Application::Helper {
 			 /// <summary>
 			 /// Packs {x amount} of images of the same width and height into an atlas
 			 /// gif extraction (individual frames) must be in a folder in /assets/ with nothing else in it.
-			 /// @rows: the number of rows the canvas should have if explicitly added
-			 /// @cols: the number of columns the canvas should have if explicitly added
 			 /// </summary>
+			 /// \param @rows: the number of rows the canvas should have if explicitly added
+			 /// \param @cols: the number of columns the canvas should have if explicitly added
 			Pack(std::string_view dirPath, SDL_Renderer *ren, int rows = 0, int cols = 0) {
 				std::vector<std::string_view> pathList;
 				IMD newImage = {nullptr};
@@ -135,6 +136,7 @@ namespace Application::Helper {
 		private:
 			Image *ptr {nullptr};
 			// as long they have ID's, it doesn't matter since we will reorganize it
+			// potentially change this to std::vector with std::lower_bound
 			std::unordered_map<IMD, unsigned int> imageList {};
 			//std::map<IMD, unsigned int> imageList {};
 			//std::map<std::unique_ptr<SDL_Texture, Utilities::Memory>, uint32_t> imageList;
