@@ -5,9 +5,11 @@
 #include <string>
 
 namespace Application::Helper {
+	using IMDW = std::weak_ptr<ImageData>;
+
 	struct Button {
 		SDL_Rect box {0};
-		IMD texture {nullptr};
+		IMDW texture;
 		MessageData md {};
 		bool boxOutline {false};
 		int boxWidth {box.w};
@@ -18,17 +20,17 @@ namespace Application::Helper {
 
 	class UInterface final {
 	public:
-		
-	   /** for when you want to explicitly state all of the details
-		* 
-		* \param MessageData struct -> msg, fontFile, colour, fontSize
-		* \param texture -> texture of the button
-		* \param x -> x position of the button
-		* \param y -> y position of the button 
-		* \param w -> width of the button
-		* \param y -> height of the button
-		* \returns Button object filled with all of the essential details for a customized button
-		*/
+
+		/** for when you want to explicitly state all of the details
+		 *
+		 * \param MessageData struct -> msg, fontFile, colour, fontSize
+		 * \param texture -> texture of the button
+		 * \param x -> x position of the button
+		 * \param y -> y position of the button
+		 * \param w -> width of the button
+		 * \param y -> height of the button
+		 * \return Button object filled with all of the essential details for a customized button
+		 */
 		Button createButton(MessageData &msg, IMD texture, int x, int y, unsigned int w, unsigned int h);
 		// for simple button
 		Button createButton(std::string_view text, IMD texture, int x, int y, unsigned int w, unsigned int h);

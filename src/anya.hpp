@@ -44,10 +44,12 @@ namespace Application {
 		int delay {1000 / FPS};
 
 	private:
-		std::unique_ptr<Helper::UInterface> ui {nullptr};
-		std::unique_ptr<Helper::Image> ptr {nullptr};
+		std::unique_ptr<Helper::UInterface> interfacePtr {nullptr};
+		std::unique_ptr<Helper::Image> imagePtr {nullptr};
+		std::unique_ptr<Helper::Pack> packPtr {nullptr}; // to be removed
 		std::basic_string<char> path {};
 		std::basic_stringstream<char> str {};
+		Helper::IMD backgroundGIF {nullptr};
 		Helper::IMD background {nullptr};
 		Helper::IMD msg {nullptr};
 	};

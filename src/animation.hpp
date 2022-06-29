@@ -6,6 +6,7 @@
 #include <vector>
 
 // add a sprite sheet and iterate over it (assuming the spritesheet is exactly the same width and height
+
 namespace Application::Helper {
 	class Animation {
 	public:

@@ -1,17 +1,16 @@
 #include "uinterface.hpp"
-#include <concepts>
 
 namespace Application::Helper {
 	Button UInterface::createButton(MessageData &msg, IMD texture, int x, int y, unsigned int w, unsigned int h) {
 		Button newButton = {};
-		// add error checking here
-		newButton.box = {x, y, static_cast<int>(w), static_cast<int>(h)};
 
+		//SDL_assert(Utilities::isUnsigned(w) == true);
+
+		newButton.box = {x, y, static_cast<int>(w), static_cast<int>(h)};
 		if (texture != nullptr)
 			newButton.texture = texture;
-		
-		newButton.md = msg;
 
+		newButton.md = msg;
 		btnList.emplace_back(newButton);
 
 		return newButton;
@@ -20,22 +19,13 @@ namespace Application::Helper {
 	Button UInterface::createButton(std::string_view text, IMD texture, int x, int y, unsigned int w, unsigned int h) {
 		Button newButton = {};
 
-		const auto isUnsigned = []<typename T>(auto val) -> bool {
-			if (std::unsigned_integral(val))
-				return true;
-			else
-				return false;
-		};
+		//SDL_assert(Utilities::isUnsigned(w) == true);
 
-		SDL_assert(isUnsigned(w) == true);
-		//std::unsigned_integral<>(w);
 		newButton.box = {x, y, static_cast<int>(w), static_cast<int>(h)};
-
 		if (texture != nullptr)
 			newButton.texture = texture;
 
 		newButton.md.msg = text;
-
 		btnList.emplace_back(newButton);
 
 		return newButton;
@@ -51,6 +41,7 @@ namespace Application::Helper {
 
 	void UInterface::update(double dt) {
 		// update all buttons 
+		// check to see if there is a mouse hovering or clicking
 	}
 
 	void UInterface::draw(Button &button, SDL_Renderer *ren, int x, int y, double sx, double sy, SDL_Rect *clip) {
