@@ -4,13 +4,12 @@
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 #include "animation.hpp"
-#include "util.hpp"
+#include "data.hpp"
 #include <filesystem>
 #include <string>
 #include <unordered_map>
 
 namespace fs = std::filesystem;
-
 
 /** Structure
  *
@@ -21,34 +20,7 @@ namespace fs = std::filesystem;
  */
 
 namespace Application::Helper {
-	struct PackData final {
-		int width {0};
-		int height {0};
-		int rows {0};
-		int columns {0};
-	};
-
-	struct MessageData final {
-		MessageData &operator=(MessageData &) { return *this; }
-		std::basic_string<char> msg {};
-		std::basic_string<char> fontFile {};
-		const SDL_Color &col {};
-		int fontSize {0};
-	};
-
-	struct ImageData final {
-		std::basic_string<char> path {};
-		std::shared_ptr<SDL_Texture> texture {nullptr};
-		int imageWidth {0};
-		int imageHeight {0};
-	};
-	// handle
-	using IMD = std::shared_ptr<ImageData>;
-
 	class Image {
-	private:
-		friend class Animation;
-
 	public:
 		// todo: add param/return 
 		IMD createImage(std::string_view filePath, SDL_Renderer *ren, SDL_Color *key = nullptr);
@@ -81,15 +53,19 @@ namespace Application::Helper {
 		  * \return ImageData pointer (canvas) or nullptr if failed
 		  */
 		IMD createPack(std::string_view dirPath, SDL_Renderer *ren, int rows = 0, int cols = 0);
-		std::weak_ptr<PackData> getPackData();
+		std::shared_ptr<PackData> getPackData() noexcept;
+		std::shared_ptr<Animation> getAnimPtr() noexcept;
 		void add(std::string_view str, IMD &img);
 		void remove(IMD &img);
 		void draw(IMD &img, SDL_Renderer *ren, int x, int y, double sx = 0.0, double sy = 0.0, SDL_Rect *clip = nullptr) noexcept;
-		void printImageCount();
+		// draw animations
+		void drawAnimation(IMD &img, SDL_Renderer *ren, int x, int y, double scale = 0) const noexcept;
+		void printImageCount() const noexcept;
 
 	private:
 		std::unordered_map<std::string_view, IMD> images {};
 		std::unordered_map<std::string_view, IMD> imagePackList {};
-		std::shared_ptr<PackData> packPtr;
+		std::shared_ptr<PackData> packPtr {std::make_shared<PackData>()};
+		std::shared_ptr<Animation> animPtr {std::make_shared<Animation>()};
 	};
 } // namespace Application::Helper

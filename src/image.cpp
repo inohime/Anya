@@ -142,15 +142,19 @@ namespace Application::Helper {
 		SDL_RenderCopy(ren, img->texture.get(), clip, &dst);
 	}
 
+	void Image::drawAnimation(IMD &img, SDL_Renderer *ren, int x, int y, double scale) const noexcept {
+		animPtr->draw(img, ren, x, y, scale);
+	}
+
 	void Image::add(std::string_view str, IMD &img) {
 		auto iter = images.find(str);
 		if (iter != images.end()) {
-			std::cout << "image already exists\n";
-			return; // canvas exists
+			std::cout << "Image already exists\n";
+			return; // string exists
 		} else {
 			images.insert({str, img});
 			if (images.find(str) != images.end())
-				std::cout << "created image\n";
+				std::cout << "Created image\n";
 		}
 	}
 
@@ -158,13 +162,15 @@ namespace Application::Helper {
 		if (images.contains(img->path)) {
 			images.erase(img->path);
 			img.reset();
+		} else {
+			std::cout << "Failed to remove image\n";
+			return;
 		}
 	}
 
-	void Image::printImageCount() {
-		for (const auto &i : images) {
+	void Image::printImageCount() const noexcept {
+		for (const auto &i : images)
 			std::cout << "Image Size: " << images.size() << '\n';
-		}
 	}
 
 	IMD Image::createPack(std::string_view dirPath, SDL_Renderer *ren, int rows, int cols) {
@@ -250,7 +256,11 @@ namespace Application::Helper {
 		return canvas;
 	}
 
-	std::weak_ptr<PackData> Image::getPackData() {
+	std::shared_ptr<PackData> Image::getPackData() noexcept {
 		return packPtr;
+	}
+
+	std::shared_ptr<Animation> Image::getAnimPtr() noexcept {
+		return animPtr;
 	}
 } // namespace Application::Helper

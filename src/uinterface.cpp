@@ -8,7 +8,7 @@ namespace Application::Helper {
 
 		newButton.box = {x, y, static_cast<int>(w), static_cast<int>(h)};
 		if (texture != nullptr)
-			newButton.texture = texture;
+			newButton.texturePtr = texture;
 
 		newButton.md = msg;
 		btnList.emplace_back(newButton);
@@ -23,7 +23,7 @@ namespace Application::Helper {
 
 		newButton.box = {x, y, static_cast<int>(w), static_cast<int>(h)};
 		if (texture != nullptr)
-			newButton.texture = texture;
+			newButton.texturePtr = texture;
 
 		newButton.md.msg = text;
 		btnList.emplace_back(newButton);
@@ -32,7 +32,7 @@ namespace Application::Helper {
 	}
 
 	void UInterface::setButtonTexture(Button &button, IMD &texture) {
-		button.texture = texture;
+		button.texturePtr = texture;
 	}
 
 	void UInterface::showOutline(Button &button) {

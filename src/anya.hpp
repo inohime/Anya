@@ -9,7 +9,7 @@
 #include <sstream>
 
 // low memory | low cpu utilization app (not the lowest since added features and no optimizations)
-// at its current state, it takes 3.6mb on debug, too high. (19mb with gif alloc)
+// at its current state, it takes 3.6mb on debug, too high. (11mb with gif alloc)
 
 namespace Application {
 	using namespace Helper::Utilities;
@@ -38,10 +38,6 @@ namespace Application {
 		bool shouldRun {false};
 		uint32_t windowWidth {148};
 		uint32_t windowHeight {89};
-		// start: for debug
-		//uint32_t windowWidth {1920};
-		//uint32_t windowHeight {1080};
-		// end
 		std::chrono::steady_clock::time_point begin {};
 		std::chrono::steady_clock::time_point end {};
 		std::chrono::duration<double, std::milli> deltaTime {};

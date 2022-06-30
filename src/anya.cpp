@@ -18,7 +18,7 @@ namespace Application {
 
 	bool Anya::boot() {
 		SDL_assert(SDL_Init(SDL_INIT_EVERYTHING) == 0);
-		SDL_assert(IMG_Init(IMG_INIT_PNG) != 0);
+		SDL_assert(IMG_Init(IMG_INIT_PNG | IMG_INIT_JPG) != 0);
 		if (TTF_Init() == -1) return false;
 
 		begin = std::chrono::steady_clock::now();
@@ -43,9 +43,9 @@ namespace Application {
 		// load assets
 		background = imagePtr->createImage(path + "assets/beep_1.png", renderer.get());
 		backgroundGIF = imagePtr->createPack(path + "assets/gif-extract/", renderer.get());
-		
+		imagePtr->getAnimPtr()->addAnimation(68, 0, 0, 148, 89);
 		// create buttons here
-		// add animation for gifs
+		
 		shouldRun = true;
 
 		return true;
@@ -69,6 +69,8 @@ namespace Application {
 
 			//std::cout << getTime(std::chrono::system_clock::now()) << '\n';
 #endif
+			imagePtr->getAnimPtr()->update(30, deltaTime.count());
+
 			draw();
 		}
 		free();
@@ -81,8 +83,8 @@ namespace Application {
 		SDL_SetRenderDrawColor(renderer.get(), 10, 10, 25, 255);
 		SDL_RenderClear(renderer.get());
 
-		//imagePtr->draw(background, renderer.get(), 0, 0);
-		imagePtr->draw(backgroundGIF, renderer.get(), 0, 0);
+		//imagePtr->draw(background, renderer.get(), 0, 0); // make buttons to change backgrounds
+		imagePtr->drawAnimation(backgroundGIF, renderer.get(), 0, 0);
 		imagePtr->draw(msg, renderer.get(), static_cast<int>(windowWidth / 5.5), static_cast<int>(windowHeight / 1.6));
 
 		SDL_RenderPresent(renderer.get());
