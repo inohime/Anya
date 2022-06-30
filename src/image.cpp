@@ -155,7 +155,10 @@ namespace Application::Helper {
 	}
 
 	void Image::remove(IMD &img) {
-		img.~shared_ptr();
+		if (images.contains(img->path)) {
+			images.erase(img->path);
+			img.reset();
+		}
 	}
 
 	void Image::printImageCount() {
@@ -169,11 +172,11 @@ namespace Application::Helper {
 		// get the directory path and append all of the files into the array
 		for (const auto &pathIter : fs::directory_iterator(dirPath)) {
 			auto pathString = pathIter.path().string();
-			const auto findQuotesInPath = [&]() {
+			const auto fixPathString = [&]() {
 				std::for_each(std::begin({pathString}), std::end({pathString}), [&](std::string_view str) {
 					if (pathString.find(str) != std::basic_string<char>::npos)
 						pathString.erase(std::remove(pathString.begin(), pathString.end(), '"'), pathString.end());
-							  });
+				});
 			};
 			pathList.emplace_back(pathString);
 		}

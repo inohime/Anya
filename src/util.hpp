@@ -2,7 +2,7 @@
 
 #include <SDL.h>
 #include <memory>
-#include <concepts>
+//#include <concepts>
 
 namespace Application::Helper::Utilities {
 	struct Memory final {
