@@ -39,11 +39,10 @@ namespace Application {
 		// initialize image
 		imagePtr = std::make_unique<Helper::Image>();
 		//interfacePtr = std::make_unique<Helper::UInterface>();
-		packPtr = std::make_unique<Helper::Pack>();
 
 		// load assets
-		background = imagePtr->create(path + "assets/beep_1.png", renderer.get());
-		backgroundGIF = packPtr->create(path + "assets/her/", renderer.get());
+		background = imagePtr->createImage(path + "assets/beep_1.png", renderer.get());
+		backgroundGIF = imagePtr->createPack(path + "assets/gif-extract/", renderer.get());
 		
 		// create buttons here
 		// add animation for gifs
@@ -77,12 +76,12 @@ namespace Application {
 
 	// usually you want this to be independent
 	void Anya::draw() {
-		msg = imagePtr->create({timeToStr(std::chrono::system_clock::now()), path + "assets/bahnschrift.ttf", {255, 255, 255, 255}, 28}, renderer.get());
+		msg = imagePtr->createTextA({timeToStr(std::chrono::system_clock::now()), path + "assets/bahnschrift.ttf", {255, 255, 255, 255}, 28}, renderer.get());
 
 		SDL_SetRenderDrawColor(renderer.get(), 10, 10, 25, 255);
 		SDL_RenderClear(renderer.get());
-		
-		imagePtr->draw(background, renderer.get(), 0, 0);
+
+		//imagePtr->draw(background, renderer.get(), 0, 0);
 		imagePtr->draw(backgroundGIF, renderer.get(), 0, 0);
 		imagePtr->draw(msg, renderer.get(), static_cast<int>(windowWidth / 5.5), static_cast<int>(windowHeight / 1.6));
 
