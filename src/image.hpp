@@ -50,7 +50,7 @@ namespace Application::Helper {
 		  * \param ren -> the renderer to use
 		  * \param rows -> the number of rows the canvas should have if explicitly added
 		  * \param cols -> the number of columns the canvas should have if explicitly added
-		  * \return ImageData pointer (canvas) or nullptr if failed
+		  * \return ImageData pointer (canvas) or nullptr if failed.
 		  */
 		IMD createPack(std::string_view dirPath, SDL_Renderer *ren, int rows = 0, int cols = 0);
 		std::shared_ptr<PackData> getPackData() noexcept;
@@ -58,7 +58,6 @@ namespace Application::Helper {
 		void add(std::string_view str, IMD &img);
 		void remove(IMD &img);
 		void draw(IMD &img, SDL_Renderer *ren, int x, int y, double sx = 0.0, double sy = 0.0, SDL_Rect *clip = nullptr) noexcept;
-		// draw animations
 		void drawAnimation(IMD &img, SDL_Renderer *ren, int x, int y, double scale = 0) const noexcept;
 		void printImageCount() const noexcept;
 

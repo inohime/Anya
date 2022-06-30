@@ -4,7 +4,6 @@
 #include "data.hpp"
 #include <map>
 #include <string>
-#include <vector>
 
 // add a sprite sheet and iterate over it (assuming the spritesheet is exactly the same width and height)
 
@@ -19,7 +18,7 @@ namespace Application::Helper {
 		 * \param y -> y position of the button
 		 * \param w -> width of the button
 		 * \param h -> height of the button
-		 * \return Button object filled with all of the essential details for a customized button
+		 * \return void -> no return available.
 		 */
 		void addAnimation(int frames, int x, int y, int w, int h);
 		//void setCurrentFrame(std::string_view frameName);

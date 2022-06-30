@@ -29,7 +29,7 @@ namespace Application::Helper {
 		 * \param y -> y position of the button
 		 * \param w -> width of the button
 		 * \param h -> height of the button
-		 * \return Button object filled with all of the essential details for a customized button
+		 * \return Button object filled with all of the essential details for a customized button.
 		 */
 		Button createButton(MessageData &msg, IMD texture, int x, int y, unsigned int w, unsigned int h);
 		// for simple button
@@ -40,7 +40,7 @@ namespace Application::Helper {
 		void draw(Button &button, SDL_Renderer *ren, int x, int y, double sx = 0.0, double sy = 0.0, SDL_Rect *clip = nullptr);
 
 	private:
-		Image *imagePtr {nullptr};
+		std::unique_ptr<Image> imagePtr {nullptr};
 		// change this to Element that holds UI components?
 		std::vector<Button> btnList {};
 	};
