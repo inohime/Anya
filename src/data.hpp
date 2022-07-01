@@ -5,13 +5,6 @@
 #include <memory>
 
 namespace Application::Helper {
-	struct PackData final {
-		int width {0};
-		int height {0};
-		int rows {0};
-		int columns {0};
-	};
-
 	struct MessageData final {
 		MessageData &operator=(MessageData &) { return *this; }
 		std::basic_string<char> msg {};
@@ -21,7 +14,7 @@ namespace Application::Helper {
 	};
 
 	struct ImageData final {
-		std::basic_string<char> path {};
+		std::basic_string<char> path;
 		std::shared_ptr<SDL_Texture> texture {nullptr};
 		int imageWidth {0};
 		int imageHeight {0};

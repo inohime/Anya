@@ -5,11 +5,10 @@
 #include <string>
 
 namespace Application::Helper {
-	using IMDW = std::weak_ptr<ImageData>;
-
+	/*
 	struct Button {
 		SDL_Rect box {0};
-		IMDW texturePtr;
+		ImageData texture {};
 		MessageData md {};
 		bool boxOutline {false};
 		int boxWidth {box.w};
@@ -17,10 +16,22 @@ namespace Application::Helper {
 		int boxPosX {box.x};
 		int boxPosY {box.y};
 	};
+	*/
+
+	struct Button {
+		SDL_Rect box {0};
+		Helper::ImageData texture {};
+		SDL_Color initializedColor {};
+		SDL_Color color {};
+		std::basic_string<char> text {};
+		bool boxOutline {false};
+		bool isClickable {false};
+	};
+
+	using BUTTONPTR = std::shared_ptr<Button>;
 
 	class UInterface final {
 	public:
-
 		/** for when you want to explicitly state all of the details
 		 *
 		 * \param MessageData struct -> msg, fontFile, colour, fontSize
@@ -31,17 +42,16 @@ namespace Application::Helper {
 		 * \param h -> height of the button
 		 * \return Button object filled with all of the essential details for a customized button.
 		 */
-		Button createButton(MessageData &msg, IMD texture, int x, int y, unsigned int w, unsigned int h);
+		BUTTONPTR createButton(MessageData &msg, IMD &texture, int x, int y, unsigned int w, unsigned int h);
 		// for simple button
-		Button createButton(std::string_view text, IMD texture, int x, int y, unsigned int w, unsigned int h);
-		void setButtonTexture(Button &button, IMD &texture);
-		void showOutline(Button &button);
-		void update(double dt);
-		void draw(Button &button, SDL_Renderer *ren, int x, int y, double sx = 0.0, double sy = 0.0, SDL_Rect *clip = nullptr);
+		BUTTONPTR createButton(std::string_view text, IMD &texture, SDL_Color col, int x, int y, unsigned int w, unsigned int h);
+		void setButtonTexture(BUTTONPTR &button, IMD &texture);
+		void showOutline(BUTTONPTR &button, bool show);
+		void update(SDL_Event *ev);
+		void draw(BUTTONPTR &button, IMD &text, SDL_Renderer *ren, double sx = 0.0, double sy = 0.0, SDL_Rect *clip = nullptr);
+		// void fadeEffect(SDL_Renderer *ren, float speed, 
 
 	private:
-		std::unique_ptr<Image> imagePtr {nullptr};
-		// change this to Element that holds UI components?
-		std::vector<Button> btnList {};
+		std::vector<BUTTONPTR> btnList {};
 	};
 } // namespace Application::Helper

@@ -52,9 +52,10 @@ namespace Application::Helper {
 		  * \param cols -> the number of columns the canvas should have if explicitly added
 		  * \return ImageData pointer (canvas) or nullptr if failed.
 		  */
-		IMD createPack(std::string_view dirPath, SDL_Renderer *ren, int rows = 0, int cols = 0);
-		std::shared_ptr<PackData> getPackData() noexcept;
+		IMD createPack(std::string_view packName, std::string_view dirPath, SDL_Renderer *ren);
 		std::shared_ptr<Animation> getAnimPtr() noexcept;
+		int getPackWidth(std::string_view packName) noexcept;
+		int getPackHeight(std::string_view packName) noexcept;
 		void add(std::string_view str, IMD &img);
 		void remove(IMD &img);
 		void draw(IMD &img, SDL_Renderer *ren, int x, int y, double sx = 0.0, double sy = 0.0, SDL_Rect *clip = nullptr) noexcept;
@@ -64,7 +65,6 @@ namespace Application::Helper {
 	private:
 		std::unordered_map<std::string_view, IMD> images {};
 		std::unordered_map<std::string_view, IMD> imagePackList {};
-		std::shared_ptr<PackData> packPtr {std::make_shared<PackData>()};
 		std::shared_ptr<Animation> animPtr {std::make_shared<Animation>()};
 	};
 } // namespace Application::Helper

@@ -41,7 +41,7 @@ namespace Application {
 		std::chrono::steady_clock::time_point begin {};
 		std::chrono::steady_clock::time_point end {};
 		std::chrono::duration<double, std::milli> deltaTime {};
-		int FPS {8};
+		int FPS {30};
 		int delay {1000 / FPS};
 
 	private:
@@ -52,6 +52,8 @@ namespace Application {
 		Helper::IMD backgroundGIF {nullptr};
 		Helper::IMD background {nullptr};
 		Helper::IMD msg {nullptr};
+		Helper::IMD buttonText {nullptr};
+		Helper::BUTTONPTR testButton {nullptr};
 	};
 } // namespace Application
 

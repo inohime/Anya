@@ -173,7 +173,7 @@ namespace Application::Helper {
 			std::cout << "Image Size: " << images.size() << '\n';
 	}
 
-	IMD Image::createPack(std::string_view dirPath, SDL_Renderer *ren, int rows, int cols) {
+	IMD Image::createPack(std::string_view packName, std::string_view dirPath, SDL_Renderer *ren) {
 		std::vector<std::basic_string<char>> pathList;
 		// get the directory path and append all of the files into the array
 		for (const auto &pathIter : fs::directory_iterator(dirPath)) {
@@ -182,7 +182,7 @@ namespace Application::Helper {
 				std::for_each(std::begin({pathString}), std::end({pathString}), [&](std::string_view str) {
 					if (pathString.find(str) != std::basic_string<char>::npos)
 						pathString.erase(std::remove(pathString.begin(), pathString.end(), '"'), pathString.end());
-				});
+							  });
 			};
 			pathList.emplace_back(pathString);
 		}
@@ -203,61 +203,51 @@ namespace Application::Helper {
 			imagePackList.insert({path, newImage});
 		}
 
-		// our 1D/2D array is now prepped, now we need to align it on our atlas texture
-		PackData pack = {0};
+		// our 1D array is now prepped, now we need to align it on our atlas texture
 		IMD canvas = {nullptr};
-		// fill the canvas with our textures
-		if ((rows && cols) != 0) {
-			// change the canvas to fit [x] rows and [y (lol)] columns
-			pack.rows = rows;
-			pack.columns = cols;
-			unsigned int canvasWidth = imageWidth * static_cast<unsigned int>(imagePackList.size());
-			unsigned int canvasHeight = imageHeight * static_cast<unsigned int>(imagePackList.size());
+		// expand the width to create a large-width based canvas
+		canvas = createRenderTarget(imageWidth * static_cast<unsigned int>(pathList.size()), imageHeight, ren);
 
-			canvas = createRenderTarget(imageWidth * static_cast<unsigned int>(pathList.size()), imageHeight * static_cast<unsigned int>(pathList.size()), ren);
+		SDL_SetRenderTarget(ren, canvas->texture.get());
+		int iterWidth = 0; // the image iteration width (0, 148, 296, etc..)
+		bool firstElement = true; // to place the first image at origin
+		// unload our list onto the canvas
+		for (const auto &i : pathList) {
+			// place them sequentially on the canvas
+			if (firstElement)
+				draw(imagePackList[i], ren, 0, 0);
+			else
+				draw(imagePackList[i], ren, iterWidth += imageWidth, 0);
 
-			SDL_SetRenderTarget(ren, canvas->texture.get());
-			for (const auto &i : pathList) {
-				for (unsigned int x = 0; x < canvasWidth / rows; ++x) {
-					for (unsigned int y = 0; y < canvasHeight / cols; ++y) {
-						// [i] will be the number of images we will be adding onto our canvas
-						// based on the rows and columns, sort out how many images should fit on each line
-						// probably a naive implementation, but optimize later.
-
-						// unload our list onto the canvas
-						draw(imagePackList[i], ren, imageWidth *= x, imageHeight *= y); // fix this later, not that important at the moment
-					}
-				}
-			}
-			SDL_SetRenderTarget(ren, nullptr);
-		} else {
-			// expand the width to create a large-width based canvas
-			canvas = createRenderTarget(imageWidth * static_cast<unsigned int>(pathList.size()), imageHeight, ren);
-			// unload our list onto the canvas
-			SDL_SetRenderTarget(ren, canvas->texture.get());
-			int iterWidth = 0; // the image iteration width (0, 148, 296, etc..)
-			bool firstElement = true; // to place the first image at origin
-			for (const auto &i : pathList) {
-				// place them sequentially on the canvas
-				if (firstElement)
-					draw(imagePackList[i], ren, 0, 0);
-				else
-					draw(imagePackList[i], ren, iterWidth += imageWidth, 0);
-
-				firstElement = false;
-			}
-			SDL_SetRenderTarget(ren, nullptr);
+			firstElement = false;
 		}
+		SDL_SetRenderTarget(ren, nullptr);
+		// fill width and height for querying
+		SDL_QueryTexture(canvas->texture.get(), nullptr, nullptr, &canvas->imageWidth, &canvas->imageHeight);
 		// add canvas to Image container
-		add("canvas", canvas);
-		// fill width and height for later use (query canvas size later?)
-		SDL_QueryTexture(canvas->texture.get(), nullptr, nullptr, &pack.width, &pack.height);
+		add(packName, canvas);
 
 		return canvas;
 	}
 
-	std::shared_ptr<PackData> Image::getPackData() noexcept {
-		return packPtr;
+	int Image::getPackWidth(std::string_view packName) noexcept {
+		auto findPack = images.find(packName);
+		if (findPack == images.end()) {
+			std::cout << "failed to get pack\n";
+			return -1;
+		}
+
+		return images[packName]->imageWidth;
+	}
+
+	int Image::getPackHeight(std::string_view packName) noexcept {
+		auto findPack = images.find(packName);
+		if (findPack == images.end()) {
+			std::cout << "failed to get pack\n";
+			return -1;
+		}
+
+		return images[packName]->imageHeight;
 	}
 
 	std::shared_ptr<Animation> Image::getAnimPtr() noexcept {

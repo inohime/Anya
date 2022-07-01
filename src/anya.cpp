@@ -38,13 +38,15 @@ namespace Application {
 
 		// initialize image
 		imagePtr = std::make_unique<Helper::Image>();
-		//interfacePtr = std::make_unique<Helper::UInterface>();
+		interfacePtr = std::make_unique<Helper::UInterface>();
 
 		// load assets
 		background = imagePtr->createImage(path + "assets/beep_1.png", renderer.get());
-		backgroundGIF = imagePtr->createPack(path + "assets/gif-extract/", renderer.get());
+		backgroundGIF = imagePtr->createPack("canvas", path + "assets/gif-extract/", renderer.get());
 		imagePtr->getAnimPtr()->addAnimation(68, 0, 0, 148, 89);
 		// create buttons here
+		testButton = interfacePtr->createButton("hello", background, {255, 0, 0, 255}, 0, 0, 50, 50);
+		testButton->boxOutline = true;
 		
 		shouldRun = true;
 
@@ -69,7 +71,8 @@ namespace Application {
 
 			//std::cout << getTime(std::chrono::system_clock::now()) << '\n';
 #endif
-			imagePtr->getAnimPtr()->update(30, deltaTime.count());
+			imagePtr->getAnimPtr()->update(37, deltaTime.count());
+			interfacePtr->update(&ev);
 
 			draw();
 		}
@@ -79,6 +82,7 @@ namespace Application {
 	// usually you want this to be independent
 	void Anya::draw() {
 		msg = imagePtr->createTextA({timeToStr(std::chrono::system_clock::now()), path + "assets/bahnschrift.ttf", {255, 255, 255, 255}, 28}, renderer.get());
+		buttonText = imagePtr->createTextA({testButton->text, path + "assets/bahnschrift.ttf", {255, 255, 255, 255}, 16}, renderer.get());
 
 		SDL_SetRenderDrawColor(renderer.get(), 10, 10, 25, 255);
 		SDL_RenderClear(renderer.get());
@@ -86,6 +90,7 @@ namespace Application {
 		//imagePtr->draw(background, renderer.get(), 0, 0); // make buttons to change backgrounds
 		imagePtr->drawAnimation(backgroundGIF, renderer.get(), 0, 0);
 		imagePtr->draw(msg, renderer.get(), static_cast<int>(windowWidth / 5.5), static_cast<int>(windowHeight / 1.6));
+		interfacePtr->draw(testButton, buttonText, renderer.get(), testButton->box.x, testButton->box.y);
 
 		SDL_RenderPresent(renderer.get());
 
