@@ -5,27 +5,15 @@
 #include <string>
 
 namespace Application::Helper {
-	/*
 	struct Button {
 		SDL_Rect box {0};
 		ImageData texture {};
-		MessageData md {};
-		bool boxOutline {false};
-		int boxWidth {box.w};
-		int boxHeight {box.h};
-		int boxPosX {box.x};
-		int boxPosY {box.y};
-	};
-	*/
-
-	struct Button {
-		SDL_Rect box {0};
-		Helper::ImageData texture {};
-		SDL_Color initializedColor {};
+		SDL_Color initialColor {};
 		SDL_Color color {};
 		std::basic_string<char> text {};
 		bool boxOutline {false};
 		bool isClickable {false};
+		// add button color state (for button themes)
 	};
 
 	using BUTTONPTR = std::shared_ptr<Button>;

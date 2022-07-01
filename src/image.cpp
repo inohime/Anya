@@ -46,8 +46,8 @@ namespace Application::Helper {
 			std::cout << "Texture failed to be created\n";
 			return nullptr;
 		}
-		//images.insert({targetName, newImage});
-		// use add instead (wherever)
+
+		// add the render target to the image container manually
 
 		return newImage;
 	}
@@ -101,22 +101,22 @@ namespace Application::Helper {
 
 		TTF_SetFontOutline(ofont, 1);
 
-		SDL_Surface *bg_surf = TTF_RenderText_Blended(font, msg.msg.data(), msg.col);
-		SDL_Surface *fg_surf = TTF_RenderText_Blended(ofont, msg.msg.data(), {0x00, 0x00, 0x00});
+		SDL_Surface *bgSurf = TTF_RenderText_Blended(font, msg.msg.data(), msg.col);
+		SDL_Surface *fgSurf = TTF_RenderText_Blended(ofont, msg.msg.data(), {0x00, 0x00, 0x00});
 
 		// destination rect that gets the size of the surface (explicit x/y for those that want to understand without digging)
-		SDL_Rect position = {position.x = 1, position.y = 1, fg_surf->w, fg_surf->h};
-		SDL_BlitSurface(bg_surf, nullptr, fg_surf, &position);
+		SDL_Rect position = {position.x = 1, position.y = 1, fgSurf->w, fgSurf->h};
+		SDL_BlitSurface(bgSurf, nullptr, fgSurf, &position);
 
-		newImage->texture = std::shared_ptr<SDL_Texture>(SDL_CreateTextureFromSurface(ren, fg_surf), SDL_DestroyTexture);
+		newImage->texture = std::shared_ptr<SDL_Texture>(SDL_CreateTextureFromSurface(ren, fgSurf), SDL_DestroyTexture);
 		if (newImage->texture == nullptr) {
 			std::cout << "Text texture failed to be created\n";
 			return nullptr;
 		}
 		images.insert({msg.fontFile, newImage});
 
-		SDL_FreeSurface(bg_surf);
-		SDL_FreeSurface(fg_surf);
+		SDL_FreeSurface(bgSurf);
+		SDL_FreeSurface(fgSurf);
 		TTF_CloseFont(ofont);
 		TTF_CloseFont(font);
 
@@ -124,9 +124,7 @@ namespace Application::Helper {
 	}
 
 	void Image::draw(IMD &img, SDL_Renderer *ren, int x, int y, double sx, double sy, SDL_Rect *clip) noexcept {
-		SDL_Rect dst {};
-		dst.x = x;
-		dst.y = y;
+		SDL_Rect dst {x, y, NULL, NULL};
 		if (clip != nullptr) {
 			dst.w = clip->w;
 			dst.h = clip->h;
@@ -169,8 +167,7 @@ namespace Application::Helper {
 	}
 
 	void Image::printImageCount() const noexcept {
-		for (const auto &i : images)
-			std::cout << "Image Size: " << images.size() << '\n';
+		std::cout << "Image Size: " << images.size() << '\n';
 	}
 
 	IMD Image::createPack(std::string_view packName, std::string_view dirPath, SDL_Renderer *ren) {
@@ -182,13 +179,10 @@ namespace Application::Helper {
 				std::for_each(std::begin({pathString}), std::end({pathString}), [&](std::string_view str) {
 					if (pathString.find(str) != std::basic_string<char>::npos)
 						pathString.erase(std::remove(pathString.begin(), pathString.end(), '"'), pathString.end());
-							  });
+				});
 			};
 			pathList.emplace_back(pathString);
 		}
-
-		for (const auto &i : pathList)
-			std::cout << i << '\n';
 
 		int imageWidth = 0;
 		int imageHeight = 0;
@@ -214,11 +208,11 @@ namespace Application::Helper {
 		// unload our list onto the canvas
 		for (const auto &i : pathList) {
 			// place them sequentially on the canvas
-			if (firstElement)
+			if (firstElement) {
 				draw(imagePackList[i], ren, 0, 0);
-			else
+			} else {
 				draw(imagePackList[i], ren, iterWidth += imageWidth, 0);
-
+			}
 			firstElement = false;
 		}
 		SDL_SetRenderTarget(ren, nullptr);
@@ -233,7 +227,7 @@ namespace Application::Helper {
 	int Image::getPackWidth(std::string_view packName) noexcept {
 		auto findPack = images.find(packName);
 		if (findPack == images.end()) {
-			std::cout << "failed to get pack\n";
+			std::cout << "Failed to get pack\n";
 			return -1;
 		}
 
@@ -243,7 +237,7 @@ namespace Application::Helper {
 	int Image::getPackHeight(std::string_view packName) noexcept {
 		auto findPack = images.find(packName);
 		if (findPack == images.end()) {
-			std::cout << "failed to get pack\n";
+			std::cout << "Failed to get pack\n";
 			return -1;
 		}
 

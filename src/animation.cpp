@@ -22,11 +22,7 @@ namespace Application::Helper {
 
 	void Animation::draw(IMD &img, SDL_Renderer *ren, int x, int y, double scale){
 		SDL_Rect clip = frames[currentFrame];
-		SDL_Rect dst {};
-		dst.x = x;
-		dst.y = y;
-		dst.w = clip.w;
-		dst.h = clip.h;
+		SDL_Rect dst {x, y, clip.w, clip.h};
 		
 		if (scale != 0) {
 			dst.w *= static_cast<int>(scale);

@@ -30,7 +30,7 @@ namespace Application::Helper {
 			newButton->texture = *texture;
 
 		newButton->color = col;
-		newButton->initializedColor = col;
+		newButton->initialColor = col;
 
 		btnList.emplace_back(newButton);
 
@@ -55,20 +55,24 @@ namespace Application::Helper {
 				} break;
 
 				case SDL_MOUSEBUTTONUP: {
-					if (!button->isClickable)
-						button->color = button->initializedColor;
+					if (!button->isClickable) {
+						button->color = button->initialColor;
+					} else {
+						button->color = {0, 255, 0, 255}; // test
+					}
 				} break;
 
 				case SDL_MOUSEMOTION: {
 					mousePos.x = ev->motion.x;
 					mousePos.y = ev->motion.y;
+					// check if the cursor is hovering over the button
 					if (mousePos.x >= button->box.x && mousePos.x <= (button->box.x + button->box.w) &&
 						mousePos.y >= button->box.y && mousePos.y <= (button->box.y + button->box.h)) {
 
-						button->isClickable = true;
 						button->color = {0, 255, 0, 255};
+						button->isClickable = true;
 					} else {
-						button->color = button->initializedColor;
+						button->color = button->initialColor;
 						button->isClickable = false;
 					}
 				} break;
@@ -76,7 +80,7 @@ namespace Application::Helper {
 		}
 	}
 
-	void UInterface::draw(BUTTONPTR &button, IMD &text, SDL_Renderer *ren, double scaleX, double scaleY, SDL_Rect *clip) {
+	void UInterface::draw(BUTTONPTR &button, IMD &buttonText, SDL_Renderer *ren, double scaleX, double scaleY, SDL_Rect *clip) {
 		SDL_Rect dst = {button->box.x, button->box.y, button->box.w, button->box.h};
 		SDL_Rect textDst = {0, 0, button->box.w, button->box.h}; // test, fix later
 
@@ -87,12 +91,12 @@ namespace Application::Helper {
 
 		if (button->boxOutline) {
 			SDL_RenderCopy(ren, button->texture.texture.get(), nullptr, &dst);
-			SDL_RenderCopy(ren, text->texture.get(), nullptr, &textDst);
+			SDL_RenderCopy(ren, buttonText->texture.get(), nullptr, &textDst);
 			SDL_SetRenderDrawColor(ren, button->color.r, button->color.g, button->color.b, button->color.a);
 			SDL_RenderDrawRect(ren, &button->box);
 		} else {
 			SDL_RenderCopy(ren, button->texture.texture.get(), nullptr, &dst);
-			SDL_RenderCopy(ren, text->texture.get(), nullptr, &textDst);
+			SDL_RenderCopy(ren, buttonText->texture.get(), nullptr, &textDst);
 		}
 	}
 } // namespace Application::Helper
