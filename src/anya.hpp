@@ -52,6 +52,15 @@ namespace Application {
 		Helper::IMD backgroundGIF {nullptr};
 		Helper::IMD background {nullptr};
 		Helper::IMD msg {nullptr};
+
+		Helper::IMD settingsText {nullptr};
+		Helper::IMD minimizeText {nullptr};
+		Helper::IMD closeText {nullptr};
+		Helper::BUTTONPTR settingsBtn {nullptr};
+		// reuse these for in settings and on main screen
+		Helper::BUTTONPTR minimizeBtn {nullptr};
+		Helper::BUTTONPTR closeBtn {nullptr};
+
 		Helper::IMD buttonText {nullptr};
 		Helper::BUTTONPTR testButton {nullptr};
 	};

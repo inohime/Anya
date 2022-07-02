@@ -5,6 +5,15 @@
 #include <memory>
 
 namespace Application::Helper {
+	struct ColorState final {
+		SDL_Color initialColor {};
+		SDL_Color currentColor {};
+		// the outline should have a colour
+		// the button background should have a colour (fill rect)
+		// the text should have a colour
+		// hovering should show different colours
+	};
+
 	struct MessageData final {
 		MessageData &operator=(MessageData &) { return *this; }
 		std::basic_string<char> msg {};

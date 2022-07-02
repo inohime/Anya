@@ -12,11 +12,13 @@ namespace Application::Helper {
 	}
 
 	void Animation::update(float speed, double dt) {
-		frameTime += static_cast<float>(dt);
+		if (frames.size() > 0) {
+			frameTime += static_cast<float>(dt);
 
-		if (frameTime >= speed) {
-			frameTime = 0.0f;
-			currentFrame = (currentFrame + 1) % static_cast<int>(frames.size());
+			if (frameTime >= speed) {
+				frameTime = 0.0f;
+				currentFrame = (currentFrame + 1) % static_cast<int>(frames.size());
+			}
 		}
 	}
 
