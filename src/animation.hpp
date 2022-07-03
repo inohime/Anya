@@ -14,10 +14,10 @@ namespace Application::Helper {
 		/** Quick animation creation
 		 *
 		 * \param frames -> number of frames in the gif extraction
-		 * \param x -> x position of the button
-		 * \param y -> y position of the button
-		 * \param w -> width of the button
-		 * \param h -> height of the button
+		 * \param x -> x position of the image
+		 * \param y -> y position of the image
+		 * \param w -> width of the image (pixel width)
+		 * \param h -> height of the image (pixel height)
 		 * \return void -> no return available.
 		 */
 		void addAnimation(int frames, int x, int y, int w, int h);

@@ -1,3 +1,5 @@
+#include <iostream>
+
 namespace Application::Helper {
 	inline void Scene::createScene(std::string_view name) {
 		sceneList.emplace_back(name);
@@ -7,6 +9,8 @@ namespace Application::Helper {
 		const auto it = std::find(sceneList.begin(), sceneList.end(), name);
 		const auto sceneIndex = it - sceneList.begin();
 		currentScene = sceneIndex;
+
+		//std::cout << "Current Scene: " << currentScene << ", " << name << '\n';
 	}
 
 	inline constexpr uint64_t Scene::getCurrentScene() {

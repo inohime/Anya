@@ -18,7 +18,7 @@ namespace Application::Helper {
 	}
 	*/
 
-	BUTTONPTR UInterface::createButton(std::string_view text, IMD texture, SDL_Color col, int x, int y, unsigned int w, unsigned int h) {
+	BUTTONPTR UInterface::createButton(std::string_view text, IMD texture, ColorData col, int x, int y, unsigned int w, unsigned int h) {
 		BUTTONPTR newButton = std::make_shared<Button>();
 
 		//SDL_assert(Utilities::isUnsigned(w) == true);
@@ -29,8 +29,10 @@ namespace Application::Helper {
 		if (texture != nullptr)
 			newButton->texture = *texture;
 
-		newButton->color = col;
-		newButton->initialColor = col;
+		newButton->buttonColor.initialColor = col.initialColor;
+		newButton->buttonColor.currentColor = col.currentColor;
+		newButton->buttonColor.hoverColor = col.hoverColor;
+
 		newButton->canMinimize = false;
 		newButton->canQuit = false;
 
@@ -40,6 +42,11 @@ namespace Application::Helper {
 	}
 
 	std::vector<BUTTONPTR> &UInterface::getButtonList() {
+		return btnList;
+	}
+
+	std::vector<BUTTONPTR> &UInterface::getButtonsOnLayer(Scene *layer) {
+		// find the buttons on the layer
 		return btnList;
 	}
 
@@ -64,35 +71,50 @@ namespace Application::Helper {
 		return false;
 	}
 
+	bool UInterface::disableInputForLayer(BUTTONPTR &button) {
+		return false;
+	}
+
+	void UInterface::setButtonPos(BUTTONPTR &button, int x, int y) {
+		button->box.x = x;
+		button->box.y = y;
+	}
+
+	void UInterface::setButtonSize(BUTTONPTR &button, unsigned int w, unsigned int h) {
+		button->box.w = w;
+		button->box.h = h;
+	}
+
 	void UInterface::update(SDL_Event *ev) {
-		//SDL_Point mousePos = {};
 		for (auto &button : btnList) {
-			switch (ev->type) {
-				case SDL_MOUSEBUTTONDOWN: {
-					if (button->isClickable)
-						button->color = {0, 0, 255, 255}; // 
-				} break;
+			if (button->isEnabled) {
+				switch (ev->type) {
+					case SDL_MOUSEBUTTONDOWN: {
+						if (button->isClickable)
+							button->buttonColor.currentColor = {0, 0, 255};
+					} break;
 
-				case SDL_MOUSEBUTTONUP: {
-					if (!button->isClickable) {
-						button->color = button->initialColor;
-					} else {
-						button->color = {0, 255, 0, 255}; // test
-					}
-				} break;
+					case SDL_MOUSEBUTTONUP: {
+						if (!button->isClickable) {
+							button->buttonColor.currentColor = button->buttonColor.initialColor;
+						} else {
+							button->buttonColor.currentColor = button->buttonColor.hoverColor;
+						}
+					} break;
 
-				case SDL_MOUSEMOTION: {
-					mousePos.x = ev->motion.x;
-					mousePos.y = ev->motion.y;
-					// check if the cursor is hovering over the button
-					if (cursorInBounds(button, mousePos)) {
-						button->color = {0, 255, 0, 255};
-						button->isClickable = true;
-					} else {
-						button->color = button->initialColor;
-						button->isClickable = false;
-					}
-				} break;
+					case SDL_MOUSEMOTION: {
+						mousePos.x = ev->motion.x;
+						mousePos.y = ev->motion.y;
+						// check if the cursor is hovering over the button
+						if (cursorInBounds(button, mousePos)) {
+							button->buttonColor.currentColor = button->buttonColor.hoverColor;
+							button->isClickable = true;
+						} else {
+							button->buttonColor.currentColor = button->buttonColor.initialColor;
+							button->isClickable = false;
+						}
+					} break;
+				}
 			}
 		}
 	}
@@ -108,12 +130,21 @@ namespace Application::Helper {
 
 		if (button->showOutline) {
 			SDL_RenderCopy(ren, button->texture.texture.get(), nullptr, &dst);
-			SDL_RenderCopy(ren, buttonText->texture.get(), nullptr, &textDst);
-			SDL_SetRenderDrawColor(ren, button->color.r, button->color.g, button->color.b, button->color.a);
+			if (buttonText != nullptr) {
+				SDL_RenderCopy(ren, buttonText->texture.get(), nullptr, &textDst);
+			}
+			SDL_SetRenderDrawColor(
+				ren,
+				button->buttonColor.currentColor.r,
+				button->buttonColor.currentColor.g,
+				button->buttonColor.currentColor.b,
+				button->buttonColor.currentColor.a
+			);
 			SDL_RenderDrawRect(ren, &button->box);
 		} else {
 			SDL_RenderCopy(ren, button->texture.texture.get(), nullptr, &dst);
-			SDL_RenderCopy(ren, buttonText->texture.get(), nullptr, &textDst);
+			if (buttonText != nullptr)
+				SDL_RenderCopy(ren, buttonText->texture.get(), nullptr, &textDst);
 		}
 	}
 } // namespace Application::Helper

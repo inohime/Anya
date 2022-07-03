@@ -4,6 +4,7 @@
 #include "image.hpp"
 #include "uinterface.hpp"
 #include "util.hpp"
+#include "scene.hpp"
 #include <chrono>
 #include <format>
 #include <sstream>
@@ -47,22 +48,53 @@ namespace Application {
 	private:
 		std::unique_ptr<Helper::UInterface> interfacePtr {nullptr};
 		std::unique_ptr<Helper::Image> imagePtr {nullptr};
+		std::unique_ptr<Helper::Scene> scenePtr {nullptr};
 		std::basic_string<char> path {};
 		std::basic_stringstream<char> str {};
+
+		SDL_Rect settingsView {0, 0, (int)windowWidth, (int)windowHeight};
+		SDL_Rect settingsThemesView {0, 0, (int)windowWidth, (int)windowHeight};
+
+		/*
+		*	- Back arrow to settings | X button to close settings
+		*	- Minimal Mode (Minimal)
+		*	- Set Background (Background) -> expands -> Open File | Color (with color icon filled)
+		*	- Set Text Font (Font)
+		*/
+
+
 		Helper::IMD backgroundGIF {nullptr};
 		Helper::IMD background {nullptr};
-		Helper::IMD msg {nullptr};
-
+		Helper::IMD settingsIcon {nullptr};
+		// text
+		Helper::IMD timeText {nullptr};
 		Helper::IMD settingsText {nullptr};
 		Helper::IMD minimizeText {nullptr};
-		Helper::IMD closeText {nullptr};
+		Helper::IMD quitText {nullptr};
+		//Helper::IMD superCloseText {nullptr}; // supersedes closeText
+		Helper::IMD settingsExitText {nullptr};
+		Helper::IMD themesText {nullptr};
+		Helper::IMD themesExitText {nullptr};
+		Helper::IMD minimalText {nullptr};
+		Helper::IMD setBGText {nullptr};
+		Helper::IMD openFileText {nullptr};
+		Helper::IMD setBGColorText {nullptr};
+		Helper::IMD setTextFontText {nullptr};
+		// buttons
 		Helper::BUTTONPTR settingsBtn {nullptr};
-		// reuse these for in settings and on main screen
 		Helper::BUTTONPTR minimizeBtn {nullptr};
-		Helper::BUTTONPTR closeBtn {nullptr};
+		Helper::BUTTONPTR quitBtn {nullptr};
+		Helper::BUTTONPTR settingsExitBtn {nullptr};
+		Helper::BUTTONPTR themesBtn {nullptr};
+		Helper::BUTTONPTR themesExitBtn {nullptr};
+		Helper::BUTTONPTR minimalBtn {nullptr};
+		Helper::BUTTONPTR setBGBtn {nullptr};
+		Helper::BUTTONPTR openFileBtn {nullptr};
+		Helper::BUTTONPTR setBGColorBtn {nullptr};
+		Helper::BUTTONPTR setTextFontBtn {nullptr};
 
-		Helper::IMD buttonText {nullptr};
-		Helper::BUTTONPTR testButton {nullptr};
+		//Helper::IMD buttonText {nullptr};
+		//Helper::BUTTONPTR testButton {nullptr};
 	};
 } // namespace Application
 

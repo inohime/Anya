@@ -3,19 +3,23 @@
 #include <SDL.h>
 #include "image.hpp"
 #include <string>
-#include <iostream>
+
+class Scene;
 
 namespace Application::Helper {
 	struct Button {
 		SDL_Rect box {0};
 		ImageData texture {};
-		SDL_Color initialColor {};
-		SDL_Color color {};
+		ColorData buttonColor {};
+		//SDL_Color initialColor {};
+		//SDL_Color color {};
+		//SDL_Color backgroundColor {};
 		std::basic_string<char> text {};
 		bool showOutline {false};
 		bool isClickable {false};
 		bool canMinimize {false};
 		bool canQuit {false};
+		bool isEnabled {false};
 		// add button color state (for button themes)
 	};
 
@@ -35,11 +39,14 @@ namespace Application::Helper {
 		 */
 		//BUTTONPTR createButton(MessageData &msg, IMD &texture, int x, int y, unsigned int w, unsigned int h);
 		// for simple button
-		// width and height is the size of the gif extracted images
-		BUTTONPTR createButton(std::string_view text, IMD texture, SDL_Color col, int x, int y, unsigned int w, unsigned int h);
+		BUTTONPTR createButton(std::string_view text, IMD texture, ColorData col, int x, int y, unsigned int w, unsigned int h);
 		std::vector<BUTTONPTR> &getButtonList();
+		std::vector<BUTTONPTR> &getButtonsOnLayer(Scene *layer);
 		SDL_Point &getMousePos();
 		bool cursorInBounds(BUTTONPTR &button, SDL_Point &mousePos);
+		bool disableInputForLayer(BUTTONPTR &button);
+		void setButtonPos(BUTTONPTR &button, int x, int y);
+		void setButtonSize(BUTTONPTR &button, unsigned int w, unsigned int h);
 		void setButtonTexture(BUTTONPTR &button, IMD &texture);
 		void showOutline(BUTTONPTR &button, bool show);
 		void update(SDL_Event *ev);
