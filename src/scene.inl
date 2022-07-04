@@ -10,7 +10,7 @@ namespace Application::Helper {
 		const auto sceneIndex = it - sceneList.begin();
 		currentScene = sceneIndex;
 
-		//std::cout << "Current Scene: " << currentScene << ", " << name << '\n';
+		std::cout << "Current Scene: " << currentScene << ", " << name << '\n';
 	}
 
 	inline constexpr uint64_t Scene::getCurrentScene() {

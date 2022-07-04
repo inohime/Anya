@@ -3,6 +3,7 @@
 #include <SDL.h>
 #include "image.hpp"
 #include <string>
+#include <unordered_map>
 
 class Scene;
 
@@ -11,11 +12,12 @@ namespace Application::Helper {
 		SDL_Rect box {0};
 		ImageData texture {};
 		ColorData buttonColor {};
+		std::basic_string<char> layer {};
 		//SDL_Color initialColor {};
 		//SDL_Color color {};
 		//SDL_Color backgroundColor {};
 		std::basic_string<char> text {};
-		bool showOutline {false};
+		bool showOutline {true};
 		bool isClickable {false};
 		bool canMinimize {false};
 		bool canQuit {false};
@@ -37,21 +39,17 @@ namespace Application::Helper {
 		 * \param h -> height of the button
 		 * \return Button object filled with all of the essential details for a customized button.
 		 */
-		//BUTTONPTR createButton(MessageData &msg, IMD &texture, int x, int y, unsigned int w, unsigned int h);
-		// for simple button
-		BUTTONPTR createButton(std::string_view text, IMD texture, ColorData col, int x, int y, unsigned int w, unsigned int h);
+		BUTTONPTR createButton(std::string_view text, IMD texture, ColorData col, std::string_view layerName, int x, int y, unsigned int w, unsigned int h);
 		std::vector<BUTTONPTR> &getButtonList();
-		std::vector<BUTTONPTR> &getButtonsOnLayer(Scene *layer);
 		SDL_Point &getMousePos();
 		bool cursorInBounds(BUTTONPTR &button, SDL_Point &mousePos);
-		bool disableInputForLayer(BUTTONPTR &button);
 		void setButtonPos(BUTTONPTR &button, int x, int y);
 		void setButtonSize(BUTTONPTR &button, unsigned int w, unsigned int h);
 		void setButtonTexture(BUTTONPTR &button, IMD &texture);
 		void showOutline(BUTTONPTR &button, bool show);
 		void update(SDL_Event *ev);
 		void draw(BUTTONPTR &button, IMD buttonText, SDL_Renderer *ren, double sx = 0.0, double sy = 0.0, SDL_Rect *clip = nullptr);
-		// void fadeEffect(SDL_Renderer *ren, float speed, 
+		// void fadeEffect(SDL_Renderer *ren, float speed);
 
 	private:
 		std::vector<BUTTONPTR> btnList {};

@@ -43,52 +43,49 @@ namespace Application {
 
 		// load assets
 		background = imagePtr->createImage(path + "assets/beep_1.png", renderer.get());
-		settingsIcon = imagePtr->createImage(path + "assets/setting.png", renderer.get());
 		backgroundGIF = imagePtr->createPack("canvas", path + "assets/gif-extract/", renderer.get());
 		imagePtr->getAnimPtr()->addAnimation(68, 0, 0, 148, 89);
-
-		// replace ColorData with ColorState
-		// main
-		settingsBtn = interfacePtr->createButton("", settingsIcon, {{255, 0, 0}, {0, 255, 0}}, 0, 50, 25, 25);
-		settingsBtn->showOutline = true;
-		//settingsBtn->isEnabled = true;
-
-		minimizeBtn = interfacePtr->createButton("-", nullptr, {{255, 0, 0}, {0, 255, 0}}, 80, 0, 25, 25);
-		minimizeBtn->showOutline = true;
-		minimizeBtn->canMinimize = true;
-
-		quitBtn = interfacePtr->createButton("Quit", nullptr, {{255, 0, 0}, {0, 255, 0}}, 120, 25, 25, 25);
-		quitBtn->showOutline = true;
-		quitBtn->canQuit = true;
-
-		// settings
-		settingsExitBtn = interfacePtr->createButton("x", nullptr, {{255, 0, 0}, {0, 255, 0}}, 0, 0, 25, 25);
-		settingsExitBtn->showOutline = true;
-
-		themesBtn = interfacePtr->createButton("Themes", nullptr, {{255, 0, 0}, {0, 255, 0}}, 100, 0, 50, 25);
-		themesBtn->showOutline = true;
-
-		// settings-themes
-		minimalBtn = interfacePtr->createButton("Minimal Mode", nullptr, {{255, 0, 0}, {0, 255, 0}}, 0, 10, 50, 25);
-		minimalBtn->showOutline = true;
-
-		setBGBtn = interfacePtr->createButton("Set Background", nullptr, {{255, 0, 0}, {0, 255, 0}}, 0, 20, 75, 25);
-		setBGBtn->showOutline = true;
-
-		openFileBtn = interfacePtr->createButton("Open File", nullptr, {{255, 0, 0}, {0, 255, 0}}, 0, 0, 30, 25);
-		openFileBtn->showOutline = true;
-
-		setBGColorBtn = interfacePtr->createButton("Set Color", nullptr, {{255, 0, 0}, {0, 255, 0}}, 0, 40, 50, 25);
-		setBGColorBtn->showOutline = true;
-
-		setTextFontBtn = interfacePtr->createButton("Set Time Font", nullptr, {{255, 0, 0}, {0, 255, 0}}, 0, 50, 50, 25);
-		setTextFontBtn->showOutline = true;
 
 		// create scenes
 		scenePtr->createScene("Main");
 		scenePtr->createScene("Settings");
 		scenePtr->createScene("Settings-Themes");
 
+		// replace ColorData with ColorState
+		// main
+		settingsBtn = interfacePtr->createButton("+", nullptr, {{255, 0, 0}, {0, 255, 0}}, "Main", -2, -15, 25, 50);
+		//settingsBtn->showOutline = true;
+		settingsBtn->isEnabled = true;
+
+		// settings
+		quitBtn = interfacePtr->createButton("Quit", nullptr, {{255, 0, 0}, {0, 255, 0}}, "Settings", 45, 45, 55, 40);
+		//quitBtn->showOutline = true;
+		quitBtn->canQuit = true;
+		quitBtn->isEnabled = true;
+
+		settingsExitBtn = interfacePtr->createButton("x", nullptr, {{255, 0, 0}, {0, 255, 0}}, "Settings", 0, -5, 20, 28);
+		//settingsExitBtn->showOutline = true;
+
+		themesBtn = interfacePtr->createButton("Themes", nullptr, {{255, 0, 0}, {0, 255, 0}}, "Settings", 35, 10, 80, 40);
+		//themesBtn->showOutline = true;
+
+		themesExitBtn = interfacePtr->createButton("<-", nullptr, {{255, 0, 0}, {0, 255, 0}}, "Settings", 0, -5, 20, 28);
+
+		// setLayoutBtn = interfacePtr->createButton();
+		// setLayoutBtn->showOutline = true;
+
+		// settings-themes
+		minimalBtn = interfacePtr->createButton("Minimal Mode", nullptr, {{255, 0, 0}, {0, 255, 0}}, "Settings-Themes", 0, 10, 100, 25);
+
+		setBGBtn = interfacePtr->createButton("Set Background", nullptr, {{255, 0, 0}, {0, 255, 0}}, "Settings-Themes", 0, 20, 100, 25);
+
+		openFileBtn = interfacePtr->createButton("Open File", nullptr, {{255, 0, 0}, {0, 255, 0}}, "Settings-Themes", 50, 0, 50, 25);
+
+		setBGColorBtn = interfacePtr->createButton("Set Color", nullptr, {{255, 0, 0}, {0, 255, 0}}, "Settings-Themes", 50, 40, 50, 25);
+
+		setTextFontBtn = interfacePtr->createButton("Set Time Font", nullptr, {{255, 0, 0}, {0, 255, 0}}, "Settings-Themes", 0, 50, 75, 25);
+
+		// set the scene to be displayed
 		scenePtr->setScene("Main");
 
 
@@ -126,22 +123,38 @@ namespace Application {
 						if (button->canMinimize && interfacePtr->cursorInBounds(button, interfacePtr->getMousePos()))
 							SDL_MinimizeWindow(window.get());
 
-						if (button->canQuit && interfacePtr->cursorInBounds(button, interfacePtr->getMousePos()))
-							shouldRun = false;
+						if (button->canQuit && interfacePtr->cursorInBounds(button, interfacePtr->getMousePos())) {
+							if (scenePtr->getCurrentScene() == scenePtr->findScene("Settings"))
+								shouldRun = false;
+						}		
 					}
 
-					// append buttons to layers 
-					if (interfacePtr->cursorInBounds(settingsBtn, interfacePtr->getMousePos())) {
+					if (interfacePtr->cursorInBounds(settingsBtn, interfacePtr->getMousePos()) && settingsBtn->isEnabled) {
 						scenePtr->setScene("Settings");
+						settingsBtn->isEnabled = false;
 					}
 
-					if (interfacePtr->cursorInBounds(themesBtn, interfacePtr->getMousePos()))
-						scenePtr->setScene("Settings-Themes");
-
-					if (interfacePtr->cursorInBounds(settingsExitBtn, interfacePtr->getMousePos())) {
+					if (interfacePtr->cursorInBounds(settingsExitBtn, interfacePtr->getMousePos()) && settingsExitBtn->isEnabled) {
 						scenePtr->setScene("Main");
+						settingsExitBtn->isEnabled = false;
+						themesBtn->isEnabled = false;
+						settingsBtn->isEnabled = true;
 					}
 
+					if (interfacePtr->cursorInBounds(themesBtn, interfacePtr->getMousePos()) && themesBtn->isEnabled) {
+						scenePtr->setScene("Settings-Themes");
+						themesExitBtn->isEnabled = true;
+						settingsExitBtn->isEnabled = false;
+					}
+
+					if (interfacePtr->cursorInBounds(themesExitBtn, interfacePtr->getMousePos()) && themesExitBtn->isEnabled) {
+						scenePtr->setScene("Settings");
+						settingsExitBtn->isEnabled = true;
+						themesExitBtn->isEnabled = false;
+					}
+
+					//if (interfacePtr->cursorInBounds())
+					
 				} break;
 			}
 			end = std::chrono::steady_clock::now();
@@ -155,6 +168,18 @@ namespace Application {
 
 			//std::cout << getTime(std::chrono::system_clock::now()) << '\n';
 #endif
+
+			if (scenePtr->getCurrentScene() == scenePtr->findScene("Settings") && !settingsBtn->isEnabled) {
+				settingsExitBtn->isEnabled = true;
+				themesBtn->isEnabled = true;
+			}
+			/*
+			if (scenePtr->getCurrentScene() == scenePtr->findScene("Settings-Themes") && !settingsExitBtn->isEnabled) {
+				themesExitBtn->isEnabled = true;
+				themesBtn->isEnabled = true;
+			}
+			*/
+
 			imagePtr->getAnimPtr()->update(40, deltaTime.count());
 			interfacePtr->update(&ev);
 
@@ -165,32 +190,34 @@ namespace Application {
 
 	// usually you want this to be independent
 	void Anya::draw() {
-		timeText = imagePtr->createTextA({timeToStr(std::chrono::system_clock::now()), path + "assets/bahnschrift.ttf", {255, 255, 255}, 28}, renderer.get());
-		quitText = imagePtr->createText({quitBtn->text, path + "assets/bahnschrift.ttf", {255, 255, 255}, 96}, renderer.get());
-		settingsExitText = imagePtr->createText({settingsExitBtn->text, path + "assets/bahnschrift.ttf", {255, 255, 255}, 96}, renderer.get());
-		themesText = imagePtr->createText({themesBtn->text, path + "assets/bahnschrift.ttf", {255, 255, 255}, 96}, renderer.get());
-		minimalText = imagePtr->createText({minimalBtn->text, path + "assets/bahnschrift.ttf", {255, 255, 255}, 96}, renderer.get());
-		setBGText = imagePtr->createText({setBGBtn->text, path + "assets/bahnschrift.ttf", {255, 255, 255}, 96}, renderer.get());
-		openFileText = imagePtr->createText({openFileBtn->text, path + "assets/bahnschrift.ttf", {255, 255, 255}, 96}, renderer.get());
-		setBGColorText = imagePtr->createText({setBGColorBtn->text, path + "assets/bahnschrift.ttf", {255, 255, 255}, 28}, renderer.get());
-		setTextFontText = imagePtr->createText({setTextFontBtn->text, path + "assets/bahnschrift.ttf", {255, 255, 255}, 96}, renderer.get());
+		timeText = imagePtr->createTextA({timeToStr(std::chrono::system_clock::now()), path + "assets/OnestRegular1602-hint.ttf", {255, 255, 255}, 28}, renderer.get());
+		quitText = imagePtr->createText({quitBtn->text, path + "assets/OnestRegular1602-hint.ttf", {255, 255, 255}, 28}, renderer.get());
+		settingsText = imagePtr->createTextA({settingsBtn->text, path + "assets/OnestRegular1602-hint.ttf", {255, 255, 255}, 196, 4}, renderer.get());
+		settingsExitText = imagePtr->createText({settingsExitBtn->text, path + "assets/OnestRegular1602-hint.ttf", {255, 255, 255}, 96}, renderer.get());
+		themesText = imagePtr->createText({themesBtn->text, path + "assets/OnestRegular1602-hint.ttf", {255, 255, 255}, 32}, renderer.get());
+		themesExitText = imagePtr->createText({themesExitBtn->text, path + "assets/OnestRegular1602-hint.ttf", {255, 255, 255}, 96}, renderer.get());
+		minimalText = imagePtr->createText({minimalBtn->text, path + "assets/OnestRegular1602-hint.ttf", {255, 255, 255}, 96}, renderer.get());
+		setBGText = imagePtr->createText({setBGBtn->text, path + "assets/OnestRegular1602-hint.ttf", {255, 255, 255}, 96}, renderer.get());
+		openFileText = imagePtr->createText({openFileBtn->text, path + "assets/OnestRegular1602-hint.ttf", {255, 255, 255}, 96}, renderer.get());
+		setBGColorText = imagePtr->createText({setBGColorBtn->text, path + "assets/OnestRegular1602-hint.ttf", {255, 255, 255}, 28}, renderer.get());
+		setTextFontText = imagePtr->createText({setTextFontBtn->text, path + "assets/OnestRegular1602-hint.ttf", {255, 255, 255}, 96}, renderer.get());
 
+		SDL_SetRenderDrawBlendMode(renderer.get(), SDL_BLENDMODE_BLEND);
 		SDL_SetRenderDrawColor(renderer.get(), 10, 10, 25, 255);
 		SDL_RenderClear(renderer.get());
 
 		if (scenePtr->getCurrentScene() == scenePtr->findScene("Main")) {
 			//imagePtr->draw(background, renderer.get(), 0, 0); // make buttons to change backgrounds
 			imagePtr->drawAnimation(backgroundGIF, renderer.get(), 0, 0);
-			imagePtr->draw(timeText, renderer.get(), static_cast<int>(windowWidth / 5.5), static_cast<int>(windowHeight / 1.6));
+			imagePtr->draw(timeText, renderer.get(), static_cast<int>(windowWidth / 8), static_cast<int>(windowHeight / 1.6));
 
-			interfacePtr->draw(settingsBtn, nullptr, renderer.get());
+			interfacePtr->draw(settingsBtn, settingsText, renderer.get());
 		}
 
 		if (scenePtr->getCurrentScene() == scenePtr->findScene("Settings")) {
 			SDL_SetRenderDrawColor(renderer.get(), 0, 0, 0, 255);
 			SDL_RenderFillRect(renderer.get(), &settingsView);
 
-			// draw buttons
 			interfacePtr->draw(settingsExitBtn, settingsExitText, renderer.get());
 			interfacePtr->draw(quitBtn, quitText, renderer.get());
 			interfacePtr->draw(themesBtn, themesText, renderer.get());
@@ -200,6 +227,7 @@ namespace Application {
 			SDL_SetRenderDrawColor(renderer.get(), 0, 0, 0, 255);
 			SDL_RenderFillRect(renderer.get(), &settingsThemesView);
 
+			interfacePtr->draw(themesExitBtn, themesExitText, renderer.get());
 			interfacePtr->draw(minimalBtn, minimalText, renderer.get());
 			interfacePtr->draw(setBGBtn, setBGText, renderer.get());
 			interfacePtr->draw(openFileBtn, openFileText, renderer.get());

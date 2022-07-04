@@ -34,6 +34,7 @@ namespace Application::Helper {
 		std::basic_string<char> fontFile {};
 		const SDL_Color &col {};
 		int fontSize {0};
+		int outlineThickness {1};
 	};
 
 	struct ImageData final {

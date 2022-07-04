@@ -7,6 +7,7 @@ namespace Application::Helper {
 			std::cout << "Failed to load file " << SDL_GetError() << '\n';
 			return nullptr;
 		}
+
 		return IMG_Load(filePath.data());
 	}
 
@@ -93,16 +94,16 @@ namespace Application::Helper {
 			return nullptr;
 		}
 
-		TTF_Font *ofont = TTF_OpenFont(msg.fontFile.data(), msg.fontSize);
+		TTF_Font *outlineFont = TTF_OpenFont(msg.fontFile.data(), msg.fontSize);
 		if (font == nullptr) {
 			std::cout << "TTF_OpenFont error " << TTF_GetError() << "\n";
 			return nullptr;
 		}
 
-		TTF_SetFontOutline(ofont, 1);
+		TTF_SetFontOutline(outlineFont, msg.outlineThickness);
 
 		SDL_Surface *bgSurf = TTF_RenderText_Blended(font, msg.msg.data(), msg.col);
-		SDL_Surface *fgSurf = TTF_RenderText_Blended(ofont, msg.msg.data(), {0x00, 0x00, 0x00});
+		SDL_Surface *fgSurf = TTF_RenderText_Blended(outlineFont, msg.msg.data(), {0x00, 0x00, 0x00});
 
 		// destination rect that gets the size of the surface (explicit x/y for those that want to understand without digging)
 		SDL_Rect position = {position.x = 1, position.y = 1, fgSurf->w, fgSurf->h};
@@ -117,7 +118,7 @@ namespace Application::Helper {
 
 		SDL_FreeSurface(bgSurf);
 		SDL_FreeSurface(fgSurf);
-		TTF_CloseFont(ofont);
+		TTF_CloseFont(outlineFont);
 		TTF_CloseFont(font);
 
 		return newImage;

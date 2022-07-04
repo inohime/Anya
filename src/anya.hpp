@@ -52,29 +52,21 @@ namespace Application {
 		std::basic_string<char> path {};
 		std::basic_stringstream<char> str {};
 
+		float sceneAlpha {SDL_ALPHA_TRANSPARENT};
 		SDL_Rect settingsView {0, 0, (int)windowWidth, (int)windowHeight};
 		SDL_Rect settingsThemesView {0, 0, (int)windowWidth, (int)windowHeight};
 
-		/*
-		*	- Back arrow to settings | X button to close settings
-		*	- Minimal Mode (Minimal)
-		*	- Set Background (Background) -> expands -> Open File | Color (with color icon filled)
-		*	- Set Text Font (Font)
-		*/
-
-
 		Helper::IMD backgroundGIF {nullptr};
 		Helper::IMD background {nullptr};
-		Helper::IMD settingsIcon {nullptr};
 		// text
 		Helper::IMD timeText {nullptr};
 		Helper::IMD settingsText {nullptr};
 		Helper::IMD minimizeText {nullptr};
 		Helper::IMD quitText {nullptr};
-		//Helper::IMD superCloseText {nullptr}; // supersedes closeText
 		Helper::IMD settingsExitText {nullptr};
 		Helper::IMD themesText {nullptr};
 		Helper::IMD themesExitText {nullptr};
+		// Helper::IMD setLayoutText {nullptr};
 		Helper::IMD minimalText {nullptr};
 		Helper::IMD setBGText {nullptr};
 		Helper::IMD openFileText {nullptr};
@@ -86,15 +78,13 @@ namespace Application {
 		Helper::BUTTONPTR quitBtn {nullptr};
 		Helper::BUTTONPTR settingsExitBtn {nullptr};
 		Helper::BUTTONPTR themesBtn {nullptr};
+		//Helper::BUTTONPTR setLayoutBtn {nullptr};
 		Helper::BUTTONPTR themesExitBtn {nullptr};
 		Helper::BUTTONPTR minimalBtn {nullptr};
 		Helper::BUTTONPTR setBGBtn {nullptr};
 		Helper::BUTTONPTR openFileBtn {nullptr};
 		Helper::BUTTONPTR setBGColorBtn {nullptr};
 		Helper::BUTTONPTR setTextFontBtn {nullptr};
-
-		//Helper::IMD buttonText {nullptr};
-		//Helper::BUTTONPTR testButton {nullptr};
 	};
 } // namespace Application
 
