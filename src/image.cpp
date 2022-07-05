@@ -1,4 +1,5 @@
 #include "image.hpp"
+#include "util.hpp"
 #include <iostream>
 
 namespace Application::Helper {
@@ -26,7 +27,7 @@ namespace Application::Helper {
 		if (key != nullptr)
 			SDL_SetColorKey(surf, SDL_TRUE, SDL_MapRGB(surf->format, key->r, key->g, key->b));
 
-		newImage->texture = std::shared_ptr<SDL_Texture>(SDL_CreateTextureFromSurface(ren, surf), SDL_DestroyTexture);
+		newImage->texture = Utilities::PTR<SDL_Texture>(SDL_CreateTextureFromSurface(ren, surf));
 		if (newImage->texture == nullptr) {
 			std::cout << "Text texture failed to be created\n";
 			return nullptr;
@@ -42,7 +43,7 @@ namespace Application::Helper {
 	IMD Image::createRenderTarget(uint32_t width, uint32_t height, SDL_Renderer *ren) {
 		IMD newImage = std::make_shared<ImageData>();
 
-		newImage->texture = std::shared_ptr<SDL_Texture>(SDL_CreateTexture(ren, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, width, height), SDL_DestroyTexture);
+		newImage->texture = Utilities::PTR<SDL_Texture>(SDL_CreateTexture(ren, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, width, height));
 		if (newImage->texture == nullptr) {
 			std::cout << "Texture failed to be created\n";
 			return nullptr;
@@ -71,7 +72,7 @@ namespace Application::Helper {
 			return nullptr;
 		}
 
-		newImage->texture = std::shared_ptr<SDL_Texture>(SDL_CreateTextureFromSurface(ren, surf), SDL_DestroyTexture);
+		newImage->texture = Utilities::PTR<SDL_Texture>(SDL_CreateTextureFromSurface(ren, surf));
 		if (newImage->texture == nullptr) {
 			std::cout << "Text texture failed to be created\n";
 			return nullptr;
@@ -109,7 +110,7 @@ namespace Application::Helper {
 		SDL_Rect position = {position.x = 1, position.y = 1, fgSurf->w, fgSurf->h};
 		SDL_BlitSurface(bgSurf, nullptr, fgSurf, &position);
 
-		newImage->texture = std::shared_ptr<SDL_Texture>(SDL_CreateTextureFromSurface(ren, fgSurf), SDL_DestroyTexture);
+		newImage->texture = Utilities::PTR<SDL_Texture>(SDL_CreateTextureFromSurface(ren, fgSurf));
 		if (newImage->texture == nullptr) {
 			std::cout << "Text texture failed to be created\n";
 			return nullptr;

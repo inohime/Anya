@@ -35,13 +35,6 @@ namespace Application::Helper {
 		 *	| 0 | 1 | 2 | 3 | 4 | 5 | 6 |
 		 *	-----------------------------
 		 *  1D array: images are on an x axis only (rows)
-		 *
-		 *	-----------------------------
-		 *	| 0 | 1 | 2 | 3 | 4 | 5 | 6 |
-		 *	-----------------------------
-		 *	| 7 | 8 | 9 | 10| 11| 12| 13|
-		 *	-----------------------------
-		 *  2D array: images are on both x and y axis (rows and columns)
 		 */
 
 		 /** Packs the gif extraction into an atlas to be used as an animation

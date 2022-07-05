@@ -52,7 +52,7 @@ namespace Application {
 		std::basic_string<char> path {};
 		std::basic_stringstream<char> str {};
 
-		float buttonOpacity {191.25f};
+		float buttonOpacity {191.25f}; // 75% opacity of 255
 		
 		float sceneAlpha {SDL_ALPHA_TRANSPARENT};
 		SDL_Rect settingsView {0, 0, (int)windowWidth, (int)windowHeight};
