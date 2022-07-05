@@ -12,7 +12,6 @@ namespace Application::Helper {
 		return IMG_Load(filePath.data());
 	}
 
-	// load textures
 	IMD Image::createImage(std::string_view filePath, SDL_Renderer *ren, SDL_Color *key) {
 		IMD newImage = std::make_shared<ImageData>();
 		newImage->path = filePath;
@@ -21,7 +20,6 @@ namespace Application::Helper {
 		if (iter != images.end())
 			return iter->second; // we found the filePath
 
-		// start texture creation process
 		SDL_Surface *surf = loadFile(filePath);
 
 		if (key != nullptr)
@@ -39,7 +37,6 @@ namespace Application::Helper {
 		return newImage;
 	}
 
-	// load render target
 	IMD Image::createRenderTarget(SDL_Renderer *ren, unsigned int width, unsigned int height) {
 		IMD newImage = std::make_shared<ImageData>();
 
@@ -54,7 +51,6 @@ namespace Application::Helper {
 		return newImage;
 	}
 
-	// load text
 	IMD Image::createText(const MessageData &msg, SDL_Renderer *ren) {
 		IMD newImage = std::make_shared<ImageData>();
 		newImage->path = msg.fontFile;
@@ -85,7 +81,6 @@ namespace Application::Helper {
 		return newImage;
 	}
 
-	// load text with outline
 	IMD Image::createTextA(const MessageData &msg, SDL_Renderer *ren) {
 		IMD newImage = std::make_shared<ImageData>();
 
@@ -146,26 +141,30 @@ namespace Application::Helper {
 		animPtr->draw(img, ren, x, y, scale);
 	}
 
-	void Image::add(std::string_view str, IMD &img) {
+	int Image::add(std::string_view str, IMD &img) {
 		auto iter = images.find(str);
 		if (iter != images.end()) {
 			std::cout << "Image already exists\n";
-			return; // string exists
+			return -1;
 		} else {
 			images.insert({str, img});
 			if (images.find(str) != images.end())
 				std::cout << "Created image\n";
 		}
+
+		return 0;
 	}
 
-	void Image::remove(IMD &img) {
+	int Image::remove(IMD &img) {
 		if (images.contains(img->path)) {
 			images.erase(img->path);
 			img.reset();
 		} else {
 			std::cout << "Failed to remove image\n";
-			return;
+			return -1;
 		}
+
+		return 0;
 	}
 
 	void Image::printImageCount() const noexcept {

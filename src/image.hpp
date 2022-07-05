@@ -77,8 +77,6 @@ namespace Application::Helper {
 		 * \param packName -> the name of the image pack canvas that will be added to the map.
 		 * \param dirPath -> the directory of the files, not the actual files!
 		 * \param ren -> the renderer to use
-		 * \param rows -> the number of rows the canvas should have if explicitly added
-		 * \param cols -> the number of columns the canvas should have if explicitly added
 		 * \return the image (canvas) or nullptr if the operation failed.
 		 */
 		IMD createPack(std::string_view packName, std::string_view dirPath, SDL_Renderer *ren);
@@ -103,13 +101,15 @@ namespace Application::Helper {
 		 * 
 		 * \param str -> the nametag of the image
 		 * \param img -> the image to be inserted into the map
+		 * \return 0 if the operation succeeded, otherwise -1 if it failed.
 		 */
-		void add(std::string_view str, IMD &img);
+		int add(std::string_view str, IMD &img);
 		/** Remove an image out of the map.
 		 * 
 		 * \param img -> the image to be removed from the map & safely freed.
+		 * \return 0 if the operation succeeded, otherwise -1 if it failed.
 		 */
-		void remove(IMD &img);
+		int remove(IMD &img);
 		/** Renders an image to the screen.
 		 * 
 		 * \param img -> the image to draw
@@ -117,9 +117,11 @@ namespace Application::Helper {
 		 * \param x -> x position of the image
 		 * \param y -> y position of the image
 		 * \param scale -> scale up or down the image width and height (0 if default)
+		 * \param clip -> the portion of the image to render (nullptr if default)
 		 */
 		void draw(IMD &img, SDL_Renderer *ren, int x, int y, double sx = 0.0, double sy = 0.0, SDL_Rect *clip = nullptr) noexcept;
 		/** Renders an animation (or GIF from Image Pack) to the screen.
+		 * 
 		 * \param img -> the image (animation) to draw
 		 * \param ren -> the renderer to use
 		 * \param x -> x position of the image
