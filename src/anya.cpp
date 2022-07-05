@@ -53,37 +53,24 @@ namespace Application {
 
 		// replace ColorData with ColorState
 		// main
-		settingsBtn = interfacePtr->createButton("+", nullptr, {{255, 0, 0}, {0, 255, 0}}, "Main", -2, -15, 25, 50);
-		//settingsBtn->showOutline = true;
+		settingsBtn = interfacePtr->createButton("+", nullptr, {{255, 0, 0, 255}, {0, 255, 0, 255}}, "Main", -2, -15, 25, 50);
 		settingsBtn->isEnabled = true;
 
 		// settings
-		quitBtn = interfacePtr->createButton("Quit", nullptr, {{255, 0, 0}, {0, 255, 0}}, "Settings", 45, 45, 55, 40);
-		//quitBtn->showOutline = true;
+		quitBtn = interfacePtr->createButton("Quit", nullptr, {{255, 0, 0, 255}, {0, 255, 0, 255}}, "Settings", 45, 45, 55, 40);
 		quitBtn->canQuit = true;
 		quitBtn->isEnabled = true;
-
-		settingsExitBtn = interfacePtr->createButton("x", nullptr, {{255, 0, 0}, {0, 255, 0}}, "Settings", 0, -5, 20, 28);
-		//settingsExitBtn->showOutline = true;
-
-		themesBtn = interfacePtr->createButton("Themes", nullptr, {{255, 0, 0}, {0, 255, 0}}, "Settings", 35, 10, 80, 40);
-		//themesBtn->showOutline = true;
-
-		themesExitBtn = interfacePtr->createButton("<-", nullptr, {{255, 0, 0}, {0, 255, 0}}, "Settings", 0, -5, 20, 28);
-
+		settingsExitBtn = interfacePtr->createButton("x", nullptr, {{255, 0, 0, 255}, {0, 255, 0, 255}}, "Settings", 0, -5, 20, 28);
+		themesBtn = interfacePtr->createButton("Themes", nullptr, {{255, 0, 0, 255}, {0, 255, 0, 255}}, "Settings", 35, 10, 80, 40);
+		themesExitBtn = interfacePtr->createButton("<-", nullptr, {{255, 0, 0, 255}, {0, 255, 0, 255}}, "Settings", 0, -5, 20, 28);
 		// setLayoutBtn = interfacePtr->createButton();
-		// setLayoutBtn->showOutline = true;
 
 		// settings-themes
-		minimalBtn = interfacePtr->createButton("Minimal Mode", nullptr, {{255, 0, 0}, {0, 255, 0}}, "Settings-Themes", 0, 10, 100, 25);
-
-		setBGBtn = interfacePtr->createButton("Set Background", nullptr, {{255, 0, 0}, {0, 255, 0}}, "Settings-Themes", 0, 20, 100, 25);
-
-		openFileBtn = interfacePtr->createButton("Open File", nullptr, {{255, 0, 0}, {0, 255, 0}}, "Settings-Themes", 50, 0, 50, 25);
-
-		setBGColorBtn = interfacePtr->createButton("Set Color", nullptr, {{255, 0, 0}, {0, 255, 0}}, "Settings-Themes", 50, 40, 50, 25);
-
-		setTextFontBtn = interfacePtr->createButton("Set Time Font", nullptr, {{255, 0, 0}, {0, 255, 0}}, "Settings-Themes", 0, 50, 75, 25);
+		minimalBtn = interfacePtr->createButton("Minimal Mode", nullptr, {{255, 0, 0, 255}, {0, 255, 0, 255}}, "Settings-Themes", 0, 10, 100, 25);
+		setBGBtn = interfacePtr->createButton("Set Background", nullptr, {{255, 0, 0, 255}, {0, 255, 0, 255}}, "Settings-Themes", 0, 20, 100, 25);
+		openFileBtn = interfacePtr->createButton("Open File", nullptr, {{255, 0, 0, 255}, {0, 255, 0, 255}}, "Settings-Themes", 50, 0, 50, 25);
+		setBGColorBtn = interfacePtr->createButton("Set Color", nullptr, {{255, 0, 0, 255}, {0, 255, 0, 255}}, "Settings-Themes", 50, 40, 50, 25);
+		setTextFontBtn = interfacePtr->createButton("Set Time Font", nullptr, {{255, 0, 0, 255}, {0, 255, 0, 255}}, "Settings-Themes", 0, 50, 75, 25);
 
 		// set the scene to be displayed
 		scenePtr->setScene("Main");
@@ -126,9 +113,10 @@ namespace Application {
 						if (button->canQuit && interfacePtr->cursorInBounds(button, interfacePtr->getMousePos())) {
 							if (scenePtr->getCurrentScene() == scenePtr->findScene("Settings"))
 								shouldRun = false;
-						}		
+						}
 					}
-
+					// checking if the button can be pressed
+					/*
 					if (interfacePtr->cursorInBounds(settingsBtn, interfacePtr->getMousePos()) && settingsBtn->isEnabled) {
 						scenePtr->setScene("Settings");
 						settingsBtn->isEnabled = false;
@@ -152,9 +140,7 @@ namespace Application {
 						settingsExitBtn->isEnabled = true;
 						themesExitBtn->isEnabled = false;
 					}
-
-					//if (interfacePtr->cursorInBounds())
-					
+					*/
 				} break;
 			}
 			end = std::chrono::steady_clock::now();
@@ -168,17 +154,22 @@ namespace Application {
 
 			//std::cout << getTime(std::chrono::system_clock::now()) << '\n';
 #endif
+			// test button fade in/out
+			if (interfacePtr->cursorInBounds(settingsBtn, interfacePtr->getMousePos())) {
+				std::cout << buttonOpacity << "\n";
+				buttonOpacity += 0.35f * deltaTime.count();
+				if (buttonOpacity >= SDL_ALPHA_OPAQUE)
+					buttonOpacity = SDL_ALPHA_OPAQUE;
+			} else {
+				buttonOpacity -= 0.35f * deltaTime.count();
+				if (buttonOpacity <= 191.25f)
+					buttonOpacity = 191.25f;
+			}
 
 			if (scenePtr->getCurrentScene() == scenePtr->findScene("Settings") && !settingsBtn->isEnabled) {
 				settingsExitBtn->isEnabled = true;
 				themesBtn->isEnabled = true;
 			}
-			/*
-			if (scenePtr->getCurrentScene() == scenePtr->findScene("Settings-Themes") && !settingsExitBtn->isEnabled) {
-				themesExitBtn->isEnabled = true;
-				themesBtn->isEnabled = true;
-			}
-			*/
 
 			imagePtr->getAnimPtr()->update(40, deltaTime.count());
 			interfacePtr->update(&ev);
@@ -192,7 +183,7 @@ namespace Application {
 	void Anya::draw() {
 		timeText = imagePtr->createTextA({timeToStr(std::chrono::system_clock::now()), path + "assets/OnestRegular1602-hint.ttf", {255, 255, 255}, 28}, renderer.get());
 		quitText = imagePtr->createText({quitBtn->text, path + "assets/OnestRegular1602-hint.ttf", {255, 255, 255}, 28}, renderer.get());
-		settingsText = imagePtr->createTextA({settingsBtn->text, path + "assets/OnestRegular1602-hint.ttf", {255, 255, 255}, 196, 4}, renderer.get());
+		settingsText = imagePtr->createText({settingsBtn->text, path + "assets/OnestRegular1602-hint.ttf", {240, 209, 189}, 50}, renderer.get()); // 196
 		settingsExitText = imagePtr->createText({settingsExitBtn->text, path + "assets/OnestRegular1602-hint.ttf", {255, 255, 255}, 96}, renderer.get());
 		themesText = imagePtr->createText({themesBtn->text, path + "assets/OnestRegular1602-hint.ttf", {255, 255, 255}, 32}, renderer.get());
 		themesExitText = imagePtr->createText({themesExitBtn->text, path + "assets/OnestRegular1602-hint.ttf", {255, 255, 255}, 96}, renderer.get());
@@ -203,7 +194,7 @@ namespace Application {
 		setTextFontText = imagePtr->createText({setTextFontBtn->text, path + "assets/OnestRegular1602-hint.ttf", {255, 255, 255}, 96}, renderer.get());
 
 		SDL_SetRenderDrawBlendMode(renderer.get(), SDL_BLENDMODE_BLEND);
-		SDL_SetRenderDrawColor(renderer.get(), 10, 10, 25, 255);
+		SDL_SetRenderDrawColor(renderer.get(), 255, 255, 255, 255); // 10, 10, 25
 		SDL_RenderClear(renderer.get());
 
 		if (scenePtr->getCurrentScene() == scenePtr->findScene("Main")) {
@@ -211,6 +202,23 @@ namespace Application {
 			imagePtr->drawAnimation(backgroundGIF, renderer.get(), 0, 0);
 			imagePtr->draw(timeText, renderer.get(), static_cast<int>(windowWidth / 8), static_cast<int>(windowHeight / 1.6));
 
+			//interfacePtr->draw(settingsBtn, settingsText, renderer.get());
+
+			// make a test button and style it
+			SDL_Rect u = {5, 5, 25, 25}; // x, y -> 50 (last position)
+			SDL_SetRenderDrawColor(renderer.get(), 168, 124, 116, buttonOpacity);
+			SDL_RenderFillRect(renderer.get(), &u);
+
+			// outline
+			SDL_Rect p = {4, 4, 27, 27}; // x, y -> 49
+			SDL_SetRenderDrawColor(renderer.get(), 67, 48, 46, buttonOpacity);
+			SDL_RenderDrawRect(renderer.get(), &p);
+
+			SDL_Rect l = {3, 3, 29, 29}; // x, y -> 48
+			SDL_SetRenderDrawColor(renderer.get(), 67, 48, 46, buttonOpacity);
+			SDL_RenderDrawRect(renderer.get(), &l);
+
+			interfacePtr->setButtonPos(settingsBtn, 5, -7); // x, y -> 50, 38 (last position)
 			interfacePtr->draw(settingsBtn, settingsText, renderer.get());
 		}
 

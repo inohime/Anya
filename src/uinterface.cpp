@@ -2,23 +2,6 @@
 #include <format>
 
 namespace Application::Helper {
-	/*
-	BUTTONPTR UInterface::createButton(MessageData &msg, IMD texture, int x, int y, unsigned int w, unsigned int h) {
-		BUTTONPTR newButton = std::make_shared<Button>();
-
-		//SDL_assert(Utilities::isUnsigned(w) == true);
-
-		newButton->box = {x, y, static_cast<int>(w), static_cast<int>(h)};
-		if (texture != nullptr)
-			newButton->texture = *texture;
-
-		newButton->md = msg;
-		btnList.emplace_back(newButton);
-
-		return newButton;
-	}
-	*/
-
 	BUTTONPTR UInterface::createButton(std::string_view text, IMD texture, ColorData col, std::string_view layerName, int x, int y, unsigned int w, unsigned int h) {
 		BUTTONPTR newButton = std::make_shared<Button>();
 
@@ -36,43 +19,14 @@ namespace Application::Helper {
 
 		newButton->layer = layerName;
 
-		newButton->canMinimize = false;
-		newButton->canQuit = false;
-
 		btnList.emplace_back(newButton);
-		//btnList.insert({layerName, newButton});
 
 		return newButton;
 	}
 
 	std::vector<BUTTONPTR> &UInterface::getButtonList() {
-		/*
-		std::vector<BUTTONPTR> currButtons;
-
-		for (const auto &btn : btnList) {
-			currButtons.push_back(btnList[btn.first]);
-		}
-
-		return currButtons;
-		*/
 		return btnList;
 	}
-	/*
-	std::vector<BUTTONPTR> *UInterface::getButtonsOnLayer(std::string_view layer) {
-		//find the buttons on the layer
-		std::vector<BUTTONPTR> btnsOnLayer;
-		auto iter = btnList.find(layer);
-		if (iter != btnList.end()) {
-			btnsOnLayer.push_back(btnList[layer]);
-		} else {
-			//std::cout << "Failed to find buttons on "
-			std::format("Failed to find buttons on {}", layer);
-			return nullptr;
-		}
-
-		return &btnsOnLayer;
-	}
-	*/
 
 	SDL_Point &UInterface::getMousePos() {
 		return mousePos;
@@ -94,10 +48,6 @@ namespace Application::Helper {
 
 		return false;
 	}
-
-	//bool UInterface::disableInputForLayer(BUTTONPTR &button) {
-		//return false;
-	//}
 
 	void UInterface::setButtonPos(BUTTONPTR &button, int x, int y) {
 		button->box.x = x;
@@ -143,7 +93,7 @@ namespace Application::Helper {
 
 	void UInterface::draw(BUTTONPTR &button, IMD buttonText, SDL_Renderer *ren, double scaleX, double scaleY, SDL_Rect *clip) {
 		SDL_Rect dst = {button->box.x, button->box.y, button->box.w, button->box.h};
-		SDL_Rect textDst = {button->box.x, button->box.y, button->box.w, button->box.h}; // test, fix later
+		SDL_Rect textDst = {button->box.x, button->box.y, button->box.w, button->box.h};
 
 		if ((scaleX && scaleY) != 0) {
 			dst.w *= static_cast<int>(scaleX);

@@ -13,11 +13,8 @@ namespace Application::Helper {
 		ImageData texture {};
 		ColorData buttonColor {};
 		std::basic_string<char> layer {};
-		//SDL_Color initialColor {};
-		//SDL_Color color {};
-		//SDL_Color backgroundColor {};
 		std::basic_string<char> text {};
-		bool showOutline {true};
+		bool showOutline {false};
 		bool isClickable {false};
 		bool canMinimize {false};
 		bool canQuit {false};
@@ -31,8 +28,10 @@ namespace Application::Helper {
 	public:
 		/** for when you want to explicitly state all of the details
 		 *
-		 * \param MessageData struct -> msg, fontFile, colour, fontSize
+		 * \param text -> the text within the button
 		 * \param texture -> texture of the button
+		 * \param col -> the colours for the button (button colour
+		 * \param layerName -> sets the button layer for layer manipulation
 		 * \param x -> x position of the button
 		 * \param y -> y position of the button
 		 * \param w -> width of the button
