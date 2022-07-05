@@ -40,7 +40,7 @@ namespace Application::Helper {
 	}
 
 	// load render target
-	IMD Image::createRenderTarget(uint32_t width, uint32_t height, SDL_Renderer *ren) {
+	IMD Image::createRenderTarget(SDL_Renderer *ren, unsigned int width, unsigned int height) {
 		IMD newImage = std::make_shared<ImageData>();
 
 		newImage->texture = Utilities::PTR<SDL_Texture>(SDL_CreateTexture(ren, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, width, height));
@@ -202,7 +202,7 @@ namespace Application::Helper {
 		// our 1D array is now prepped, now we need to align it on our atlas texture
 		IMD canvas = {nullptr};
 		// expand the width to create a large-width based canvas
-		canvas = createRenderTarget(imageWidth * static_cast<unsigned int>(pathList.size()), imageHeight, ren);
+		canvas = createRenderTarget(ren, imageWidth * static_cast<unsigned int>(pathList.size()), imageHeight);
 
 		SDL_SetRenderTarget(ren, canvas->texture.get());
 		int iterWidth = 0; // the image iteration width (0, 148, 296, etc..)
