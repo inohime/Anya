@@ -61,7 +61,7 @@ namespace Application::Helper {
 			return nullptr;
 		}
 
-		SDL_Surface *surf = TTF_RenderText_Blended(font, msg.msg.data(), msg.col);
+		SDL_Surface *surf = TTF_RenderText_Blended(font, msg.msg.data(), msg.col.textColor);
 		if (surf == nullptr) {
 			TTF_CloseFont(font);
 			std::cout << "TTF_RenderText error " << TTF_GetError() << "\n";
@@ -98,7 +98,7 @@ namespace Application::Helper {
 
 		TTF_SetFontOutline(outlineFont, msg.outlineThickness);
 
-		SDL_Surface *bgSurf = TTF_RenderText_Blended(font, msg.msg.data(), msg.col);
+		SDL_Surface *bgSurf = TTF_RenderText_Blended(font, msg.msg.data(), msg.col.textColor);
 		SDL_Surface *fgSurf = TTF_RenderText_Blended(outlineFont, msg.msg.data(), {0x00, 0x00, 0x00});
 
 		// destination rect that gets the size of the surface (explicit x/y for those that want to understand without digging)
