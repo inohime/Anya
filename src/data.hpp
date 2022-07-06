@@ -6,7 +6,6 @@
 
 namespace Application::Helper {
 	struct ColorData final {
-		// for now, only support outline, background, and text colour
 		SDL_Color outlineColor {55, 55, 55};
 		SDL_Color bgColor {255, 255, 255};
 		SDL_Color textColor {0, 0, 0};
@@ -16,7 +15,6 @@ namespace Application::Helper {
 		MessageData &operator=(MessageData &) {return *this;}
 		std::basic_string<char> msg {};
 		std::basic_string<char> fontFile {};
-		//SDL_Color col {0};
 		ColorData col {};
 		int fontSize {0};
 		int outlineThickness {1};

@@ -52,14 +52,13 @@ namespace Application {
 		std::basic_string<char> path {};
 		std::basic_stringstream<char> str {};
 
-		float buttonOpacity {191.25f}; // 75% opacity of 255
-		
 		float sceneAlpha {SDL_ALPHA_TRANSPARENT};
 		SDL_Rect settingsView {0, 0, (int)windowWidth, (int)windowHeight};
 		SDL_Rect settingsThemesView {0, 0, (int)windowWidth, (int)windowHeight};
 
 		Helper::IMD backgroundGIF {nullptr};
-		Helper::IMD background {nullptr};
+		Helper::IMD backgroundImg {nullptr};
+		Helper::IMD githubImg {nullptr};
 		// text
 		Helper::IMD timeText {nullptr};
 		Helper::IMD settingsText {nullptr};
@@ -80,6 +79,7 @@ namespace Application {
 		Helper::BUTTONPTR quitBtn {nullptr};
 		Helper::BUTTONPTR settingsExitBtn {nullptr};
 		Helper::BUTTONPTR themesBtn {nullptr};
+		Helper::BUTTONPTR githubBtn {nullptr};
 		//Helper::BUTTONPTR setLayoutBtn {nullptr};
 		Helper::BUTTONPTR themesExitBtn {nullptr};
 		Helper::BUTTONPTR minimalBtn {nullptr};

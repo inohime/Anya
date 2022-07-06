@@ -4,7 +4,7 @@
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 #include "animation.hpp"
-#include "data.hpp"
+//#include "data.hpp"
 #include <filesystem>
 #include <string>
 #include <unordered_map>
@@ -129,12 +129,18 @@ namespace Application::Helper {
 		 * \param scale -> scale up or down the image width and height (0 if default)
 		 */
 		void drawAnimation(IMD &img, SDL_Renderer *ren, int x, int y, double scale = 0) const noexcept;
+		/** Modifies the colour of the image.
+		 * 
+		 * \param img -> the image to modify
+		 * \param col -> the colour to set the image to
+		 */
+		void setTextureColor(IMD &img, SDL_Color col);
 		// prints the number of images in the map
 		void printImageCount() const noexcept;
 
 	private:
-		std::unordered_map<std::string_view, IMD> images {};
-		std::unordered_map<std::string_view, IMD> imagePackList {};
+		std::unordered_map<std::basic_string<char>, IMD> images {};
+		std::unordered_map<std::basic_string<char>, IMD> imagePackList {};
 		std::shared_ptr<Animation> animPtr {std::make_shared<Animation>()};
 	};
 } // namespace Application::Helper
