@@ -2,8 +2,8 @@
 #include <format>
 
 namespace Application::Helper {
-	
-	BUTTONPTR UInterface::createButton(std::string_view text, IMD texture, ColorData col, std::string_view layerName, int x, int y, unsigned int w, unsigned int h) {
+
+	BUTTONPTR UInterface::createButton(std::string_view text, IMD texture, int x, int y, uint32_t w, uint32_t h) {
 		BUTTONPTR newButton = std::make_shared<Button>();
 
 		//SDL_assert(Utilities::isUnsigned(w) == true);
@@ -14,17 +14,11 @@ namespace Application::Helper {
 		if (texture != nullptr)
 			newButton->texture = *texture;
 
-		//newButton->buttonColor.initialColor = col.initialColor;
-		//newButton->buttonColor.currentColor = col.currentColor;
-		//newButton->buttonColor.hoverColor = col.hoverColor;
-
-		newButton->layer = layerName;
-
 		btnList.emplace_back(newButton);
 
 		return newButton;
 	}
-	
+
 
 	BUTTONPTR UInterface::createButton(std::string_view text, int x, int y, uint32_t w, uint32_t h) {
 		BUTTONPTR newButton = std::make_shared<Button>();
@@ -65,7 +59,9 @@ namespace Application::Helper {
 	}
 
 	// make the text in the button independent
-	void UInterface::setButtonTextSize(BUTTONPTR &button, uint32_t w, uint32_t h) {
+	void UInterface::setButtonTextSize(IMD &buttonText, uint32_t w, uint32_t h) {
+		buttonText->imageWidth = w;
+		buttonText->imageHeight = h;
 	}
 
 	void UInterface::setButtonTheme(BUTTONPTR &button, ColorData color) {
@@ -83,19 +79,11 @@ namespace Application::Helper {
 	}
 
 	void UInterface::update(SDL_Event *ev, double dt) {
-		for (auto &button : getButtonList()) {
-			switch (ev->type) {
-				case SDL_MOUSEMOTION: {
-					mousePos.x = ev->motion.x;
-					mousePos.y = ev->motion.y;
-					// check if the cursor is hovering over the button
-					if (cursorInBounds(button, mousePos)) {
-						button->isClickable = true;
-					} else {
-						button->isClickable = false;
-					}
-				} break;
-			}
+		switch (ev->type) {
+			case SDL_MOUSEMOTION: {
+				mousePos.x = ev->motion.x;
+				mousePos.y = ev->motion.y;
+			} break;
 		}
 
 		for (auto &button : getButtonList()) {
@@ -111,24 +99,27 @@ namespace Application::Helper {
 		}
 	}
 
-	void UInterface::draw(BUTTONPTR &button, IMD buttonText, SDL_Renderer *ren, double scaleX, double scaleY, SDL_Rect *clip) {
+	void UInterface::draw(BUTTONPTR &button, IMD buttonText, SDL_Renderer *ren, double scaleX, double scaleY) {
 		SDL_Rect dst = {button->box.x, button->box.y, button->box.w, button->box.h};
-		SDL_Rect textDst = {button->box.x, button->box.y, button->box.w, button->box.h};
+		SDL_Rect textDst = {};
+		if (buttonText != nullptr) {
+			textDst = {
+				button->box.x - (buttonText->imageWidth / 2),
+				button->box.y - (buttonText->imageHeight / 2),
+				button->box.w + buttonText->imageWidth,
+				button->box.h + buttonText->imageHeight
+			}; // modify the text dims here
+		}
 
 		if ((scaleX && scaleY) != 0) {
 			dst.w *= static_cast<int>(scaleX);
 			dst.h *= static_cast<int>(scaleY);
 		}
 
-		// get the button colour and the size of the button
-		// draw the button with styles
-		
-		// test style (button position should be set to button pos
-		//SDL_Rect bg = {5, 5, 25, 25}; // x, y -> 50 (last position)
+		// button background colour
 		SDL_SetRenderDrawColor(ren, button->buttonColor.bgColor.r, button->buttonColor.bgColor.g, button->buttonColor.bgColor.b, button->colorAlpha);
 		SDL_RenderFillRect(ren, &dst);
 
-		// outline
 		SDL_Rect innerOutline = {button->box.x - 1, button->box.y - 1, button->box.w + 2, button->box.h + 2};
 		SDL_SetRenderDrawColor(ren, button->buttonColor.outlineColor.r, button->buttonColor.outlineColor.g, button->buttonColor.outlineColor.b, button->colorAlpha);
 		SDL_RenderDrawRect(ren, &innerOutline);

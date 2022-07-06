@@ -1,4 +1,5 @@
 #include "image.hpp"
+#include "data.hpp"
 #include "util.hpp"
 #include <iostream>
 
@@ -16,7 +17,7 @@ namespace Application::Helper {
 		IMD newImage = std::make_shared<ImageData>();
 		newImage->path = filePath;
 
-		auto iter = images.find(filePath);
+		auto iter = images.find(filePath.data());
 		if (iter != images.end())
 			return iter->second; // we found the filePath
 
@@ -30,7 +31,7 @@ namespace Application::Helper {
 			std::cout << "Text texture failed to be created\n";
 			return nullptr;
 		}
-		images.insert({filePath, newImage});
+		images.insert({filePath.data(), newImage});
 
 		SDL_FreeSurface(surf);
 
@@ -142,13 +143,13 @@ namespace Application::Helper {
 	}
 
 	int Image::add(std::string_view str, IMD &img) {
-		auto iter = images.find(str);
+		auto iter = images.find(str.data());
 		if (iter != images.end()) {
 			std::cout << "Image already exists\n";
 			return -1;
 		} else {
-			images.insert({str, img});
-			if (images.find(str) != images.end())
+			images.insert({str.data(), img});
+			if (images.find(str.data()) != images.end())
 				std::cout << "Created image\n";
 		}
 
@@ -165,6 +166,11 @@ namespace Application::Helper {
 		}
 
 		return 0;
+	}
+
+	void Image::setTextureColor(IMD &img, SDL_Color col) {
+		SDL_SetTextureColorMod(img->texture.get(), col.r, col.g, col.b);
+		SDL_SetTextureAlphaMod(img->texture.get(), col.a);
 	}
 
 	void Image::printImageCount() const noexcept {
@@ -226,23 +232,23 @@ namespace Application::Helper {
 	}
 
 	int Image::getPackWidth(std::string_view packName) noexcept {
-		auto findPack = images.find(packName);
+		auto findPack = images.find(packName.data());
 		if (findPack == images.end()) {
 			std::cout << "Failed to get pack\n";
 			return -1;
 		}
 
-		return images[packName]->imageWidth;
+		return images[packName.data()]->imageWidth;
 	}
 
 	int Image::getPackHeight(std::string_view packName) noexcept {
-		auto findPack = images.find(packName);
+		auto findPack = images.find(packName.data());
 		if (findPack == images.end()) {
 			std::cout << "Failed to get pack\n";
 			return -1;
 		}
 
-		return images[packName]->imageHeight;
+		return images[packName.data()]->imageHeight;
 	}
 
 	std::shared_ptr<Animation> Image::getAnimPtr() noexcept {

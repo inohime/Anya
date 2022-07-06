@@ -1,7 +1,7 @@
 #pragma once
 
 #include <SDL.h>
-#include "image.hpp"
+#include "data.hpp"
 #include <string>
 #include <unordered_map>
 
@@ -12,48 +12,51 @@ namespace Application::Helper {
 		SDL_Rect box {0};
 		ImageData texture {};
 		ColorData buttonColor {};
+		// 75% of 255
 		float colorAlpha {191.25f};
-		std::basic_string<char> layer {};
 		std::basic_string<char> text {};
 		bool showOutline {true};
-		bool isClickable {false};
 		bool canMinimize {false};
 		bool canQuit {false};
 		bool isEnabled {false};
-		// add button color state (for button themes)
 	};
 
 	using BUTTONPTR = std::shared_ptr<Button>;
 
 	class UInterface final {
 	public:
-		/** for when you want to explicitly state all of the details
+		/** Create a button with a texture.
 		 *
 		 * \param text -> the text within the button
 		 * \param texture -> texture of the button
-		 * \param col -> the colours for the button (button colour
-		 * \param layerName -> sets the button layer for layer manipulation
 		 * \param x -> x position of the button
 		 * \param y -> y position of the button
 		 * \param w -> width of the button
 		 * \param h -> height of the button
 		 * \return Button object filled with all of the essential details for a customized button.
 		 */
-		BUTTONPTR createButton(std::string_view text, IMD texture, ColorData col, std::string_view layerName, int x, int y, uint32_t w, uint32_t h);
-		// for simplicity and short length
+		BUTTONPTR createButton(std::string_view text, IMD texture, int x, int y, uint32_t w, uint32_t h);
+		/** Create a normal button.
+		 *
+		 * \param text -> the text within the button
+		 * \param x -> x position of the button
+		 * \param y -> y position of the button
+		 * \param w -> width of the button
+		 * \param h -> height of the button
+		 * \return Button object filled with all of the essential details for a customized button.
+		 */
 		BUTTONPTR createButton(std::string_view text, int x, int y, uint32_t w, uint32_t h);
 		std::vector<BUTTONPTR> &getButtonList();
 		SDL_Point &getMousePos();
 		bool cursorInBounds(BUTTONPTR &button, SDL_Point &mousePos);
-		void setButtonTextSize(BUTTONPTR &button, uint32_t w, uint32_t h);
+		void setButtonTextSize(IMD &buttonText, uint32_t w, uint32_t h);
 		void setButtonTheme(BUTTONPTR &button, ColorData color);
 		void setButtonPos(BUTTONPTR &button, int x, int y);
 		void setButtonSize(BUTTONPTR &button, unsigned int w, unsigned int h);
 		void setButtonTexture(BUTTONPTR &button, IMD &texture);
 		void showOutline(BUTTONPTR &button, bool show);
 		void update(SDL_Event *ev, double dt);
-		void draw(BUTTONPTR &button, IMD buttonText, SDL_Renderer *ren, double sx = 0.0, double sy = 0.0, SDL_Rect *clip = nullptr);
-		// void fadeEffect(SDL_Renderer *ren, float speed);
+		void draw(BUTTONPTR &button, IMD buttonText, SDL_Renderer *ren, double sx = 0.0, double sy = 0.0);
 
 	private:
 		std::vector<BUTTONPTR> btnList {};
