@@ -6,33 +6,18 @@
 
 namespace Application::Helper {
 	struct ColorData final {
-		SDL_Color currentColor {0};
-		SDL_Color hoverColor {0};
-		SDL_Color initialColor {currentColor};
-
-		// the outline should have a colour
-		// the button background should have a colour (fill rect)
-		// the text should have a colour
-		// hovering should show different colours
-	};
-
-	class ColorState {
-	public:
-		SDL_Color &setColorTheme();
-	
-	private:
-		SDL_Color currentColor {0};
-		SDL_Color hoverColor {0};
-		SDL_Color initialColor {currentColor};
-		SDL_Color textColor {255, 255, 255};
-
+		// for now, only support outline, background, and text colour
+		SDL_Color outlineColor {55, 55, 55};
+		SDL_Color bgColor {255, 255, 255};
+		SDL_Color textColor {0, 0, 0};
 	};
 
 	struct MessageData final {
-		MessageData &operator=(MessageData &) { return *this; }
+		MessageData &operator=(MessageData &) {return *this;}
 		std::basic_string<char> msg {};
 		std::basic_string<char> fontFile {};
-		const SDL_Color &col {};
+		//SDL_Color col {0};
+		ColorData col {};
 		int fontSize {0};
 		int outlineThickness {1};
 	};

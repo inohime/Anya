@@ -12,9 +12,10 @@ namespace Application::Helper {
 		SDL_Rect box {0};
 		ImageData texture {};
 		ColorData buttonColor {};
+		float colorAlpha {191.25f};
 		std::basic_string<char> layer {};
 		std::basic_string<char> text {};
-		bool showOutline {false};
+		bool showOutline {true};
 		bool isClickable {false};
 		bool canMinimize {false};
 		bool canQuit {false};
@@ -38,15 +39,19 @@ namespace Application::Helper {
 		 * \param h -> height of the button
 		 * \return Button object filled with all of the essential details for a customized button.
 		 */
-		BUTTONPTR createButton(std::string_view text, IMD texture, ColorData col, std::string_view layerName, int x, int y, unsigned int w, unsigned int h);
+		BUTTONPTR createButton(std::string_view text, IMD texture, ColorData col, std::string_view layerName, int x, int y, uint32_t w, uint32_t h);
+		// for simplicity and short length
+		BUTTONPTR createButton(std::string_view text, int x, int y, uint32_t w, uint32_t h);
 		std::vector<BUTTONPTR> &getButtonList();
 		SDL_Point &getMousePos();
 		bool cursorInBounds(BUTTONPTR &button, SDL_Point &mousePos);
+		void setButtonTextSize(BUTTONPTR &button, uint32_t w, uint32_t h);
+		void setButtonTheme(BUTTONPTR &button, ColorData color);
 		void setButtonPos(BUTTONPTR &button, int x, int y);
 		void setButtonSize(BUTTONPTR &button, unsigned int w, unsigned int h);
 		void setButtonTexture(BUTTONPTR &button, IMD &texture);
 		void showOutline(BUTTONPTR &button, bool show);
-		void update(SDL_Event *ev);
+		void update(SDL_Event *ev, double dt);
 		void draw(BUTTONPTR &button, IMD buttonText, SDL_Renderer *ren, double sx = 0.0, double sy = 0.0, SDL_Rect *clip = nullptr);
 		// void fadeEffect(SDL_Renderer *ren, float speed);
 
