@@ -49,10 +49,10 @@ namespace Application::Helper {
 		std::vector<BUTTONPTR> &getButtonList();
 		SDL_Point &getMousePos();
 		bool cursorInBounds(BUTTONPTR &button, SDL_Point &mousePos);
-		void setButtonTextSize(IMD &buttonText, uint32_t w, uint32_t h);
+		void setButtonTextSize(IMD &buttonText, int w, int h);
 		void setButtonTheme(BUTTONPTR &button, ColorData color);
 		void setButtonPos(BUTTONPTR &button, int x, int y);
-		void setButtonSize(BUTTONPTR &button, unsigned int w, unsigned int h);
+		void setButtonSize(BUTTONPTR &button, uint32_t w, uint32_t h);
 		void setButtonTexture(BUTTONPTR &button, IMD &texture);
 		void showOutline(BUTTONPTR &button, bool show);
 		void update(SDL_Event *ev, double dt);
