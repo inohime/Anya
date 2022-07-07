@@ -117,7 +117,8 @@ namespace Application {
 				case SDL_MOUSEBUTTONDOWN: {
 					for (auto &button : interfacePtr->getButtonList()) {
 						if (button->canMinimize && interfacePtr->cursorInBounds(button, interfacePtr->getMousePos()))
-							SDL_MinimizeWindow(window.get());
+							if (scenePtr->getCurrentScene() == scenePtr->findScene("Main"))
+								SDL_MinimizeWindow(window.get());
 
 						if (button->canQuit && interfacePtr->cursorInBounds(button, interfacePtr->getMousePos())) {
 							if (scenePtr->getCurrentScene() == scenePtr->findScene("Settings"))
@@ -159,7 +160,6 @@ namespace Application {
 						themesExitBtn->isEnabled = true;
 						settingsExitBtn->isEnabled = false;
 						setBGBtn->isEnabled = true;
-						minimalBtn->isEnabled = true;
 					}
 
 					if (interfacePtr->cursorInBounds(setBGBtn, interfacePtr->getMousePos()) && setBGBtn->isEnabled) {
@@ -191,6 +191,7 @@ namespace Application {
 						minimalBtn->isEnabled = false;
 						setBGBtn->isEnabled = false;
 						openFileBtn->isEnabled = false;
+						setBGIsPressed = false;
 					}
 				} break;
 			}
@@ -211,6 +212,9 @@ namespace Application {
 				themesBtn->isEnabled = true;
 				githubBtn->isEnabled = true;
 			}
+
+			if (scenePtr->getCurrentScene() == scenePtr->findScene("Settings-Themes") && !settingsExitBtn->isEnabled)
+				minimalBtn->isEnabled = true;
 
 			imagePtr->getAnimPtr()->update(40, deltaTime.count());
 			interfacePtr->update(&ev, deltaTime.count());
