@@ -1,12 +1,12 @@
 #include "uinterface.hpp"
+#include "util.hpp"
+#include <cassert>
+#include <iostream>
 #include <format>
 
 namespace Application::Helper {
-
 	BUTTONPTR UInterface::createButton(std::string_view text, IMD texture, int x, int y, uint32_t w, uint32_t h) {
 		BUTTONPTR newButton = std::make_shared<Button>();
-
-		//SDL_assert(Utilities::isUnsigned(w) == true);
 
 		newButton->box = {x, y, static_cast<int>(w), static_cast<int>(h)};
 
@@ -19,11 +19,8 @@ namespace Application::Helper {
 		return newButton;
 	}
 
-
 	BUTTONPTR UInterface::createButton(std::string_view text, int x, int y, uint32_t w, uint32_t h) {
 		BUTTONPTR newButton = std::make_shared<Button>();
-
-		//SDL_assert(Utilities::isUnsigned(w) == true);
 
 		newButton->box = {x, y, static_cast<int>(w), static_cast<int>(h)};
 		newButton->text = text;
@@ -59,7 +56,7 @@ namespace Application::Helper {
 	}
 
 	// make the text in the button independent
-	void UInterface::setButtonTextSize(IMD &buttonText, uint32_t w, uint32_t h) {
+	void UInterface::setButtonTextSize(IMD &buttonText, int w, int h) {
 		buttonText->imageWidth = w;
 		buttonText->imageHeight = h;
 	}
@@ -73,7 +70,7 @@ namespace Application::Helper {
 		button->box.y = y;
 	}
 
-	void UInterface::setButtonSize(BUTTONPTR &button, unsigned int w, unsigned int h) {
+	void UInterface::setButtonSize(BUTTONPTR &button, uint32_t w, uint32_t h) {
 		button->box.w = w;
 		button->box.h = h;
 	}

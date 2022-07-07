@@ -2,7 +2,7 @@
 
 #include <SDL.h>
 #include <memory>
-//#include <concepts>
+#include <concepts>
 
 namespace Application::Helper::Utilities {
 	struct Memory final {
@@ -12,9 +12,12 @@ namespace Application::Helper::Utilities {
 	};
 
 	template <typename T> using PTR = std::unique_ptr<T, Memory>;
-	/*
-	template <typename T> constexpr bool isUnsigned(T val) {
-		return std::unsigned_integral<T>(val);
+
+	constexpr bool isUnsigned(std::unsigned_integral auto val) noexcept {
+		return (val) ? true : false;
 	}
-	*/
+
+	constexpr bool isUnsigned(std::unsigned_integral auto val1, std::unsigned_integral auto val2) noexcept {
+		return ((val1) && (val2)) ? true : false;
+	}
 } // namespace Application::Helper::Utilities

@@ -24,6 +24,7 @@ namespace Application {
 
 		std::basic_string<char> timeToStr(const std::chrono::system_clock::time_point &time);
 		std::unique_ptr<std::basic_stringstream<char>> getStream();
+		static SDL_HitTestResult hitTestResult(SDL_Window *window, const SDL_Point *pt, void *data);
 		bool boot();
 		void update();
 		void draw();
@@ -52,9 +53,16 @@ namespace Application {
 		std::basic_string<char> path {};
 		std::basic_stringstream<char> str {};
 
+		bool setBGIsPressed {false};
+		bool setBGToColor {false};
+		bool minimalMode {false};
+
 		float sceneAlpha {SDL_ALPHA_TRANSPARENT};
+
 		SDL_Rect settingsView {0, 0, (int)windowWidth, (int)windowHeight};
 		SDL_Rect settingsThemesView {0, 0, (int)windowWidth, (int)windowHeight};
+		SDL_Rect fillBGColor {0, 0, (int)windowWidth, (int)windowHeight};
+		//SDL_Rect minimalDragRect;
 
 		Helper::IMD backgroundGIF {nullptr};
 		Helper::IMD backgroundImg {nullptr};
@@ -62,6 +70,7 @@ namespace Application {
 		// text
 		Helper::IMD timeText {nullptr};
 		Helper::IMD settingsText {nullptr};
+		Helper::IMD mainQuitText {nullptr};
 		Helper::IMD minimizeText {nullptr};
 		Helper::IMD quitText {nullptr};
 		Helper::IMD settingsExitText {nullptr};
@@ -75,8 +84,9 @@ namespace Application {
 		Helper::IMD setTextFontText {nullptr};
 		// buttons
 		Helper::BUTTONPTR settingsBtn {nullptr};
+		Helper::BUTTONPTR mainQuitBtn {nullptr};
 		Helper::BUTTONPTR minimizeBtn {nullptr};
-		Helper::BUTTONPTR quitBtn {nullptr};
+		Helper::BUTTONPTR settingsQuitBtn {nullptr};
 		Helper::BUTTONPTR settingsExitBtn {nullptr};
 		Helper::BUTTONPTR themesBtn {nullptr};
 		Helper::BUTTONPTR githubBtn {nullptr};
