@@ -66,6 +66,7 @@ namespace Application {
 		scenePtr->createScene("Main");
 		scenePtr->createScene("Settings");
 		scenePtr->createScene("Settings-Themes");
+		scenePtr->createScene("Themes-Background-Color");
 		
 		// main
 		settingsBtn = interfacePtr->createButton("+", 5, 5, 20, 20); // 25 50
@@ -100,6 +101,16 @@ namespace Application {
 		
 		// set the scene to be displayed
 		scenePtr->setScene("Main");
+
+		std::cout << "Set Background Colour: ";
+		std::getline(std::cin, rgbVal);
+		if (rgbVal.contains(',')) {
+			rgbVal.erase(std::remove(rgbVal.begin(), rgbVal.end(), ','));
+			rVal = std::stoi(rgbVal.substr(0, 3));
+			gVal = std::stoi(rgbVal.substr(4, 3));
+			bVal = std::stoi(rgbVal.substr(8, 3));
+			// 255 163 210 (demo colour)
+		}
 
 		shouldRun = true;
 
@@ -143,7 +154,6 @@ namespace Application {
 						system("xdg-open https://www.github.com/inohime");
 #endif
 					}
-					
 					
 					if (interfacePtr->cursorInBounds(settingsExitBtn, interfacePtr->getMousePos()) && settingsExitBtn->isEnabled) {
 						scenePtr->setScene("Main");
@@ -235,7 +245,7 @@ namespace Application {
 			settingsText = imagePtr->createText({settingsBtn->text, path + "assets/OnestRegular1602-hint.ttf", settingsBtn->buttonColor, 96}, renderer.get()); // 196 / 50
 
 			if (setBGToColor) {
-				SDL_SetRenderDrawColor(renderer.get(), 0, 0, 0, 255);
+				SDL_SetRenderDrawColor(renderer.get(), rVal, gVal, bVal, 255);
 				SDL_RenderFillRect(renderer.get(), &fillBGColor);
 			} else {
 				imagePtr->drawAnimation(backgroundGIF, renderer.get(), 0, 0);
