@@ -82,6 +82,17 @@ namespace Application {
 		Helper::IMD openFileText {nullptr};
 		Helper::IMD setBGColorText {nullptr};
 		Helper::IMD setTextFontText {nullptr};
+		// test button theme changing
+		/*
+		Helper::IMD themesOCText {nullptr};
+		Helper::IMD themesBGCText {nullptr};
+		Helper::IMD themesTCText {nullptr};
+		*/
+
+		// test console rgb background
+		std::basic_string<char> rgbVal {};
+		int rVal, gVal, bVal;
+
 		// buttons
 		Helper::BUTTONPTR settingsBtn {nullptr};
 		Helper::BUTTONPTR mainQuitBtn {nullptr};
@@ -97,6 +108,12 @@ namespace Application {
 		Helper::BUTTONPTR openFileBtn {nullptr};
 		Helper::BUTTONPTR setBGColorBtn {nullptr};
 		Helper::BUTTONPTR setTextFontBtn {nullptr};
+		// test button theme changing
+		/*
+		Helper::BUTTONPTR themesOCBtn {nullptr};
+		Helper::BUTTONPTR themesBGCBtn {nullptr};
+		Helper::BUTTONPTR themesTCBtn {nullptr};
+		*/
 	};
 } // namespace Application
 
