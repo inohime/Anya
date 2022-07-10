@@ -1,5 +1,3 @@
-#define _CRT_SECURE_NO_WARNINGS
-
 #include "anya.hpp"
 #include <iostream>
 #ifdef _WIN32
@@ -71,7 +69,7 @@ namespace Application {
 		scenePtr->createScene("Themes-Background-Color");
 
 		// main
-		settingsBtn = interfacePtr->createButton("+", 5, 5, 20, 20); // 25 50
+		settingsBtn = interfacePtr->createButton("+", 5, 5, 20, 20);
 		settingsBtn->isEnabled = true;
 		mainQuitBtn = interfacePtr->createButton("x", 103, 5, 12, 12);
 		mainQuitBtn->isEnabled = false;
@@ -81,11 +79,11 @@ namespace Application {
 		minimizeBtn->canMinimize = true;
 
 		// settings
-		settingsQuitBtn = interfacePtr->createButton("Quit", 108, 5, 35, 25); // 93, 5, 50, 25
+		settingsQuitBtn = interfacePtr->createButton("Quit", 108, 5, 35, 25);
 		settingsQuitBtn->canQuit = true;
 		settingsQuitBtn->isEnabled = true;
 		settingsExitBtn = interfacePtr->createButton("x", 65, 60, 20, 20);
-		themesBtn = interfacePtr->createButton("Themes", 39, 5, 60, 25); // 39, 5, 45, 25
+		themesBtn = interfacePtr->createButton("Themes", 39, 5, 60, 25);
 		githubBtn = interfacePtr->createButton("", githubImg, 5, 5, 25, 25);
 
 		// settings-themes
@@ -205,6 +203,8 @@ namespace Application {
 							// apply the colour to the background and reset the text
 							if (bgColorText.contains(',')) {
 								bgColorText.erase(std::remove(bgColorText.begin(), bgColorText.end(), ','));
+								// delete the duplicate character at the end
+								bgColorText.pop_back();
 								// find the all of the spaces
 								auto first = bgColorText.find_first_of(' ');
 								auto second = bgColorText.find_last_of(' ');
@@ -212,9 +212,7 @@ namespace Application {
 								rVal = std::stoi(bgColorText.substr(0, first));
 								gVal = std::stoi(bgColorText.substr(first, second));
 								bVal = std::stoi(bgColorText.substr(second, bgColorText.back()));
-								// it duplicates the last number, find a fix
 								// 255 163 210 (demo colour)
-
 							} else if (bgColorText.contains('#')) {
 								char const *hexVal = bgColorText.c_str();
 								// convert the hex to rgb
