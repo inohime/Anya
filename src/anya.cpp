@@ -1,3 +1,5 @@
+#define _CRT_SECURE_NO_WARNINGS
+
 #include "anya.hpp"
 #include <iostream>
 #ifdef _WIN32
@@ -67,7 +69,7 @@ namespace Application {
 		scenePtr->createScene("Settings");
 		scenePtr->createScene("Settings-Themes");
 		scenePtr->createScene("Themes-Background-Color");
-		
+
 		// main
 		settingsBtn = interfacePtr->createButton("+", 5, 5, 20, 20); // 25 50
 		settingsBtn->isEnabled = true;
@@ -82,7 +84,7 @@ namespace Application {
 		settingsQuitBtn = interfacePtr->createButton("Quit", 108, 5, 35, 25); // 93, 5, 50, 25
 		settingsQuitBtn->canQuit = true;
 		settingsQuitBtn->isEnabled = true;
-		settingsExitBtn = interfacePtr->createButton("x", 65, 60, 20, 20); 
+		settingsExitBtn = interfacePtr->createButton("x", 65, 60, 20, 20);
 		themesBtn = interfacePtr->createButton("Themes", 39, 5, 60, 25); // 39, 5, 45, 25
 		githubBtn = interfacePtr->createButton("", githubImg, 5, 5, 25, 25);
 
@@ -98,19 +100,9 @@ namespace Application {
 			interfacePtr->setButtonTheme(button, {{67, 48, 46}, {168, 124, 116}, {240, 209, 189}});
 
 		imagePtr->setTextureColor(githubImg, {240, 209, 189, (uint8_t)githubBtn->colorAlpha});
-		
+
 		// set the scene to be displayed
 		scenePtr->setScene("Main");
-
-		std::cout << "Set Background Colour: ";
-		std::getline(std::cin, rgbVal);
-		if (rgbVal.contains(',')) {
-			rgbVal.erase(std::remove(rgbVal.begin(), rgbVal.end(), ','));
-			rVal = std::stoi(rgbVal.substr(0, 3));
-			gVal = std::stoi(rgbVal.substr(4, 3));
-			bVal = std::stoi(rgbVal.substr(8, 3));
-			// 255 163 210 (demo colour)
-		}
 
 		shouldRun = true;
 
@@ -118,7 +110,7 @@ namespace Application {
 	}
 
 	void Anya::update() {
-		while (shouldRun == true) {
+		while (shouldRun) {
 			SDL_PollEvent(&ev);
 			switch (ev.type) {
 				case SDL_QUIT: {
@@ -139,12 +131,12 @@ namespace Application {
 								shouldRun = false;
 						}
 					}
-					
+
 					if (interfacePtr->cursorInBounds(settingsBtn, interfacePtr->getMousePos()) && settingsBtn->isEnabled) {
 						scenePtr->setScene("Settings");
 						settingsBtn->isEnabled = false;
 					}
-					
+
 
 					//GITHUB BUTTON (Cross platform, use system for unix)
 					if (interfacePtr->cursorInBounds(githubBtn, interfacePtr->getMousePos()) && githubBtn->isEnabled) {
@@ -154,7 +146,7 @@ namespace Application {
 						system("xdg-open https://www.github.com/inohime");
 #endif
 					}
-					
+
 					if (interfacePtr->cursorInBounds(settingsExitBtn, interfacePtr->getMousePos()) && settingsExitBtn->isEnabled) {
 						scenePtr->setScene("Main");
 						settingsExitBtn->isEnabled = false;
@@ -180,6 +172,7 @@ namespace Application {
 
 					if (interfacePtr->cursorInBounds(setBGColorBtn, interfacePtr->getMousePos()) && setBGColorBtn->isEnabled) {
 						setBGToColor = true;
+						setBGColorBtn->text = "";
 					}
 
 					if (interfacePtr->cursorInBounds(minimalBtn, interfacePtr->getMousePos()) && minimalBtn->isEnabled) {
@@ -202,6 +195,64 @@ namespace Application {
 						setBGBtn->isEnabled = false;
 						openFileBtn->isEnabled = false;
 						setBGIsPressed = false;
+					}
+				} break;
+
+				case SDL_KEYDOWN: {
+					switch (ev.key.keysym.sym) {
+						case SDLK_RETURN: {
+							auto &bgColorText = setBGColorBtn->text;
+							// apply the colour to the background and reset the text
+							if (bgColorText.contains(',')) {
+								bgColorText.erase(std::remove(bgColorText.begin(), bgColorText.end(), ','));
+								// find the all of the spaces
+								auto first = bgColorText.find_first_of(' ');
+								auto second = bgColorText.find_last_of(' ');
+								// get the positions of the colour values and apply them
+								rVal = std::stoi(bgColorText.substr(0, first));
+								gVal = std::stoi(bgColorText.substr(first, second));
+								bVal = std::stoi(bgColorText.substr(second, bgColorText.back()));
+								// it duplicates the last number, find a fix
+								// 255 163 210 (demo colour)
+
+							} else if (bgColorText.contains('#')) {
+								char const *hexVal = bgColorText.c_str();
+								// convert the hex to rgb
+								sscanf_s(hexVal, "#%02x%02x%02x", &rVal, &gVal, &bVal);
+							}
+							setBGColorBtn->text = "Set Color";
+						} break;
+
+						case SDLK_c: {
+							if (SDL_GetModState() & KMOD_CTRL)
+								SDL_SetClipboardText(setBGColorBtn->text.c_str());
+
+						} break;
+
+						case SDLK_v: {
+							if (SDL_GetModState() & KMOD_CTRL)
+								setBGColorBtn->text = SDL_GetClipboardText();
+
+						} break;
+
+						case SDLK_BACKSPACE: {
+							if (setBGColorBtn->text.contains("Set Color"))
+								break;
+
+							if (setBGColorBtn->text.length() > 0)
+								setBGColorBtn->text.pop_back();
+
+						} break;
+					}
+				} break;
+
+				case SDL_TEXTINPUT: {
+					if (!(SDL_GetModState() & KMOD_CTRL && (ev.text.text[0] == 'c' || ev.text.text[0] == 'C' ||
+															ev.text.text[0] == 'v' || ev.text.text[0] == 'V')) && setBGColorBtn->isEnabled) {
+						if (setBGColorBtn->text.contains("Set Color"))
+							break;
+
+						setBGColorBtn->text += ev.text.text;
 					}
 				} break;
 			}
@@ -262,7 +313,6 @@ namespace Application {
 
 				interfacePtr->setButtonTextSize(mainQuitText, -2, 0);
 				interfacePtr->draw(mainQuitBtn, mainQuitText, renderer.get());
-				//interfacePtr->setButtonTextSize(minimizeText, -2, 0);
 				interfacePtr->draw(minimizeBtn, minimizeText, renderer.get());
 			} else {
 				imagePtr->draw(timeText, renderer.get(), static_cast<int>(windowWidth / 10), static_cast<int>(windowHeight / 1.6));
@@ -316,6 +366,7 @@ namespace Application {
 
 	void Anya::free() {
 		std::cout << "releasing allocated resources..\n";
+		SDL_StopTextInput();
 		TTF_Quit();
 		IMG_Quit();
 		SDL_Quit();
