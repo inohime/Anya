@@ -159,7 +159,7 @@ namespace Application {
 						githubBtn->isEnabled = false;
 						themesExitBtn->isEnabled = true;
 						settingsExitBtn->isEnabled = false;
-						setBGBtn->isEnabled = true;
+						//setBGBtn->isEnabled = true;
 					}
 
 					if (interfacePtr->cursorInBounds(setBGBtn, interfacePtr->getMousePos()) && setBGBtn->isEnabled) {
@@ -274,6 +274,9 @@ namespace Application {
 
 			if (scenePtr->getCurrentScene() == scenePtr->findScene("Settings-Themes") && !settingsExitBtn->isEnabled)
 				minimalBtn->isEnabled = true;
+
+			if (scenePtr->getCurrentScene() == scenePtr->findScene("Settings-Themes") && !themesBtn->isEnabled)
+				setBGBtn->isEnabled = true;
 
 			imagePtr->getAnimPtr()->update(40, deltaTime.count());
 			interfacePtr->update(&ev, deltaTime.count());
