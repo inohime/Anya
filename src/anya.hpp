@@ -56,6 +56,7 @@ namespace Application {
 		bool setBGIsPressed {false};
 		bool setBGToColor {false};
 		bool minimalMode {false};
+		bool showDate {false};
 
 		float sceneAlpha {SDL_ALPHA_TRANSPARENT};
 
@@ -67,8 +68,10 @@ namespace Application {
 		Helper::IMD backgroundGIF {nullptr};
 		Helper::IMD backgroundImg {nullptr};
 		Helper::IMD githubImg {nullptr};
+		Helper::IMD calendarImg {nullptr};
 		// text
 		Helper::IMD timeText {nullptr};
+		Helper::IMD dateText {nullptr};
 		Helper::IMD settingsText {nullptr};
 		Helper::IMD mainQuitText {nullptr};
 		Helper::IMD minimizeText {nullptr};
@@ -101,6 +104,7 @@ namespace Application {
 		Helper::BUTTONPTR settingsExitBtn {nullptr};
 		Helper::BUTTONPTR themesBtn {nullptr};
 		Helper::BUTTONPTR githubBtn {nullptr};
+		Helper::BUTTONPTR calendarBtn {nullptr};
 		//Helper::BUTTONPTR setLayoutBtn {nullptr};
 		Helper::BUTTONPTR themesExitBtn {nullptr};
 		Helper::BUTTONPTR minimalBtn {nullptr};
