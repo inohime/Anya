@@ -59,6 +59,7 @@ namespace Application {
 		// load assets
 		backgroundImg = imagePtr->createImage(path + "assets/beep_1.png", renderer.get());
 		githubImg = imagePtr->createImage(path + "assets/25231.png", renderer.get());
+		calendarImg = imagePtr->createImage(path + "assets/calendar.png", renderer.get());
 		backgroundGIF = imagePtr->createPack("canvas", path + "assets/gif-extract/", renderer.get());
 		imagePtr->getAnimPtr()->addAnimation(68, 0, 0, 148, 89);
 
@@ -85,6 +86,7 @@ namespace Application {
 		settingsExitBtn = interfacePtr->createButton("x", 65, 60, 20, 20);
 		themesBtn = interfacePtr->createButton("Themes", 39, 5, 60, 25);
 		githubBtn = interfacePtr->createButton("", githubImg, 5, 5, 25, 25);
+		calendarBtn = interfacePtr->createButton("", calendarImg, 5, 39, 25, 25);
 
 		// settings-themes
 		themesExitBtn = interfacePtr->createButton("x", 65, 60, 20, 20);
@@ -92,12 +94,14 @@ namespace Application {
 		setBGBtn = interfacePtr->createButton("Set BG", 90, 5, 50, 25);
 		openFileBtn = interfacePtr->createButton("Open File", 25, 35, 50, 15);
 		setBGColorBtn = interfacePtr->createButton("Set Color", 80, 35, 50, 15);
+		// use the text icon instead
 		setTextFontBtn = interfacePtr->createButton("Set Font", 0, 50, 50, 25);
 
 		for (auto &button : interfacePtr->getButtonList())
 			interfacePtr->setButtonTheme(button, {{67, 48, 46}, {168, 124, 116}, {240, 209, 189}});
 
 		imagePtr->setTextureColor(githubImg, {240, 209, 189, (uint8_t)githubBtn->colorAlpha});
+		imagePtr->setTextureColor(calendarImg, {240, 209, 189, (uint8_t)githubBtn->colorAlpha});
 
 		// set the scene to be displayed
 		scenePtr->setScene("Main");
@@ -110,6 +114,7 @@ namespace Application {
 	void Anya::update() {
 		while (shouldRun) {
 			SDL_PollEvent(&ev);
+
 			switch (ev.type) {
 				case SDL_QUIT: {
 					shouldRun = false;
@@ -135,8 +140,6 @@ namespace Application {
 						settingsBtn->isEnabled = false;
 					}
 
-
-					//GITHUB BUTTON (Cross platform, use system for unix)
 					if (interfacePtr->cursorInBounds(githubBtn, interfacePtr->getMousePos()) && githubBtn->isEnabled) {
 #ifdef _WIN32
 						ShellExecute(0, 0, L"https://www.github.com/inohime", 0, 0, SW_SHOW);
@@ -157,9 +160,15 @@ namespace Application {
 						scenePtr->setScene("Settings-Themes");
 						themesBtn->isEnabled = false;
 						githubBtn->isEnabled = false;
+						calendarBtn->isEnabled = false;
 						themesExitBtn->isEnabled = true;
 						settingsExitBtn->isEnabled = false;
-						//setBGBtn->isEnabled = true;
+					}
+
+					if (interfacePtr->cursorInBounds(calendarBtn, interfacePtr->getMousePos()) && !showDate) {
+						showDate = true;
+					} else if (interfacePtr->cursorInBounds(calendarBtn, interfacePtr->getMousePos()) && showDate) {
+						showDate = false;
 					}
 
 					if (interfacePtr->cursorInBounds(setBGBtn, interfacePtr->getMousePos()) && setBGBtn->isEnabled) {
@@ -245,7 +254,7 @@ namespace Application {
 				} break;
 
 				case SDL_TEXTINPUT: {
-					if (!(SDL_GetModState() & KMOD_CTRL && (ev.text.text[0] == 'c' || ev.text.text[0] == 'C' ||
+					if (!(SDL_GetModState() & KMOD_CTRL && (ev.text.text[0] == 'c' || ev.text.text[0] == 'C' || 
 															ev.text.text[0] == 'v' || ev.text.text[0] == 'V')) && setBGColorBtn->isEnabled) {
 						if (setBGColorBtn->text.contains("Set Color"))
 							break;
@@ -270,6 +279,7 @@ namespace Application {
 				settingsExitBtn->isEnabled = true;
 				themesBtn->isEnabled = true;
 				githubBtn->isEnabled = true;
+				calendarBtn->isEnabled = true;
 			}
 
 			if (scenePtr->getCurrentScene() == scenePtr->findScene("Settings-Themes") && !settingsExitBtn->isEnabled)
@@ -277,6 +287,8 @@ namespace Application {
 
 			if (scenePtr->getCurrentScene() == scenePtr->findScene("Settings-Themes") && !themesBtn->isEnabled)
 				setBGBtn->isEnabled = true;
+
+			printf("%d\n", showDate);
 
 			imagePtr->getAnimPtr()->update(40, deltaTime.count());
 			interfacePtr->update(&ev, deltaTime.count());
@@ -291,10 +303,11 @@ namespace Application {
 		SDL_SetRenderDrawBlendMode(renderer.get(), SDL_BLENDMODE_BLEND);
 		SDL_SetRenderDrawColor(renderer.get(), 255, 255, 255, 255);
 		SDL_RenderClear(renderer.get());
-
+		
 		if (scenePtr->getCurrentScene() == scenePtr->findScene("Main")) {
 			timeText = imagePtr->createTextA({timeToStr(std::chrono::system_clock::now()), path + "assets/OnestRegular1602-hint.ttf", {{0}, {0}, {255, 255, 255}}, 28}, renderer.get());
-			settingsText = imagePtr->createText({settingsBtn->text, path + "assets/OnestRegular1602-hint.ttf", settingsBtn->buttonColor, 96}, renderer.get()); // 196 / 50
+			dateText = imagePtr->createTextA({std::format("{:%Ex}", std::chrono::current_zone()->to_local(std::chrono::system_clock::now())), path + "assets/OnestRegular1602-hint.ttf", {{0}, {0}, {255, 255, 255}}, 14}, renderer.get());
+			settingsText = imagePtr->createText({settingsBtn->text, path + "assets/OnestRegular1602-hint.ttf", settingsBtn->buttonColor, 96}, renderer.get());
 
 			if (setBGToColor) {
 				SDL_SetRenderDrawColor(renderer.get(), rVal, gVal, bVal, 255);
@@ -316,7 +329,12 @@ namespace Application {
 				interfacePtr->draw(mainQuitBtn, mainQuitText, renderer.get());
 				interfacePtr->draw(minimizeBtn, minimizeText, renderer.get());
 			} else {
-				imagePtr->draw(timeText, renderer.get(), static_cast<int>(windowWidth / 10), static_cast<int>(windowHeight / 1.6));
+				if (showDate) {
+					imagePtr->draw(timeText, renderer.get(), static_cast<int>(windowWidth / 10), static_cast<int>(windowHeight / 1.6));
+					imagePtr->draw(dateText, renderer.get(), static_cast<int>(windowWidth / 4), static_cast<int>(windowHeight / 2.1));
+				} else {
+					imagePtr->draw(timeText, renderer.get(), static_cast<int>(windowWidth / 10), static_cast<int>(windowHeight / 1.6));
+				}
 				// put the settings button in non minimal mode for now, resize & set button pos for minimal mode later
 				interfacePtr->setButtonTextSize(settingsText, 1, 16);
 				interfacePtr->draw(settingsBtn, settingsText, renderer.get());
@@ -335,6 +353,7 @@ namespace Application {
 			interfacePtr->draw(settingsQuitBtn, quitText, renderer.get());
 			interfacePtr->draw(githubBtn, nullptr, renderer.get());
 			interfacePtr->draw(themesBtn, themesText, renderer.get());
+			interfacePtr->draw(calendarBtn, nullptr, renderer.get());
 		}
 
 		if (scenePtr->getCurrentScene() == scenePtr->findScene("Settings-Themes")) {

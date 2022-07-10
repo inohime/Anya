@@ -85,11 +85,11 @@ namespace Application::Helper {
 
 		for (auto &button : getButtonList()) {
 			if (cursorInBounds(button, getMousePos())) {
-				button->colorAlpha += 0.35f * dt;
+				button->colorAlpha += 0.35f * static_cast<float>(dt);
 				if (button->colorAlpha >= SDL_ALPHA_OPAQUE)
 					button->colorAlpha = SDL_ALPHA_OPAQUE;
 			} else {
-				button->colorAlpha -= 0.35f * dt;
+				button->colorAlpha -= 0.35f * static_cast<float>(dt);
 				if (button->colorAlpha <= 191.25f)
 					button->colorAlpha = 191.25f;
 			}
@@ -114,15 +114,15 @@ namespace Application::Helper {
 		}
 
 		// button background colour
-		SDL_SetRenderDrawColor(ren, button->buttonColor.bgColor.r, button->buttonColor.bgColor.g, button->buttonColor.bgColor.b, button->colorAlpha);
+		SDL_SetRenderDrawColor(ren, button->buttonColor.bgColor.r, button->buttonColor.bgColor.g, button->buttonColor.bgColor.b, (uint8_t)button->colorAlpha);
 		SDL_RenderFillRect(ren, &dst);
 
 		SDL_Rect innerOutline = {button->box.x - 1, button->box.y - 1, button->box.w + 2, button->box.h + 2};
-		SDL_SetRenderDrawColor(ren, button->buttonColor.outlineColor.r, button->buttonColor.outlineColor.g, button->buttonColor.outlineColor.b, button->colorAlpha);
+		SDL_SetRenderDrawColor(ren, button->buttonColor.outlineColor.r, button->buttonColor.outlineColor.g, button->buttonColor.outlineColor.b, (uint8_t)button->colorAlpha);
 		SDL_RenderDrawRect(ren, &innerOutline);
 
 		SDL_Rect outerOutline = {button->box.x - 2, button->box.y - 2, button->box.w + 4, button->box.h + 4};
-		SDL_SetRenderDrawColor(ren, button->buttonColor.outlineColor.r, button->buttonColor.outlineColor.g, button->buttonColor.outlineColor.b, button->colorAlpha);
+		SDL_SetRenderDrawColor(ren, button->buttonColor.outlineColor.r, button->buttonColor.outlineColor.g, button->buttonColor.outlineColor.b, (uint8_t)button->colorAlpha);
 		SDL_RenderDrawRect(ren, &outerOutline);
 
 		SDL_RenderCopy(ren, button->texture.texture.get(), nullptr, &dst);
