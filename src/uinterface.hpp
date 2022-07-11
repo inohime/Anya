@@ -15,7 +15,6 @@ namespace Application::Helper {
 		// 75% of 255
 		float colorAlpha {191.25f};
 		std::basic_string<char> text {};
-		bool showOutline {true};
 		bool canMinimize {false};
 		bool canQuit {false};
 		bool isEnabled {false};
@@ -54,7 +53,6 @@ namespace Application::Helper {
 		void setButtonPos(BUTTONPTR &button, int x, int y);
 		void setButtonSize(BUTTONPTR &button, uint32_t w, uint32_t h);
 		void setButtonTexture(BUTTONPTR &button, IMD &texture);
-		void showOutline(BUTTONPTR &button, bool show);
 		void update(SDL_Event *ev, double dt);
 		void draw(BUTTONPTR &button, IMD buttonText, SDL_Renderer *ren, double sx = 0.0, double sy = 0.0);
 

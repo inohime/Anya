@@ -44,7 +44,7 @@ namespace Application {
 		std::chrono::steady_clock::time_point end {};
 		std::chrono::duration<double, std::milli> deltaTime {};
 		int FPS {30};
-		int delay {1000 / FPS};
+		const int delay {1000 / FPS};
 
 	private:
 		std::unique_ptr<Helper::UInterface> interfacePtr {nullptr};
@@ -52,7 +52,10 @@ namespace Application {
 		std::unique_ptr<Helper::Scene> scenePtr {nullptr};
 		std::basic_string<char> path {};
 		std::basic_stringstream<char> str {};
+		// set background colour
+		int rVal, gVal, bVal;
 
+		bool setTypographyIsPressed {false};
 		bool setBGIsPressed {false};
 		bool setBGToColor {false};
 		bool minimalMode {false};
@@ -63,12 +66,12 @@ namespace Application {
 		SDL_Rect settingsView {0, 0, (int)windowWidth, (int)windowHeight};
 		SDL_Rect settingsThemesView {0, 0, (int)windowWidth, (int)windowHeight};
 		SDL_Rect fillBGColor {0, 0, (int)windowWidth, (int)windowHeight};
-		//SDL_Rect minimalDragRect;
 
 		Helper::IMD backgroundGIF {nullptr};
 		Helper::IMD backgroundImg {nullptr};
 		Helper::IMD githubImg {nullptr};
 		Helper::IMD calendarImg {nullptr};
+		Helper::IMD typographyImg {nullptr};
 		// text
 		Helper::IMD timeText {nullptr};
 		Helper::IMD dateText {nullptr};
@@ -84,17 +87,12 @@ namespace Application {
 		Helper::IMD setBGText {nullptr};
 		Helper::IMD openFileText {nullptr};
 		Helper::IMD setBGColorText {nullptr};
-		Helper::IMD setTextFontText {nullptr};
 		// test button theme changing
 		/*
 		Helper::IMD themesOCText {nullptr};
 		Helper::IMD themesBGCText {nullptr};
 		Helper::IMD themesTCText {nullptr};
 		*/
-
-		// test console rgb background
-		std::basic_string<char> rgbVal {};
-		int rVal, gVal, bVal;
 
 		// buttons
 		Helper::BUTTONPTR settingsBtn {nullptr};
@@ -111,7 +109,8 @@ namespace Application {
 		Helper::BUTTONPTR setBGBtn {nullptr};
 		Helper::BUTTONPTR openFileBtn {nullptr};
 		Helper::BUTTONPTR setBGColorBtn {nullptr};
-		Helper::BUTTONPTR setTextFontBtn {nullptr};
+		Helper::BUTTONPTR setTypographyBtn {nullptr};
+		Helper::BUTTONPTR typographyInputBtn {nullptr};
 		// test button theme changing
 		/*
 		Helper::BUTTONPTR themesOCBtn {nullptr};

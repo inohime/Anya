@@ -60,6 +60,7 @@ namespace Application {
 		backgroundImg = imagePtr->createImage(path + "assets/beep_1.png", renderer.get());
 		githubImg = imagePtr->createImage(path + "assets/25231.png", renderer.get());
 		calendarImg = imagePtr->createImage(path + "assets/calendar.png", renderer.get());
+		typographyImg = imagePtr->createImage(path + "assets/typography.png", renderer.get());
 		backgroundGIF = imagePtr->createPack("canvas", path + "assets/gif-extract/", renderer.get());
 		imagePtr->getAnimPtr()->addAnimation(68, 0, 0, 148, 89);
 
@@ -76,7 +77,6 @@ namespace Application {
 		mainQuitBtn->isEnabled = false;
 		mainQuitBtn->canQuit = true;
 		minimizeBtn = interfacePtr->createButton("-", 85, 5, 12, 12);
-		minimizeBtn->isEnabled = false;
 		minimizeBtn->canMinimize = true;
 
 		// settings
@@ -90,18 +90,19 @@ namespace Application {
 
 		// settings-themes
 		themesExitBtn = interfacePtr->createButton("x", 65, 60, 20, 20);
-		minimalBtn = interfacePtr->createButton("Minimal", 25, 5, 60, 25);
-		setBGBtn = interfacePtr->createButton("Set BG", 90, 5, 50, 25);
+		minimalBtn = interfacePtr->createButton("Minimal", 39, 5, 55, 25);
+		setBGBtn = interfacePtr->createButton("Set BG", 103, 5, 40, 25);
 		openFileBtn = interfacePtr->createButton("Open File", 25, 35, 50, 15);
 		setBGColorBtn = interfacePtr->createButton("Set Color", 80, 35, 50, 15);
-		// use the text icon instead
-		setTextFontBtn = interfacePtr->createButton("Set Font", 0, 50, 50, 25);
+		setTypographyBtn = interfacePtr->createButton("", typographyImg, 5, 5, 25, 25);
+		typographyInputBtn = interfacePtr->createButton("", setTypographyBtn->box.w / 2, 35, (setTypographyBtn->box.x + (setTypographyBtn->box.w / 2)) + (setBGColorBtn->box.x + (setBGColorBtn->box.w / 2)), 15);
 
 		for (auto &button : interfacePtr->getButtonList())
 			interfacePtr->setButtonTheme(button, {{67, 48, 46}, {168, 124, 116}, {240, 209, 189}});
 
 		imagePtr->setTextureColor(githubImg, {240, 209, 189, (uint8_t)githubBtn->colorAlpha});
-		imagePtr->setTextureColor(calendarImg, {240, 209, 189, (uint8_t)githubBtn->colorAlpha});
+		imagePtr->setTextureColor(calendarImg, {240, 209, 189, (uint8_t)calendarBtn->colorAlpha});
+		imagePtr->setTextureColor(typographyImg, {240, 209, 189, (uint8_t)setTypographyBtn->colorAlpha});
 
 		// set the scene to be displayed
 		scenePtr->setScene("Main");
@@ -171,10 +172,14 @@ namespace Application {
 						showDate = false;
 					}
 
-					if (interfacePtr->cursorInBounds(setBGBtn, interfacePtr->getMousePos()) && setBGBtn->isEnabled) {
+					if (interfacePtr->cursorInBounds(setBGBtn, interfacePtr->getMousePos()) && setBGBtn->isEnabled && !setBGIsPressed) {
 						setBGIsPressed = true;
 						openFileBtn->isEnabled = true;
 						setBGColorBtn->isEnabled = true;
+					} else if (interfacePtr->cursorInBounds(setBGBtn, interfacePtr->getMousePos()) && setBGBtn->isEnabled && setBGIsPressed) {
+						setBGIsPressed = false;
+						openFileBtn->isEnabled = false;
+						setBGColorBtn->isEnabled = false;
 					}
 
 					if (interfacePtr->cursorInBounds(setBGColorBtn, interfacePtr->getMousePos()) && setBGColorBtn->isEnabled) {
@@ -256,6 +261,7 @@ namespace Application {
 				case SDL_TEXTINPUT: {
 					if (!(SDL_GetModState() & KMOD_CTRL && (ev.text.text[0] == 'c' || ev.text.text[0] == 'C' || 
 															ev.text.text[0] == 'v' || ev.text.text[0] == 'V')) && setBGColorBtn->isEnabled) {
+
 						if (setBGColorBtn->text.contains("Set Color"))
 							break;
 
@@ -288,8 +294,6 @@ namespace Application {
 			if (scenePtr->getCurrentScene() == scenePtr->findScene("Settings-Themes") && !themesBtn->isEnabled)
 				setBGBtn->isEnabled = true;
 
-			printf("%d\n", showDate);
-
 			imagePtr->getAnimPtr()->update(40, deltaTime.count());
 			interfacePtr->update(&ev, deltaTime.count());
 
@@ -306,7 +310,7 @@ namespace Application {
 		
 		if (scenePtr->getCurrentScene() == scenePtr->findScene("Main")) {
 			timeText = imagePtr->createTextA({timeToStr(std::chrono::system_clock::now()), path + "assets/OnestRegular1602-hint.ttf", {{0}, {0}, {255, 255, 255}}, 28}, renderer.get());
-			dateText = imagePtr->createTextA({std::format("{:%Ex}", std::chrono::current_zone()->to_local(std::chrono::system_clock::now())), path + "assets/OnestRegular1602-hint.ttf", {{0}, {0}, {255, 255, 255}}, 14}, renderer.get());
+			dateText = imagePtr->createTextA({std::format("{:%Ex}", std::chrono::current_zone()->to_local(std::chrono::system_clock::now())), path + "assets/OnestRegular1602-hint.ttf", {{0}, {0}, {255, 255, 255}}, 16}, renderer.get());
 			settingsText = imagePtr->createText({settingsBtn->text, path + "assets/OnestRegular1602-hint.ttf", settingsBtn->buttonColor, 96}, renderer.get());
 
 			if (setBGToColor) {
@@ -362,7 +366,6 @@ namespace Application {
 			setBGText = imagePtr->createText({setBGBtn->text, path + "assets/OnestRegular1602-hint.ttf", setBGBtn->buttonColor, 96}, renderer.get());
 			openFileText = imagePtr->createText({openFileBtn->text, path + "assets/OnestRegular1602-hint.ttf", openFileBtn->buttonColor, 96}, renderer.get());
 			setBGColorText = imagePtr->createText({setBGColorBtn->text, path + "assets/OnestRegular1602-hint.ttf", setBGColorBtn->buttonColor, 28}, renderer.get());
-			//setTextFontText = imagePtr->createText({setTextFontBtn->text, path + "assets/OnestRegular1602-hint.ttf", setTextFontBtn->buttonColor, 96}, renderer.get());
 
 			SDL_SetRenderDrawColor(renderer.get(), 26, 17, 16, 255);
 			SDL_RenderFillRect(renderer.get(), &settingsThemesView);
@@ -370,11 +373,14 @@ namespace Application {
 			interfacePtr->draw(themesExitBtn, themesExitText, renderer.get());
 			interfacePtr->draw(minimalBtn, minimalText, renderer.get());
 			interfacePtr->draw(setBGBtn, setBGText, renderer.get());
+			interfacePtr->draw(setTypographyBtn, nullptr, renderer.get());
 
 			if (setBGIsPressed) {
 				interfacePtr->draw(openFileBtn, openFileText, renderer.get());
 				interfacePtr->draw(setBGColorBtn, setBGColorText, renderer.get());
 			}
+
+			interfacePtr->draw(typographyInputBtn, nullptr, renderer.get());
 			//interfacePtr->draw(setTextFontBtn, setTextFontText, renderer.get());
 		}
 
