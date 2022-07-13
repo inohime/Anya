@@ -94,7 +94,9 @@ namespace Application {
 		openFileBtn = interfacePtr->createButton("Open File", 25, 35, 50, 15);
 		setBGColorBtn = interfacePtr->createButton("Set Color", 80, 35, 50, 15);
 		setTypographyBtn = interfacePtr->createButton("", typographyImg, 5, 5, 25, 25);
-		typographyInputBtn = interfacePtr->createButton("", setTypographyBtn->box.w / 2, 35, (setTypographyBtn->box.x + (setTypographyBtn->box.w / 2)) + (setBGColorBtn->box.x + (setBGColorBtn->box.w / 2)), 15);
+		typographyInputBtn = interfacePtr->createButton("Set Font", setTypographyBtn->box.w / 2, 35, 
+														(setTypographyBtn->box.x + (setTypographyBtn->box.w / 2)) + 
+														(setBGColorBtn->box.x + (setBGColorBtn->box.w / 2)), 15);
 
 		for (auto &button : interfacePtr->getButtonList())
 			interfacePtr->setButtonTheme(button, {{67, 48, 46}, {168, 124, 116}, {240, 209, 189}});
@@ -173,6 +175,7 @@ namespace Application {
 					}
 
 					if (interfacePtr->cursorInBounds(setBGBtn, interfacePtr->getMousePos()) && setBGBtn->isEnabled && !setBGIsPressed) {
+						setTypographyIsPressed = false;
 						setBGIsPressed = true;
 						openFileBtn->isEnabled = true;
 						setBGColorBtn->isEnabled = true;
@@ -184,8 +187,15 @@ namespace Application {
 
 					if (interfacePtr->cursorInBounds(setTypographyBtn, interfacePtr->getMousePos()) && setTypographyBtn->isEnabled && !setTypographyIsPressed) {
 						setTypographyIsPressed = true;
+						setBGIsPressed = false;
+						typographyInputBtn->isEnabled = true;
 					} else if (interfacePtr->cursorInBounds(setTypographyBtn, interfacePtr->getMousePos()) && setTypographyBtn->isEnabled && setTypographyIsPressed) {
 						setTypographyIsPressed = false;
+						typographyInputBtn->isEnabled = false;
+					}
+
+					if (interfacePtr->cursorInBounds(typographyInputBtn, interfacePtr->getMousePos()) && typographyInputBtn->isEnabled) {
+						typographyInputBtn->text = "";
 					}
 
 					if (interfacePtr->cursorInBounds(setBGColorBtn, interfacePtr->getMousePos()) && setBGColorBtn->isEnabled) {
@@ -222,60 +232,86 @@ namespace Application {
 				case SDL_KEYDOWN: {
 					switch (ev.key.keysym.sym) {
 						case SDLK_RETURN: {
-							auto &bgColorText = setBGColorBtn->text;
-							// apply the colour to the background and reset the text
-							if (bgColorText.contains(',')) {
-								bgColorText.erase(std::remove(bgColorText.begin(), bgColorText.end(), ','));
-								// delete the duplicate character at the end
-								bgColorText.pop_back();
-								// find the all of the spaces
-								auto first = bgColorText.find_first_of(' ');
-								auto second = bgColorText.find_last_of(' ');
-								// get the positions of the colour values and apply them
-								rVal = std::stoi(bgColorText.substr(0, first));
-								gVal = std::stoi(bgColorText.substr(first, second));
-								bVal = std::stoi(bgColorText.substr(second, bgColorText.back()));
-								// 255 163 210 (demo colour)
-							} else if (bgColorText.contains('#')) {
-								char const *hexVal = bgColorText.c_str();
-								// convert the hex to rgb
-								sscanf_s(hexVal, "#%02x%02x%02x", &rVal, &gVal, &bVal);
+							if (setBGIsPressed) {
+								auto &bgColorText = setBGColorBtn->text;
+								// apply the colour to the background and reset the text
+								if (bgColorText.contains(',')) {
+									bgColorText.erase(std::remove(bgColorText.begin(), bgColorText.end(), ','));
+									// delete the duplicate character at the end
+									bgColorText.pop_back();
+									// find the all of the spaces
+									auto first = bgColorText.find_first_of(' ');
+									auto second = bgColorText.find_last_of(' ');
+									// get the positions of the colour values and apply them
+									rVal = std::stoi(bgColorText.substr(0, first));
+									gVal = std::stoi(bgColorText.substr(first, second));
+									bVal = std::stoi(bgColorText.substr(second, bgColorText.back()));
+									// 255 163 210 (demo colour)
+								} else if (bgColorText.contains('#')) {
+									char const *hexVal = bgColorText.c_str();
+									// convert the hex to rgb
+									sscanf_s(hexVal, "#%02x%02x%02x", &rVal, &gVal, &bVal);
+								}
+								setBGColorBtn->text = "Set Color";
+							} else if (setTypographyIsPressed) {
+								typographyInputBtn->text = "Set Font";
 							}
-							setBGColorBtn->text = "Set Color";
 						} break;
 
 						case SDLK_c: {
-							if (SDL_GetModState() & KMOD_CTRL)
-								SDL_SetClipboardText(setBGColorBtn->text.c_str());
-
+							if (setBGIsPressed) {
+								if (SDL_GetModState() & KMOD_CTRL)
+									SDL_SetClipboardText(setBGColorBtn->text.c_str());
+							} else if (setTypographyIsPressed) {
+								if (SDL_GetModState() & KMOD_CTRL)
+									SDL_SetClipboardText(typographyInputBtn->text.c_str());
+							}
 						} break;
 
 						case SDLK_v: {
+							if (setBGIsPressed) { 
 							if (SDL_GetModState() & KMOD_CTRL)
 								setBGColorBtn->text = SDL_GetClipboardText();
-
+							} else if (setTypographyIsPressed) {
+								if (SDL_GetModState() & KMOD_CTRL)
+									typographyInputBtn->text = SDL_GetClipboardText();
+							}
 						} break;
 
 						case SDLK_BACKSPACE: {
-							if (setBGColorBtn->text.contains("Set Color"))
-								break;
+							if (setBGIsPressed) {
+								if (setBGColorBtn->text.contains("Set Color"))
+									break;
 
-							if (setBGColorBtn->text.length() > 0)
-								setBGColorBtn->text.pop_back();
+								if (setBGColorBtn->text.length() > 0)
+									setBGColorBtn->text.pop_back();
+							} else if (setTypographyIsPressed) {
+								if (typographyInputBtn->text.contains("Set Font"))
+									break;
 
+								if (typographyInputBtn->text.length() > 0)
+									typographyInputBtn->text.pop_back();
+							}
 						} break;
 					}
 				} break;
 
 				case SDL_TEXTINPUT: {
-					if (!(SDL_GetModState() & KMOD_CTRL && (ev.text.text[0] == 'c' || ev.text.text[0] == 'C' || 
-															ev.text.text[0] == 'v' || ev.text.text[0] == 'V')) && 
-															(setBGColorBtn->isEnabled || setTypographyBtn->isEnabled)) {
+					if (setBGColorBtn->isEnabled || setTypographyBtn->isEnabled) {
+						if (!(SDL_GetModState() & KMOD_CTRL && (ev.text.text[0] == 'c' || ev.text.text[0] == 'C' ||
+																ev.text.text[0] == 'v' || ev.text.text[0] == 'V'))) {
+							if (setBGToColor) {
+								if (setBGColorBtn->text.contains("Set Color"))
+									break;
 
-						if (setBGColorBtn->text.contains("Set Color"))
-							break;
+								setBGColorBtn->text += ev.text.text;
+							} else if (setTypographyIsPressed) {
+								if (setBGColorBtn->text.contains("Set Font"))
+									break;
 
-						setBGColorBtn->text += ev.text.text;
+								typographyInputBtn->text += ev.text.text;
+							}
+						}
 					}
 				} break;
 			}
@@ -386,7 +422,7 @@ namespace Application {
 			interfacePtr->draw(setTypographyBtn, nullptr, renderer.get());
 
 			if (setTypographyIsPressed) {
-				typographyInputText = imagePtr->createText({typographyInputBtn->text, path + "assets/OnestRegular1602-hint.ttf", openFileBtn->buttonColor, 96}, renderer.get());
+				typographyInputText = imagePtr->createText({typographyInputBtn->text, path + "assets/OnestRegular1602-hint.ttf", openFileBtn->buttonColor, 28}, renderer.get());
 				interfacePtr->draw(typographyInputBtn, typographyInputText, renderer.get());
 			}
 

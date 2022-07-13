@@ -56,7 +56,9 @@ namespace Application {
 		int rVal, gVal, bVal;
 
 		bool setTypographyIsPressed {false};
+		// setBG button on/off
 		bool setBGIsPressed {false};
+		// setBGColor button on/off
 		bool setBGToColor {false};
 		bool minimalMode {false};
 		bool showDate {false};
