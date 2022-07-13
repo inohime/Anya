@@ -18,8 +18,6 @@ namespace Application::Helper {
 		ColorData col {};
 		int fontSize {0};
 		int outlineThickness {1};
-		int textWidth {0};
-		int textHeight {0};
 	};
 
 	struct ImageData final {

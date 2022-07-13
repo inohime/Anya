@@ -50,7 +50,9 @@ namespace Application {
 		std::unique_ptr<Helper::UInterface> interfacePtr {nullptr};
 		std::unique_ptr<Helper::Image> imagePtr {nullptr};
 		std::unique_ptr<Helper::Scene> scenePtr {nullptr};
-		std::basic_string<char> path {};
+		// directory path
+		std::basic_string<char> dirPath {};
+		std::basic_string<char> typographyStr {};
 		std::basic_stringstream<char> str {};
 		// set background colour
 		int rVal, gVal, bVal;

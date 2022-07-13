@@ -53,8 +53,10 @@ namespace Application::Helper {
 
 	// make the text in the button independent
 	void UInterface::setButtonTextSize(IMD &buttonText, int w, int h) {
-		buttonText->imageWidth = w;
-		buttonText->imageHeight = h;
+		if (buttonText != nullptr) {
+			buttonText->imageWidth = w;
+			buttonText->imageHeight = h;
+		}
 	}
 
 	void UInterface::setButtonTheme(BUTTONPTR &button, ColorData color) {
