@@ -173,10 +173,6 @@ namespace Application::Helper {
 		SDL_SetTextureAlphaMod(img->texture.get(), col.a);
 	}
 
-	void Image::printImageCount() const noexcept {
-		std::cout << "Image Size: " << images.size() << '\n';
-	}
-
 	IMD Image::createPack(std::string_view packName, std::string_view dirPath, SDL_Renderer *ren) {
 		std::vector<std::basic_string<char>> pathList;
 		// get the directory path and append all of the files into the array
@@ -253,5 +249,9 @@ namespace Application::Helper {
 
 	std::shared_ptr<Animation> Image::getAnimPtr() noexcept {
 		return animPtr;
+	}
+
+	void Image::printImageCount() const noexcept {
+		std::cout << "Image Size: " << images.size() << '\n';
 	}
 } // namespace Application::Helper

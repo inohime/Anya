@@ -42,10 +42,6 @@ namespace Application::Helper {
 		button->texture = *texture;
 	}
 
-	void UInterface::showOutline(BUTTONPTR &button, bool show) {
-		button->showOutline = show;
-	}
-
 	bool UInterface::cursorInBounds(BUTTONPTR &button, SDL_Point &mousePos) {
 		if (mousePos.x >= button->box.x && mousePos.x <= (button->box.x + button->box.w) &&
 			mousePos.y >= button->box.y && mousePos.y <= (button->box.y + button->box.h)) {
@@ -57,8 +53,10 @@ namespace Application::Helper {
 
 	// make the text in the button independent
 	void UInterface::setButtonTextSize(IMD &buttonText, int w, int h) {
-		buttonText->imageWidth = w;
-		buttonText->imageHeight = h;
+		if (buttonText != nullptr) {
+			buttonText->imageWidth = w;
+			buttonText->imageHeight = h;
+		}
 	}
 
 	void UInterface::setButtonTheme(BUTTONPTR &button, ColorData color) {

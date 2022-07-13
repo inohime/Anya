@@ -37,11 +37,11 @@ namespace Application {
 		}
 
 		char *const base = SDL_GetBasePath();
-		path = base;
+		dirPath = base;
 		SDL_free(base);
 
 		// setup minimal mode window dragging
-		const auto &hitTestResult = [](SDL_Window *window, const SDL_Point *pt, void *data) -> SDL_HitTestResult {
+		const auto hitTestResult = [](SDL_Window *window, const SDL_Point *pt, void *data) -> SDL_HitTestResult {
 			SDL_Rect dragRect = {0, 0, 50, 10};
 			if (SDL_PointInRect(pt, &dragRect))
 				return SDL_HITTEST_DRAGGABLE;
@@ -56,11 +56,15 @@ namespace Application {
 		interfacePtr = std::make_unique<Helper::UInterface>();
 		scenePtr = std::make_unique<Helper::Scene>();
 
+		// set the default font
+		typographyStr = dirPath + "assets/OnestRegular1602-hint.ttf";
+
 		// load assets
-		backgroundImg = imagePtr->createImage(path + "assets/beep_1.png", renderer.get());
-		githubImg = imagePtr->createImage(path + "assets/25231.png", renderer.get());
-		calendarImg = imagePtr->createImage(path + "assets/calendar.png", renderer.get());
-		backgroundGIF = imagePtr->createPack("canvas", path + "assets/gif-extract/", renderer.get());
+		backgroundImg = imagePtr->createImage(dirPath + "assets/beep_1.png", renderer.get());
+		githubImg = imagePtr->createImage(dirPath + "assets/25231.png", renderer.get());
+		calendarImg = imagePtr->createImage(dirPath + "assets/calendar.png", renderer.get());
+		typographyImg = imagePtr->createImage(dirPath + "assets/typography.png", renderer.get());
+		backgroundGIF = imagePtr->createPack("canvas", dirPath + "assets/gif-extract/", renderer.get());
 		imagePtr->getAnimPtr()->addAnimation(68, 0, 0, 148, 89);
 
 		// create scenes
@@ -73,10 +77,8 @@ namespace Application {
 		settingsBtn = interfacePtr->createButton("+", 5, 5, 20, 20);
 		settingsBtn->isEnabled = true;
 		mainQuitBtn = interfacePtr->createButton("x", 103, 5, 12, 12);
-		mainQuitBtn->isEnabled = false;
 		mainQuitBtn->canQuit = true;
 		minimizeBtn = interfacePtr->createButton("-", 85, 5, 12, 12);
-		minimizeBtn->isEnabled = false;
 		minimizeBtn->canMinimize = true;
 
 		// settings
@@ -90,18 +92,21 @@ namespace Application {
 
 		// settings-themes
 		themesExitBtn = interfacePtr->createButton("x", 65, 60, 20, 20);
-		minimalBtn = interfacePtr->createButton("Minimal", 25, 5, 60, 25);
-		setBGBtn = interfacePtr->createButton("Set BG", 90, 5, 50, 25);
+		minimalBtn = interfacePtr->createButton("Minimal", 39, 5, 55, 25);
+		setBGBtn = interfacePtr->createButton("Set BG", 103, 5, 40, 25);
 		openFileBtn = interfacePtr->createButton("Open File", 25, 35, 50, 15);
 		setBGColorBtn = interfacePtr->createButton("Set Color", 80, 35, 50, 15);
-		// use the text icon instead
-		setTextFontBtn = interfacePtr->createButton("Set Font", 0, 50, 50, 25);
+		setTypographyBtn = interfacePtr->createButton("", typographyImg, 5, 5, 25, 25);
+		typographyInputBtn = interfacePtr->createButton("Set Font", setTypographyBtn->box.w / 2, 35, 
+														(setTypographyBtn->box.x + (setTypographyBtn->box.w / 2)) + 
+														(setBGColorBtn->box.x + (setBGColorBtn->box.w / 2)), 15);
 
 		for (auto &button : interfacePtr->getButtonList())
 			interfacePtr->setButtonTheme(button, {{67, 48, 46}, {168, 124, 116}, {240, 209, 189}});
 
 		imagePtr->setTextureColor(githubImg, {240, 209, 189, (uint8_t)githubBtn->colorAlpha});
-		imagePtr->setTextureColor(calendarImg, {240, 209, 189, (uint8_t)githubBtn->colorAlpha});
+		imagePtr->setTextureColor(calendarImg, {240, 209, 189, (uint8_t)calendarBtn->colorAlpha});
+		imagePtr->setTextureColor(typographyImg, {240, 209, 189, (uint8_t)setTypographyBtn->colorAlpha});
 
 		// set the scene to be displayed
 		scenePtr->setScene("Main");
@@ -123,7 +128,7 @@ namespace Application {
 				case SDL_MOUSEBUTTONDOWN: {
 					for (auto &button : interfacePtr->getButtonList()) {
 						if (button->canMinimize && interfacePtr->cursorInBounds(button, interfacePtr->getMousePos()))
-							if (scenePtr->getCurrentScene() == scenePtr->findScene("Main"))
+							if (scenePtr->getCurrentScene() == scenePtr->findScene("Main") && minimizeBtn->isEnabled)
 								SDL_MinimizeWindow(window.get());
 
 						if (button->canQuit && interfacePtr->cursorInBounds(button, interfacePtr->getMousePos())) {
@@ -134,7 +139,7 @@ namespace Application {
 								shouldRun = false;
 						}
 					}
-
+					
 					if (interfacePtr->cursorInBounds(settingsBtn, interfacePtr->getMousePos()) && settingsBtn->isEnabled) {
 						scenePtr->setScene("Settings");
 						settingsBtn->isEnabled = false;
@@ -153,6 +158,7 @@ namespace Application {
 						settingsExitBtn->isEnabled = false;
 						themesBtn->isEnabled = false;
 						githubBtn->isEnabled = false;
+						calendarBtn->isEnabled = false;
 						settingsBtn->isEnabled = true;
 					}
 
@@ -165,16 +171,34 @@ namespace Application {
 						settingsExitBtn->isEnabled = false;
 					}
 
-					if (interfacePtr->cursorInBounds(calendarBtn, interfacePtr->getMousePos()) && !showDate) {
+					if (interfacePtr->cursorInBounds(calendarBtn, interfacePtr->getMousePos()) && calendarBtn->isEnabled && !showDate) {
 						showDate = true;
-					} else if (interfacePtr->cursorInBounds(calendarBtn, interfacePtr->getMousePos()) && showDate) {
+					} else if (interfacePtr->cursorInBounds(calendarBtn, interfacePtr->getMousePos()) && calendarBtn->isEnabled && showDate) {
 						showDate = false;
 					}
 
-					if (interfacePtr->cursorInBounds(setBGBtn, interfacePtr->getMousePos()) && setBGBtn->isEnabled) {
+					if (interfacePtr->cursorInBounds(setBGBtn, interfacePtr->getMousePos()) && setBGBtn->isEnabled && !setBGIsPressed) {
+						setTypographyIsPressed = false;
 						setBGIsPressed = true;
 						openFileBtn->isEnabled = true;
 						setBGColorBtn->isEnabled = true;
+					} else if (interfacePtr->cursorInBounds(setBGBtn, interfacePtr->getMousePos()) && setBGBtn->isEnabled && setBGIsPressed) {
+						setBGIsPressed = false;
+						openFileBtn->isEnabled = false;
+						setBGColorBtn->isEnabled = false;
+					}
+
+					if (interfacePtr->cursorInBounds(setTypographyBtn, interfacePtr->getMousePos()) && setTypographyBtn->isEnabled && !setTypographyIsPressed) {
+						setTypographyIsPressed = true;
+						setBGIsPressed = false;
+						typographyInputBtn->isEnabled = true;
+					} else if (interfacePtr->cursorInBounds(setTypographyBtn, interfacePtr->getMousePos()) && setTypographyBtn->isEnabled && setTypographyIsPressed) {
+						setTypographyIsPressed = false;
+						typographyInputBtn->isEnabled = false;
+					}
+
+					if (interfacePtr->cursorInBounds(typographyInputBtn, interfacePtr->getMousePos()) && typographyInputBtn->isEnabled) {
+						typographyInputBtn->text = "";
 					}
 
 					if (interfacePtr->cursorInBounds(setBGColorBtn, interfacePtr->getMousePos()) && setBGColorBtn->isEnabled) {
@@ -185,6 +209,7 @@ namespace Application {
 					if (interfacePtr->cursorInBounds(minimalBtn, interfacePtr->getMousePos()) && minimalBtn->isEnabled) {
 						minimalMode = true;
 						mainQuitBtn->isEnabled = true;
+						minimizeBtn->isEnabled = true;
 						themesExitBtn->isEnabled = false;
 						minimalBtn->isEnabled = false;
 						setBGBtn->isEnabled = false;
@@ -201,65 +226,96 @@ namespace Application {
 						minimalBtn->isEnabled = false;
 						setBGBtn->isEnabled = false;
 						openFileBtn->isEnabled = false;
+						setTypographyBtn->isEnabled = false;
 						setBGIsPressed = false;
+						setTypographyIsPressed = false;
 					}
 				} break;
 
 				case SDL_KEYDOWN: {
 					switch (ev.key.keysym.sym) {
 						case SDLK_RETURN: {
-							auto &bgColorText = setBGColorBtn->text;
-							// apply the colour to the background and reset the text
-							if (bgColorText.contains(',')) {
-								bgColorText.erase(std::remove(bgColorText.begin(), bgColorText.end(), ','));
-								// delete the duplicate character at the end
-								bgColorText.pop_back();
-								// find the all of the spaces
-								auto first = bgColorText.find_first_of(' ');
-								auto second = bgColorText.find_last_of(' ');
-								// get the positions of the colour values and apply them
-								rVal = std::stoi(bgColorText.substr(0, first));
-								gVal = std::stoi(bgColorText.substr(first, second));
-								bVal = std::stoi(bgColorText.substr(second, bgColorText.back()));
-								// 255 163 210 (demo colour)
-							} else if (bgColorText.contains('#')) {
-								char const *hexVal = bgColorText.c_str();
-								// convert the hex to rgb
-								sscanf_s(hexVal, "#%02x%02x%02x", &rVal, &gVal, &bVal);
+							if (setBGIsPressed) {
+								auto &bgColorText = setBGColorBtn->text;
+								// apply the colour to the background and reset the text
+								if (bgColorText.contains(',')) {
+									bgColorText.erase(std::remove(bgColorText.begin(), bgColorText.end(), ','));
+									// delete the duplicate character at the end
+									bgColorText.pop_back();
+									// find the all of the spaces
+									auto first = bgColorText.find_first_of(' ');
+									auto second = bgColorText.find_last_of(' ');
+									// get the positions of the colour values and apply them
+									rVal = std::stoi(bgColorText.substr(0, first));
+									gVal = std::stoi(bgColorText.substr(first, second));
+									bVal = std::stoi(bgColorText.substr(second, bgColorText.back()));
+									// 255 163 210 (demo colour)
+								} else if (bgColorText.contains('#')) {
+									char const *hexVal = bgColorText.c_str();
+									// convert the hex to rgb
+									sscanf_s(hexVal, "#%02x%02x%02x", &rVal, &gVal, &bVal);
+								}
+								setBGColorBtn->text = "Set Color";
+							} else if (setTypographyIsPressed) {
+								typographyStr = dirPath + "assets/" + typographyInputBtn->text;
+								typographyInputBtn->text = "Set Font";
 							}
-							setBGColorBtn->text = "Set Color";
 						} break;
 
 						case SDLK_c: {
-							if (SDL_GetModState() & KMOD_CTRL)
-								SDL_SetClipboardText(setBGColorBtn->text.c_str());
-
+							if (setBGIsPressed) {
+								if (SDL_GetModState() & KMOD_CTRL)
+									SDL_SetClipboardText(setBGColorBtn->text.c_str());
+							} else if (setTypographyIsPressed) {
+								if (SDL_GetModState() & KMOD_CTRL)
+									SDL_SetClipboardText(typographyInputBtn->text.c_str());
+							}
 						} break;
 
 						case SDLK_v: {
+							if (setBGIsPressed) { 
 							if (SDL_GetModState() & KMOD_CTRL)
 								setBGColorBtn->text = SDL_GetClipboardText();
-
+							} else if (setTypographyIsPressed) {
+								if (SDL_GetModState() & KMOD_CTRL)
+									typographyInputBtn->text = SDL_GetClipboardText();
+							}
 						} break;
 
 						case SDLK_BACKSPACE: {
-							if (setBGColorBtn->text.contains("Set Color"))
-								break;
+							if (setBGIsPressed) {
+								if (setBGColorBtn->text.contains("Set Color"))
+									break;
 
-							if (setBGColorBtn->text.length() > 0)
-								setBGColorBtn->text.pop_back();
+								if (setBGColorBtn->text.length() > 0)
+									setBGColorBtn->text.pop_back();
+							} else if (setTypographyIsPressed) {
+								if (typographyInputBtn->text.contains("Set Font"))
+									break;
 
+								if (typographyInputBtn->text.length() > 0)
+									typographyInputBtn->text.pop_back();
+							}
 						} break;
 					}
 				} break;
 
 				case SDL_TEXTINPUT: {
-					if (!(SDL_GetModState() & KMOD_CTRL && (ev.text.text[0] == 'c' || ev.text.text[0] == 'C' || 
-															ev.text.text[0] == 'v' || ev.text.text[0] == 'V')) && setBGColorBtn->isEnabled) {
-						if (setBGColorBtn->text.contains("Set Color"))
-							break;
+					if (setBGColorBtn->isEnabled || setTypographyBtn->isEnabled) {
+						if (!(SDL_GetModState() & KMOD_CTRL && (ev.text.text[0] == 'c' || ev.text.text[0] == 'C' ||
+																ev.text.text[0] == 'v' || ev.text.text[0] == 'V'))) {
+							if (setBGToColor) {
+								if (setBGColorBtn->text.contains("Set Color"))
+									break;
 
-						setBGColorBtn->text += ev.text.text;
+								setBGColorBtn->text += ev.text.text;
+							} else if (setTypographyIsPressed) {
+								if (typographyInputBtn->text.contains("Set Font"))
+									break;
+
+								typographyInputBtn->text += ev.text.text;
+							}
+						}
 					}
 				} break;
 			}
@@ -274,7 +330,7 @@ namespace Application {
 
 			//std::cout << getTime(std::chrono::system_clock::now()) << '\n';
 #endif
-
+			// enable these buttons when first layer's buttons are disabled
 			if (scenePtr->getCurrentScene() == scenePtr->findScene("Settings") && !settingsBtn->isEnabled) {
 				settingsExitBtn->isEnabled = true;
 				themesBtn->isEnabled = true;
@@ -282,13 +338,13 @@ namespace Application {
 				calendarBtn->isEnabled = true;
 			}
 
-			if (scenePtr->getCurrentScene() == scenePtr->findScene("Settings-Themes") && !settingsExitBtn->isEnabled)
-				minimalBtn->isEnabled = true;
-
-			if (scenePtr->getCurrentScene() == scenePtr->findScene("Settings-Themes") && !themesBtn->isEnabled)
+			// enable these buttons when the second layer's butons are disabled
+			if (scenePtr->getCurrentScene() == scenePtr->findScene("Settings-Themes") && !themesBtn->isEnabled) {
 				setBGBtn->isEnabled = true;
-
-			printf("%d\n", showDate);
+				minimalBtn->isEnabled = true;
+				setTypographyBtn->isEnabled = true;
+			}
+			
 
 			imagePtr->getAnimPtr()->update(40, deltaTime.count());
 			interfacePtr->update(&ev, deltaTime.count());
@@ -305,9 +361,10 @@ namespace Application {
 		SDL_RenderClear(renderer.get());
 		
 		if (scenePtr->getCurrentScene() == scenePtr->findScene("Main")) {
-			timeText = imagePtr->createTextA({timeToStr(std::chrono::system_clock::now()), path + "assets/OnestRegular1602-hint.ttf", {{0}, {0}, {255, 255, 255}}, 28}, renderer.get());
-			dateText = imagePtr->createTextA({std::format("{:%Ex}", std::chrono::current_zone()->to_local(std::chrono::system_clock::now())), path + "assets/OnestRegular1602-hint.ttf", {{0}, {0}, {255, 255, 255}}, 14}, renderer.get());
-			settingsText = imagePtr->createText({settingsBtn->text, path + "assets/OnestRegular1602-hint.ttf", settingsBtn->buttonColor, 96}, renderer.get());
+			//path + "assets/OnestRegular1602-hint.ttf"
+			timeText = imagePtr->createTextA({timeToStr(std::chrono::system_clock::now()), typographyStr, {{0}, {0}, {255, 255, 255}}, 28}, renderer.get());
+			dateText = imagePtr->createTextA({std::format("{:%Ex}", std::chrono::current_zone()->to_local(std::chrono::system_clock::now())), dirPath + "assets/OnestRegular1602-hint.ttf", {{0}, {0}, {255, 255, 255}}, 16}, renderer.get());
+			settingsText = imagePtr->createText({settingsBtn->text, dirPath + "assets/OnestRegular1602-hint.ttf", settingsBtn->buttonColor, 96}, renderer.get());
 
 			if (setBGToColor) {
 				SDL_SetRenderDrawColor(renderer.get(), rVal, gVal, bVal, 255);
@@ -317,8 +374,8 @@ namespace Application {
 			}
 
 			if (minimalMode) {
-				mainQuitText = imagePtr->createText({mainQuitBtn->text, path + "assets/OnestRegular1602-hint.ttf", mainQuitBtn->buttonColor, 96}, renderer.get());
-				minimizeText = imagePtr->createText({minimizeBtn->text, path + "assets/OnestRegular1602-hint.ttf", minimizeBtn->buttonColor, 96}, renderer.get());
+				mainQuitText = imagePtr->createText({mainQuitBtn->text, dirPath + "assets/OnestRegular1602-hint.ttf", mainQuitBtn->buttonColor, 96}, renderer.get());
+				minimizeText = imagePtr->createText({minimizeBtn->text, dirPath + "assets/OnestRegular1602-hint.ttf", minimizeBtn->buttonColor, 96}, renderer.get());
 
 				SDL_SetRenderDrawColor(renderer.get(), 0, 0, 0, 255);
 				SDL_RenderFillRect(renderer.get(), &fillBGColor);
@@ -342,10 +399,10 @@ namespace Application {
 		}
 
 		if (scenePtr->getCurrentScene() == scenePtr->findScene("Settings")) {
-			settingsExitText = imagePtr->createText({settingsExitBtn->text, path + "assets/OnestRegular1602-hint.ttf", settingsExitBtn->buttonColor, 72}, renderer.get());
-			themesText = imagePtr->createText({themesBtn->text, path + "assets/OnestRegular1602-hint.ttf", themesBtn->buttonColor, 32}, renderer.get());
-			quitText = imagePtr->createText({settingsQuitBtn->text, path + "assets/OnestRegular1602-hint.ttf", settingsQuitBtn->buttonColor, 96}, renderer.get());
-
+			settingsExitText = imagePtr->createText({settingsExitBtn->text, dirPath + "assets/OnestRegular1602-hint.ttf", settingsExitBtn->buttonColor, 72}, renderer.get());
+			themesText = imagePtr->createText({themesBtn->text, dirPath + "assets/OnestRegular1602-hint.ttf", themesBtn->buttonColor, 32}, renderer.get());
+			quitText = imagePtr->createText({settingsQuitBtn->text, dirPath + "assets/OnestRegular1602-hint.ttf", settingsQuitBtn->buttonColor, 96}, renderer.get());
+			// brown background colour
 			SDL_SetRenderDrawColor(renderer.get(), 26, 17, 16, 255);
 			SDL_RenderFillRect(renderer.get(), &settingsView);
 
@@ -357,25 +414,32 @@ namespace Application {
 		}
 
 		if (scenePtr->getCurrentScene() == scenePtr->findScene("Settings-Themes")) {
-			themesExitText = imagePtr->createText({themesExitBtn->text, path + "assets/OnestRegular1602-hint.ttf", themesExitBtn->buttonColor, 96}, renderer.get());
-			minimalText = imagePtr->createText({minimalBtn->text, path + "assets/OnestRegular1602-hint.ttf", minimalBtn->buttonColor, 96}, renderer.get());
-			setBGText = imagePtr->createText({setBGBtn->text, path + "assets/OnestRegular1602-hint.ttf", setBGBtn->buttonColor, 96}, renderer.get());
-			openFileText = imagePtr->createText({openFileBtn->text, path + "assets/OnestRegular1602-hint.ttf", openFileBtn->buttonColor, 96}, renderer.get());
-			setBGColorText = imagePtr->createText({setBGColorBtn->text, path + "assets/OnestRegular1602-hint.ttf", setBGColorBtn->buttonColor, 28}, renderer.get());
-			//setTextFontText = imagePtr->createText({setTextFontBtn->text, path + "assets/OnestRegular1602-hint.ttf", setTextFontBtn->buttonColor, 96}, renderer.get());
-
+			themesExitText = imagePtr->createText({themesExitBtn->text, dirPath + "assets/OnestRegular1602-hint.ttf", themesExitBtn->buttonColor, 96}, renderer.get());
+			minimalText = imagePtr->createText({minimalBtn->text, dirPath + "assets/OnestRegular1602-hint.ttf", minimalBtn->buttonColor, 96}, renderer.get());
+			setBGText = imagePtr->createText({setBGBtn->text, dirPath + "assets/OnestRegular1602-hint.ttf", setBGBtn->buttonColor, 96}, renderer.get());
+			// brown background colour
 			SDL_SetRenderDrawColor(renderer.get(), 26, 17, 16, 255);
 			SDL_RenderFillRect(renderer.get(), &settingsThemesView);
 
 			interfacePtr->draw(themesExitBtn, themesExitText, renderer.get());
 			interfacePtr->draw(minimalBtn, minimalText, renderer.get());
 			interfacePtr->draw(setBGBtn, setBGText, renderer.get());
+			interfacePtr->draw(setTypographyBtn, nullptr, renderer.get());
+
+			if (setTypographyIsPressed) {
+				typographyInputText = imagePtr->createText({typographyInputBtn->text, dirPath + "assets/OnestRegular1602-hint.ttf", openFileBtn->buttonColor, 96}, renderer.get());
+
+				interfacePtr->setButtonTextSize(typographyInputText, -45, 2);
+				interfacePtr->draw(typographyInputBtn, typographyInputText, renderer.get());
+			}
 
 			if (setBGIsPressed) {
+				openFileText = imagePtr->createText({openFileBtn->text, dirPath + "assets/OnestRegular1602-hint.ttf", openFileBtn->buttonColor, 96}, renderer.get());
+				setBGColorText = imagePtr->createText({setBGColorBtn->text, dirPath + "assets/OnestRegular1602-hint.ttf", setBGColorBtn->buttonColor, 28}, renderer.get());
+
 				interfacePtr->draw(openFileBtn, openFileText, renderer.get());
 				interfacePtr->draw(setBGColorBtn, setBGColorText, renderer.get());
 			}
-			//interfacePtr->draw(setTextFontBtn, setTextFontText, renderer.get());
 		}
 
 		SDL_RenderPresent(renderer.get());
