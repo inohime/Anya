@@ -87,6 +87,7 @@ namespace Application {
 		Helper::IMD setBGText {nullptr};
 		Helper::IMD openFileText {nullptr};
 		Helper::IMD setBGColorText {nullptr};
+		Helper::IMD typographyInputText {nullptr};
 		// test button theme changing
 		/*
 		Helper::IMD themesOCText {nullptr};
