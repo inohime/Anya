@@ -1,9 +1,6 @@
+#include <SDL_syswm.h>
 #include "anya.hpp"
 #include <iostream>
-#ifdef _WIN32
-#include <windows.h>
-#include <shellapi.h>
-#endif
 
 namespace Application {
 	Anya::Anya() {
@@ -20,12 +17,22 @@ namespace Application {
 	}
 #endif
 
+	// make this a cross platform function (void * for handle)
+#ifdef _WIN32 
+	static void setWindowShadow(HWND handle, const MARGINS &margins) {
+		DwmExtendFrameIntoClientArea(handle, &margins);
+		SetWindowPos(handle, nullptr, 0, 0, 0, 0, SWP_NOZORDER | SWP_NOOWNERZORDER | SWP_NOMOVE | SWP_NOSIZE | SWP_FRAMECHANGED);
+	};
+#endif
+
 	bool Anya::boot() {
 		SDL_assert(SDL_Init(SDL_INIT_EVERYTHING) == 0);
 		SDL_assert(IMG_Init(IMG_INIT_PNG | IMG_INIT_JPG) != 0);
 		if (TTF_Init() == -1) return false;
 
 		begin = std::chrono::steady_clock::now();
+
+		SDL_SetHintWithPriority("SDL_BORDERLESS_WINDOWED_STYLE", "1", SDL_HINT_OVERRIDE);
 
 		window = PTR<SDL_Window>(SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, windowWidth, windowHeight, 0));
 		renderer = PTR<SDL_Renderer>(SDL_CreateRenderer(window.get(), -1, SDL_RENDERER_SOFTWARE));
@@ -35,6 +42,13 @@ namespace Application {
 			free();
 			return shouldRun;
 		}
+
+		SDL_SysWMinfo wmInfo;
+		SDL_VERSION(&wmInfo.version);
+		SDL_GetWindowWMInfo(window.get(), &wmInfo);
+#ifdef _WIN32
+		hwnd = wmInfo.info.win.window;
+#endif
 
 		char *const base = SDL_GetBasePath();
 		dirPath = base;
@@ -217,6 +231,9 @@ namespace Application {
 						openFileBtn->isEnabled = false;
 						SDL_SetWindowBordered(window.get(), SDL_FALSE);
 						SDL_SetWindowSize(window.get(), 120, 50);
+#ifdef _WIN32
+						setWindowShadow(hwnd, {0, 0, 0, 1});
+#endif
 						scenePtr->setScene("Main");
 					}
 
@@ -225,6 +242,9 @@ namespace Application {
 						themesExitBtn->isEnabled = true;
 						SDL_SetWindowBordered(window.get(), SDL_TRUE);
 						SDL_SetWindowSize(window.get(), windowWidth, windowHeight);
+#ifdef _WIN32
+						setWindowShadow(hwnd, {0, 0, 0, 0});
+#endif
 						scenePtr->setScene("Settings-Themes");
 					}
 
@@ -376,9 +396,12 @@ namespace Application {
 	// usually you want this to be independent
 	void Anya::draw() {
 		SDL_SetRenderDrawBlendMode(renderer.get(), SDL_BLENDMODE_BLEND);
-		SDL_SetRenderDrawColor(renderer.get(), 255, 255, 255, 255);
+		SDL_SetRenderDrawColor(renderer.get(), 255, 0, 0, 255);
 		SDL_RenderClear(renderer.get());
 
+		SDL_SetRenderDrawColor(renderer.get(), 0, 0, 0, 255);
+		SDL_RenderFillRect(renderer.get(), &border);
+		
 		if (scenePtr->getCurrentScene() == scenePtr->findScene("Main")) {
 			timeText = imagePtr->createTextA({timeToStr(std::chrono::system_clock::now()), typographyStr, {{0}, {0}, {255, 255, 255}}, 28}, renderer.get());
 			dateText = imagePtr->createTextA({std::format("{:%Ex}", std::chrono::current_zone()->to_local(std::chrono::system_clock::now())), dirPath + "assets/OnestRegular1602-hint.ttf", {{0}, {0}, {255, 255, 255}}, 16}, renderer.get());
@@ -460,7 +483,7 @@ namespace Application {
 				interfacePtr->draw(setBGColorBtn, setBGColorText, renderer.get());
 			}
 		}
-
+		
 		SDL_RenderPresent(renderer.get());
 
 		if (delay > deltaTime.count())
