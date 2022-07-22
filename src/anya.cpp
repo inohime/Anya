@@ -64,6 +64,7 @@ namespace Application {
 		githubImg = imagePtr->createImage(dirPath + "assets/25231.png", renderer.get());
 		calendarImg = imagePtr->createImage(dirPath + "assets/calendar.png", renderer.get());
 		typographyImg = imagePtr->createImage(dirPath + "assets/typography.png", renderer.get());
+		returnImg = imagePtr->createImage(dirPath + "assets/return.png", renderer.get());
 		backgroundGIF = imagePtr->createPack("canvas", dirPath + "assets/gif-extract/", renderer.get());
 		imagePtr->getAnimPtr()->addAnimation(68, 0, 0, 148, 89);
 
@@ -80,6 +81,7 @@ namespace Application {
 		mainQuitBtn->canQuit = true;
 		minimizeBtn = interfacePtr->createButton("-", 85, 5, 12, 12);
 		minimizeBtn->canMinimize = true;
+		returnBtn = interfacePtr->createButton("", returnImg, 67, 5, 12, 12);
 
 		// settings
 		settingsQuitBtn = interfacePtr->createButton("Quit", 108, 5, 35, 25);
@@ -107,6 +109,7 @@ namespace Application {
 		imagePtr->setTextureColor(githubImg, {240, 209, 189, (uint8_t)githubBtn->colorAlpha});
 		imagePtr->setTextureColor(calendarImg, {240, 209, 189, (uint8_t)calendarBtn->colorAlpha});
 		imagePtr->setTextureColor(typographyImg, {240, 209, 189, (uint8_t)setTypographyBtn->colorAlpha});
+		imagePtr->setTextureColor(returnImg, {240, 209, 189, (uint8_t)returnBtn->colorAlpha});
 
 		// set the scene to be displayed
 		scenePtr->setScene("Main");
@@ -361,7 +364,6 @@ namespace Application {
 		SDL_RenderClear(renderer.get());
 		
 		if (scenePtr->getCurrentScene() == scenePtr->findScene("Main")) {
-			//path + "assets/OnestRegular1602-hint.ttf"
 			timeText = imagePtr->createTextA({timeToStr(std::chrono::system_clock::now()), typographyStr, {{0}, {0}, {255, 255, 255}}, 28}, renderer.get());
 			dateText = imagePtr->createTextA({std::format("{:%Ex}", std::chrono::current_zone()->to_local(std::chrono::system_clock::now())), dirPath + "assets/OnestRegular1602-hint.ttf", {{0}, {0}, {255, 255, 255}}, 16}, renderer.get());
 			settingsText = imagePtr->createText({settingsBtn->text, dirPath + "assets/OnestRegular1602-hint.ttf", settingsBtn->buttonColor, 96}, renderer.get());
@@ -385,6 +387,7 @@ namespace Application {
 				interfacePtr->setButtonTextSize(mainQuitText, -2, 0);
 				interfacePtr->draw(mainQuitBtn, mainQuitText, renderer.get());
 				interfacePtr->draw(minimizeBtn, minimizeText, renderer.get());
+				interfacePtr->draw(returnBtn, nullptr, renderer.get());
 			} else {
 				if (showDate) {
 					imagePtr->draw(timeText, renderer.get(), static_cast<int>(windowWidth / 10), static_cast<int>(windowHeight / 1.6));

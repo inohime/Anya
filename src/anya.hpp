@@ -55,7 +55,9 @@ namespace Application {
 		std::basic_string<char> typographyStr {};
 		std::basic_stringstream<char> str {};
 		// set background colour
-		int rVal, gVal, bVal;
+		int rVal {0};
+		int gVal {0};
+		int bVal {0};
 
 		bool setTypographyIsPressed {false};
 		// setBG button on/off
@@ -76,6 +78,7 @@ namespace Application {
 		Helper::IMD githubImg {nullptr};
 		Helper::IMD calendarImg {nullptr};
 		Helper::IMD typographyImg {nullptr};
+		Helper::IMD returnImg {nullptr};
 		// text
 		Helper::IMD timeText {nullptr};
 		Helper::IMD dateText {nullptr};
@@ -103,6 +106,7 @@ namespace Application {
 		Helper::BUTTONPTR settingsBtn {nullptr};
 		Helper::BUTTONPTR mainQuitBtn {nullptr};
 		Helper::BUTTONPTR minimizeBtn {nullptr};
+		Helper::BUTTONPTR returnBtn {nullptr};
 		Helper::BUTTONPTR settingsQuitBtn {nullptr};
 		Helper::BUTTONPTR settingsExitBtn {nullptr};
 		Helper::BUTTONPTR themesBtn {nullptr};
