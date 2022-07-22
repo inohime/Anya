@@ -78,7 +78,6 @@ namespace Application {
 		SDL_Rect settingsThemesView {0, 0, (int)windowWidth, (int)windowHeight};
 		SDL_Rect fillBGColor {0, 0, (int)windowWidth, (int)windowHeight};
 
-		SDL_Rect border = {0, 0, 150, 150};
 #ifdef _WIN32
 		HWND hwnd;
 #endif

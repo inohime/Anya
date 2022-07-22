@@ -398,9 +398,6 @@ namespace Application {
 		SDL_SetRenderDrawBlendMode(renderer.get(), SDL_BLENDMODE_BLEND);
 		SDL_SetRenderDrawColor(renderer.get(), 255, 0, 0, 255);
 		SDL_RenderClear(renderer.get());
-
-		SDL_SetRenderDrawColor(renderer.get(), 0, 0, 0, 255);
-		SDL_RenderFillRect(renderer.get(), &border);
 		
 		if (scenePtr->getCurrentScene() == scenePtr->findScene("Main")) {
 			timeText = imagePtr->createTextA({timeToStr(std::chrono::system_clock::now()), typographyStr, {{0}, {0}, {255, 255, 255}}, 28}, renderer.get());
