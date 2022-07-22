@@ -99,8 +99,8 @@ namespace Application {
 		openFileBtn = interfacePtr->createButton("Open File", 25, 35, 50, 15);
 		setBGColorBtn = interfacePtr->createButton("Set Color", 80, 35, 50, 15);
 		setTypographyBtn = interfacePtr->createButton("", typographyImg, 5, 5, 25, 25);
-		typographyInputBtn = interfacePtr->createButton("Set Font", setTypographyBtn->box.w / 2, 35, 
-														(setTypographyBtn->box.x + (setTypographyBtn->box.w / 2)) + 
+		typographyInputBtn = interfacePtr->createButton("Set Font", setTypographyBtn->box.w / 2, 35,
+														(setTypographyBtn->box.x + (setTypographyBtn->box.w / 2)) +
 														(setBGColorBtn->box.x + (setBGColorBtn->box.w / 2)), 15);
 
 		for (auto &button : interfacePtr->getButtonList())
@@ -142,7 +142,7 @@ namespace Application {
 								shouldRun = false;
 						}
 					}
-					
+
 					if (interfacePtr->cursorInBounds(settingsBtn, interfacePtr->getMousePos()) && settingsBtn->isEnabled) {
 						scenePtr->setScene("Settings");
 						settingsBtn->isEnabled = false;
@@ -211,8 +211,6 @@ namespace Application {
 
 					if (interfacePtr->cursorInBounds(minimalBtn, interfacePtr->getMousePos()) && minimalBtn->isEnabled) {
 						minimalMode = true;
-						mainQuitBtn->isEnabled = true;
-						minimizeBtn->isEnabled = true;
 						themesExitBtn->isEnabled = false;
 						minimalBtn->isEnabled = false;
 						setBGBtn->isEnabled = false;
@@ -220,6 +218,14 @@ namespace Application {
 						SDL_SetWindowBordered(window.get(), SDL_FALSE);
 						SDL_SetWindowSize(window.get(), 120, 50);
 						scenePtr->setScene("Main");
+					}
+
+					if (interfacePtr->cursorInBounds(returnBtn, interfacePtr->getMousePos()) && returnBtn->isEnabled && minimalMode) {
+						minimalMode = false;
+						themesExitBtn->isEnabled = true;
+						SDL_SetWindowBordered(window.get(), SDL_TRUE);
+						SDL_SetWindowSize(window.get(), windowWidth, windowHeight);
+						scenePtr->setScene("Settings-Themes");
 					}
 
 					if (interfacePtr->cursorInBounds(themesExitBtn, interfacePtr->getMousePos()) && themesExitBtn->isEnabled) {
@@ -276,9 +282,9 @@ namespace Application {
 						} break;
 
 						case SDLK_v: {
-							if (setBGIsPressed) { 
-							if (SDL_GetModState() & KMOD_CTRL)
-								setBGColorBtn->text = SDL_GetClipboardText();
+							if (setBGIsPressed) {
+								if (SDL_GetModState() & KMOD_CTRL)
+									setBGColorBtn->text = SDL_GetClipboardText();
 							} else if (setTypographyIsPressed) {
 								if (SDL_GetModState() & KMOD_CTRL)
 									typographyInputBtn->text = SDL_GetClipboardText();
@@ -347,7 +353,17 @@ namespace Application {
 				minimalBtn->isEnabled = true;
 				setTypographyBtn->isEnabled = true;
 			}
-			
+
+			// when minimalMode is false, we can keep the returnBtn from being clickable through the Settings-Theme layer
+			if (minimalMode) {
+				mainQuitBtn->isEnabled = true;
+				minimizeBtn->isEnabled = true;
+				returnBtn->isEnabled = true;
+			} else {
+				mainQuitBtn->isEnabled = false;
+				minimizeBtn->isEnabled = false;
+				returnBtn->isEnabled = false;
+			}
 
 			imagePtr->getAnimPtr()->update(40, deltaTime.count());
 			interfacePtr->update(&ev, deltaTime.count());
@@ -362,7 +378,7 @@ namespace Application {
 		SDL_SetRenderDrawBlendMode(renderer.get(), SDL_BLENDMODE_BLEND);
 		SDL_SetRenderDrawColor(renderer.get(), 255, 255, 255, 255);
 		SDL_RenderClear(renderer.get());
-		
+
 		if (scenePtr->getCurrentScene() == scenePtr->findScene("Main")) {
 			timeText = imagePtr->createTextA({timeToStr(std::chrono::system_clock::now()), typographyStr, {{0}, {0}, {255, 255, 255}}, 28}, renderer.get());
 			dateText = imagePtr->createTextA({std::format("{:%Ex}", std::chrono::current_zone()->to_local(std::chrono::system_clock::now())), dirPath + "assets/OnestRegular1602-hint.ttf", {{0}, {0}, {255, 255, 255}}, 16}, renderer.get());
