@@ -8,6 +8,12 @@
 #include <chrono>
 #include <format>
 #include <sstream>
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <dwmapi.h>
+#include <windows.h>
+#include <shellapi.h>
+#endif
 
 // low memory | low cpu utilization app (not the lowest since added features and no optimizations)
 // at its current state, it takes 3.6mb on debug, too high. (11mb with gif alloc)
@@ -24,7 +30,6 @@ namespace Application {
 
 		std::basic_string<char> timeToStr(const std::chrono::system_clock::time_point &time);
 		std::unique_ptr<std::basic_stringstream<char>> getStream();
-		static SDL_HitTestResult hitTestResult(SDL_Window *window, const SDL_Point *pt, void *data);
 		bool boot();
 		void update();
 		void draw();
@@ -72,6 +77,10 @@ namespace Application {
 		SDL_Rect settingsView {0, 0, (int)windowWidth, (int)windowHeight};
 		SDL_Rect settingsThemesView {0, 0, (int)windowWidth, (int)windowHeight};
 		SDL_Rect fillBGColor {0, 0, (int)windowWidth, (int)windowHeight};
+
+#ifdef _WIN32
+		HWND hwnd;
+#endif
 
 		Helper::IMD backgroundGIF {nullptr};
 		Helper::IMD backgroundImg {nullptr};
