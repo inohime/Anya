@@ -71,15 +71,16 @@ namespace Application {
 		scenePtr = std::make_unique<Helper::Scene>();
 
 		// set the default font
-		typographyStr = dirPath + "assets/OnestRegular1602-hint.ttf";
+		typographyStr = dirPath + "assets/Onest.ttf";
 
 		// load assets
+		backgroundGIF = imagePtr->createPack("canvas", dirPath + "assets/gif-extract/", renderer.get());
 		backgroundImg = imagePtr->createImage(dirPath + "assets/beep_1.png", renderer.get());
 		githubImg = imagePtr->createImage(dirPath + "assets/25231.png", renderer.get());
 		calendarImg = imagePtr->createImage(dirPath + "assets/calendar.png", renderer.get());
 		typographyImg = imagePtr->createImage(dirPath + "assets/typography.png", renderer.get());
 		returnImg = imagePtr->createImage(dirPath + "assets/return.png", renderer.get());
-		backgroundGIF = imagePtr->createPack("canvas", dirPath + "assets/gif-extract/", renderer.get());
+		setThemeImg = imagePtr->createImage(dirPath + "assets/paintbrush.png", renderer.get());
 		imagePtr->getAnimPtr()->addAnimation(68, 0, 0, 148, 89);
 
 		// create scenes
@@ -113,9 +114,8 @@ namespace Application {
 		openFileBtn = interfacePtr->createButton("Open File", 25, 35, 50, 15);
 		setBGColorBtn = interfacePtr->createButton("Set Color", 80, 35, 50, 15);
 		setTypographyBtn = interfacePtr->createButton("", typographyImg, 5, 5, 25, 25);
-		typographyInputBtn = interfacePtr->createButton("Set Font", setTypographyBtn->box.w / 2, 35,
-														(setTypographyBtn->box.x + (setTypographyBtn->box.w / 2)) +
-														(setBGColorBtn->box.x + (setBGColorBtn->box.w / 2)), 15);
+		typographyInputBtn = interfacePtr->createButton("Set Font", setTypographyBtn->box.w / 2, 35, 120, 15);
+		setThemeBtn = interfacePtr->createButton("", setThemeImg, 5, 39, 25, 25);
 
 		for (auto &button : interfacePtr->getButtonList())
 			interfacePtr->setButtonTheme(button, {{67, 48, 46}, {168, 124, 116}, {240, 209, 189}});
@@ -124,6 +124,7 @@ namespace Application {
 		imagePtr->setTextureColor(calendarImg, {240, 209, 189, (uint8_t)calendarBtn->colorAlpha});
 		imagePtr->setTextureColor(typographyImg, {240, 209, 189, (uint8_t)setTypographyBtn->colorAlpha});
 		imagePtr->setTextureColor(returnImg, {240, 209, 189, (uint8_t)returnBtn->colorAlpha});
+		imagePtr->setTextureColor(setThemeImg, {240, 209, 189, (uint8_t)setThemeBtn->colorAlpha});
 
 		// set the scene to be displayed
 		scenePtr->setScene("Main");
@@ -332,7 +333,7 @@ namespace Application {
 				case SDL_TEXTINPUT: {
 					if (setBGColorBtn->isEnabled || setTypographyBtn->isEnabled) {
 						if (!(SDL_GetModState() & KMOD_CTRL && (ev.text.text[0] == 'c' || ev.text.text[0] == 'C' ||
-																ev.text.text[0] == 'v' || ev.text.text[0] == 'V'))) {
+													ev.text.text[0] == 'v' || ev.text.text[0] == 'V'))) {
 							if (setBGToColor) {
 								if (setBGColorBtn->text.contains("Set Color"))
 									break;
@@ -385,7 +386,7 @@ namespace Application {
 				returnBtn->isEnabled = false;
 			}
 
-			imagePtr->getAnimPtr()->update(40, deltaTime.count());
+			imagePtr->getAnimPtr()->update(37, deltaTime.count());
 			interfacePtr->update(&ev, deltaTime.count());
 
 			draw();
@@ -401,8 +402,8 @@ namespace Application {
 		
 		if (scenePtr->getCurrentScene() == scenePtr->findScene("Main")) {
 			timeText = imagePtr->createTextA({timeToStr(std::chrono::system_clock::now()), typographyStr, {{0}, {0}, {255, 255, 255}}, 28}, renderer.get());
-			dateText = imagePtr->createTextA({std::format("{:%Ex}", std::chrono::current_zone()->to_local(std::chrono::system_clock::now())), dirPath + "assets/OnestRegular1602-hint.ttf", {{0}, {0}, {255, 255, 255}}, 16}, renderer.get());
-			settingsText = imagePtr->createText({settingsBtn->text, dirPath + "assets/OnestRegular1602-hint.ttf", settingsBtn->buttonColor, 96}, renderer.get());
+			dateText = imagePtr->createTextA({std::format("{:%Ex}", std::chrono::current_zone()->to_local(std::chrono::system_clock::now())), dirPath + "assets/Onest.ttf", {{0}, {0}, {255, 255, 255}}, 16}, renderer.get());
+			settingsText = imagePtr->createText({settingsBtn->text, dirPath + "assets/Onest.ttf", settingsBtn->buttonColor, 96}, renderer.get());
 
 			if (setBGToColor) {
 				SDL_SetRenderDrawColor(renderer.get(), rVal, gVal, bVal, 255);
@@ -412,8 +413,8 @@ namespace Application {
 			}
 
 			if (minimalMode) {
-				mainQuitText = imagePtr->createText({mainQuitBtn->text, dirPath + "assets/OnestRegular1602-hint.ttf", mainQuitBtn->buttonColor, 96}, renderer.get());
-				minimizeText = imagePtr->createText({minimizeBtn->text, dirPath + "assets/OnestRegular1602-hint.ttf", minimizeBtn->buttonColor, 96}, renderer.get());
+				mainQuitText = imagePtr->createText({mainQuitBtn->text, dirPath + "assets/Onest.ttf", mainQuitBtn->buttonColor, 96}, renderer.get());
+				minimizeText = imagePtr->createText({minimizeBtn->text, dirPath + "assets/Onest.ttf", minimizeBtn->buttonColor, 96}, renderer.get());
 
 				SDL_SetRenderDrawColor(renderer.get(), 0, 0, 0, 255);
 				SDL_RenderFillRect(renderer.get(), &fillBGColor);
@@ -438,9 +439,9 @@ namespace Application {
 		}
 
 		if (scenePtr->getCurrentScene() == scenePtr->findScene("Settings")) {
-			settingsExitText = imagePtr->createText({settingsExitBtn->text, dirPath + "assets/OnestRegular1602-hint.ttf", settingsExitBtn->buttonColor, 72}, renderer.get());
-			themesText = imagePtr->createText({themesBtn->text, dirPath + "assets/OnestRegular1602-hint.ttf", themesBtn->buttonColor, 32}, renderer.get());
-			quitText = imagePtr->createText({settingsQuitBtn->text, dirPath + "assets/OnestRegular1602-hint.ttf", settingsQuitBtn->buttonColor, 96}, renderer.get());
+			settingsExitText = imagePtr->createText({settingsExitBtn->text, dirPath + "assets/Onest.ttf", settingsExitBtn->buttonColor, 72}, renderer.get());
+			themesText = imagePtr->createText({themesBtn->text, dirPath + "assets/Onest.ttf", themesBtn->buttonColor, 32}, renderer.get());
+			quitText = imagePtr->createText({settingsQuitBtn->text, dirPath + "assets/Onest.ttf", settingsQuitBtn->buttonColor, 96}, renderer.get());
 			// brown background colour
 			SDL_SetRenderDrawColor(renderer.get(), 26, 17, 16, 255);
 			SDL_RenderFillRect(renderer.get(), &settingsView);
@@ -453,9 +454,9 @@ namespace Application {
 		}
 
 		if (scenePtr->getCurrentScene() == scenePtr->findScene("Settings-Themes")) {
-			themesExitText = imagePtr->createText({themesExitBtn->text, dirPath + "assets/OnestRegular1602-hint.ttf", themesExitBtn->buttonColor, 96}, renderer.get());
-			minimalText = imagePtr->createText({minimalBtn->text, dirPath + "assets/OnestRegular1602-hint.ttf", minimalBtn->buttonColor, 96}, renderer.get());
-			setBGText = imagePtr->createText({setBGBtn->text, dirPath + "assets/OnestRegular1602-hint.ttf", setBGBtn->buttonColor, 96}, renderer.get());
+			themesExitText = imagePtr->createText({themesExitBtn->text, dirPath + "assets/Onest.ttf", themesExitBtn->buttonColor, 96}, renderer.get());
+			minimalText = imagePtr->createText({minimalBtn->text, dirPath + "assets/Onest.ttf", minimalBtn->buttonColor, 96}, renderer.get());
+			setBGText = imagePtr->createText({setBGBtn->text, dirPath + "assets/Onest.ttf", setBGBtn->buttonColor, 96}, renderer.get());
 			// brown background colour
 			SDL_SetRenderDrawColor(renderer.get(), 26, 17, 16, 255);
 			SDL_RenderFillRect(renderer.get(), &settingsThemesView);
@@ -464,17 +465,18 @@ namespace Application {
 			interfacePtr->draw(minimalBtn, minimalText, renderer.get());
 			interfacePtr->draw(setBGBtn, setBGText, renderer.get());
 			interfacePtr->draw(setTypographyBtn, nullptr, renderer.get());
+			interfacePtr->draw(setThemeBtn, nullptr, renderer.get());
 
 			if (setTypographyIsPressed) {
-				typographyInputText = imagePtr->createText({typographyInputBtn->text, dirPath + "assets/OnestRegular1602-hint.ttf", openFileBtn->buttonColor, 96}, renderer.get());
+				typographyInputText = imagePtr->createText({typographyInputBtn->text, dirPath + "assets/Onest.ttf", openFileBtn->buttonColor, 96}, renderer.get());
 
 				interfacePtr->setButtonTextSize(typographyInputText, -45, 2);
 				interfacePtr->draw(typographyInputBtn, typographyInputText, renderer.get());
 			}
 
 			if (setBGIsPressed) {
-				openFileText = imagePtr->createText({openFileBtn->text, dirPath + "assets/OnestRegular1602-hint.ttf", openFileBtn->buttonColor, 96}, renderer.get());
-				setBGColorText = imagePtr->createText({setBGColorBtn->text, dirPath + "assets/OnestRegular1602-hint.ttf", setBGColorBtn->buttonColor, 28}, renderer.get());
+				openFileText = imagePtr->createText({openFileBtn->text, dirPath + "assets/Onest.ttf", openFileBtn->buttonColor, 96}, renderer.get());
+				setBGColorText = imagePtr->createText({setBGColorBtn->text, dirPath + "assets/Onest.ttf", setBGColorBtn->buttonColor, 28}, renderer.get());
 
 				interfacePtr->draw(openFileBtn, openFileText, renderer.get());
 				interfacePtr->draw(setBGColorBtn, setBGColorText, renderer.get());

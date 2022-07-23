@@ -1,12 +1,13 @@
 #include "image.hpp"
 #include "data.hpp"
 #include "util.hpp"
+#include <filesystem>
 #include <iostream>
 
 namespace Application::Helper {
 	SDL_Surface *loadFile(std::string_view filePath) {
 		if (filePath.data() == nullptr) {
-			std::cout << "Failed to load file " << SDL_GetError() << '\n';
+			std::cout << "Failed to load file: " << SDL_GetError() << '\n';
 			return nullptr;
 		}
 
@@ -28,7 +29,7 @@ namespace Application::Helper {
 
 		newImage->texture = Utilities::PTR<SDL_Texture>(SDL_CreateTextureFromSurface(ren, surf));
 		if (newImage->texture == nullptr) {
-			std::cout << "Text texture failed to be created\n";
+			std::cout << "Failed to create image: " << SDL_GetError() << '\n';
 			return nullptr;
 		}
 		images.insert({filePath.data(), newImage});
@@ -43,11 +44,9 @@ namespace Application::Helper {
 
 		newImage->texture = Utilities::PTR<SDL_Texture>(SDL_CreateTexture(ren, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, width, height));
 		if (newImage->texture == nullptr) {
-			std::cout << "Texture failed to be created\n";
+			std::cout << "Render Target failed to be created: " << SDL_GetError() << '\n';
 			return nullptr;
 		}
-
-		// add the render target to the image container manually
 
 		return newImage;
 	}
@@ -58,20 +57,20 @@ namespace Application::Helper {
 
 		TTF_Font *font = TTF_OpenFont(msg.fontFile.data(), msg.fontSize);
 		if (font == nullptr) {
-			std::cout << "TTF_OpenFont error " << TTF_GetError() << "\n";
+			std::cout << "TTF_OpenFont error: " << TTF_GetError() << '\n';
 			return nullptr;
 		}
 
 		SDL_Surface *surf = TTF_RenderText_Blended(font, msg.msg.data(), msg.col.textColor);
 		if (surf == nullptr) {
 			TTF_CloseFont(font);
-			std::cout << "TTF_RenderText error " << TTF_GetError() << "\n";
+			std::cout << "TTF_RenderText error: " << TTF_GetError() << '\n';
 			return nullptr;
 		}
 
 		newImage->texture = Utilities::PTR<SDL_Texture>(SDL_CreateTextureFromSurface(ren, surf));
 		if (newImage->texture == nullptr) {
-			std::cout << "Text texture failed to be created\n";
+			std::cout << "Text texture failed to be created: " << TTF_GetError() << '\n';
 			return nullptr;
 		}
 		images.insert({msg.fontFile, newImage});
@@ -108,7 +107,7 @@ namespace Application::Helper {
 
 		newImage->texture = Utilities::PTR<SDL_Texture>(SDL_CreateTextureFromSurface(ren, fgSurf));
 		if (newImage->texture == nullptr) {
-			std::cout << "Text texture failed to be created\n";
+			std::cout << "Outline text texture failed to be created: " << TTF_GetError() << '\n';
 			return nullptr;
 		}
 		images.insert({msg.fontFile, newImage});
@@ -176,7 +175,7 @@ namespace Application::Helper {
 	IMD Image::createPack(std::string_view packName, std::string_view dirPath, SDL_Renderer *ren) {
 		std::vector<std::basic_string<char>> pathList;
 		// get the directory path and append all of the files into the array
-		for (const auto &pathIter : fs::directory_iterator(dirPath)) {
+		for (const auto &pathIter : std::filesystem::directory_iterator(dirPath)) {
 			auto pathString = pathIter.path().string();
 			const auto fixPathString = [&]() {
 				std::for_each(std::begin({pathString}), std::end({pathString}), [&](std::string_view str) {
