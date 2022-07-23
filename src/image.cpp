@@ -44,7 +44,7 @@ namespace Application::Helper {
 
 		newImage->texture = Utilities::PTR<SDL_Texture>(SDL_CreateTexture(ren, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, width, height));
 		if (newImage->texture == nullptr) {
-			std::cout << "Render Target failed to be created" << SDL_GetError() << '\n';
+			std::cout << "Render Target failed to be created: " << SDL_GetError() << '\n';
 			return nullptr;
 		}
 
@@ -107,7 +107,7 @@ namespace Application::Helper {
 
 		newImage->texture = Utilities::PTR<SDL_Texture>(SDL_CreateTextureFromSurface(ren, fgSurf));
 		if (newImage->texture == nullptr) {
-			std::cout << "Text texture failed to be created: " << TTF_GetError() << '\n';
+			std::cout << "Outline text texture failed to be created: " << TTF_GetError() << '\n';
 			return nullptr;
 		}
 		images.insert({msg.fontFile, newImage});

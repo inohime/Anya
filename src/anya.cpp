@@ -333,7 +333,7 @@ namespace Application {
 				case SDL_TEXTINPUT: {
 					if (setBGColorBtn->isEnabled || setTypographyBtn->isEnabled) {
 						if (!(SDL_GetModState() & KMOD_CTRL && (ev.text.text[0] == 'c' || ev.text.text[0] == 'C' ||
-																ev.text.text[0] == 'v' || ev.text.text[0] == 'V'))) {
+													ev.text.text[0] == 'v' || ev.text.text[0] == 'V'))) {
 							if (setBGToColor) {
 								if (setBGColorBtn->text.contains("Set Color"))
 									break;
