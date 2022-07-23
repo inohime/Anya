@@ -88,6 +88,7 @@ namespace Application {
 		Helper::IMD calendarImg {nullptr};
 		Helper::IMD typographyImg {nullptr};
 		Helper::IMD returnImg {nullptr};
+		Helper::IMD setThemeImg {nullptr};
 		// text
 		Helper::IMD timeText {nullptr};
 		Helper::IMD dateText {nullptr};
@@ -129,11 +130,16 @@ namespace Application {
 		Helper::BUTTONPTR setBGColorBtn {nullptr};
 		Helper::BUTTONPTR setTypographyBtn {nullptr};
 		Helper::BUTTONPTR typographyInputBtn {nullptr};
+		Helper::BUTTONPTR setThemeBtn {nullptr};
+		//Helper::BUTTONPTR setMenuBGBtn {nullptr};
 		// test button theme changing
 		/*
-		Helper::BUTTONPTR themesOCBtn {nullptr};
-		Helper::BUTTONPTR themesBGCBtn {nullptr};
-		Helper::BUTTONPTR themesTCBtn {nullptr};
+		Helper::BUTTONPTR setButtonOCBtn {nullptr};
+		Helper::BUTTONPTR setButtonBGBtn {nullptr};
+		Helper::BUTTONPTR setButtonTCBtn {nullptr};
+		// reuse input button for each button colour
+		// set the enter key to submit the value based on the button selected
+		Helper::BUTTONPTR buttonColorInputBtn {nullptr};
 		*/
 	};
 } // namespace Application

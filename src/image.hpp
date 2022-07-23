@@ -4,12 +4,9 @@
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 #include "animation.hpp"
-//#include "data.hpp"
-#include <filesystem>
+#include "data.hpp"
 #include <string>
 #include <unordered_map>
-
-namespace fs = std::filesystem;
 
 /** Structure
  *
@@ -135,7 +132,8 @@ namespace Application::Helper {
 		 * \param col -> the colour to set the image to
 		 */
 		void setTextureColor(IMD &img, SDL_Color col);
-		// prints the number of images in the map
+		/** Prints the number of images in the map
+		 */
 		void printImageCount() const noexcept;
 
 	private:
