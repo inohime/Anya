@@ -73,6 +73,8 @@ namespace Application {
 		bool showDate {false};
 		bool setThemeIsPressed {false};
 
+		bool inColorPickerBounds {false};
+
 		float sceneAlpha {SDL_ALPHA_TRANSPARENT};
 
 		SDL_Rect windowBounds {0, 0, (int)windowWidth, (int)windowHeight};
@@ -81,6 +83,9 @@ namespace Application {
 		SDL_Rect settingsThemesView {0, 0, (int)windowWidth, (int)windowHeight};
 		SDL_Rect fillBGColor {0, 0, (int)windowWidth, (int)windowHeight};
 
+		// add an colour alpha slider
+		SDL_Rect colorPickerBounds = {(int)(windowWidth / 2) + 9, 0, 65, (int)windowWidth / 2};
+		SDL_Rect colorSliderBounds = {(int)(windowWidth / 2), 0, 8, 89};
 		SDL_Rect themesColorPicker {0, 0, 10, 10};
 		// replace with non-filled circle
 		SDL_Vertex themesSlider[3] {0};

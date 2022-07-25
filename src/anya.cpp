@@ -30,7 +30,7 @@ namespace Application {
 		SDL_assert(SDL_Init(SDL_INIT_EVERYTHING) == 0);
 		SDL_assert(IMG_Init(IMG_INIT_PNG | IMG_INIT_JPG) != 0);
 		if (TTF_Init() == -1) return false;
-		
+
 		NFD::Guard nfdInit;
 
 		begin = std::chrono::steady_clock::now();
@@ -148,7 +148,7 @@ namespace Application {
 		themesSliderOutline[1].color = {0, 0, 0, 255};
 		// right
 		themesSliderOutline[2].position.x = static_cast<float>((windowWidth / 2) - 1);
-		themesSliderOutline[2].position.y = 58.0f;
+		themesSliderOutline[2].position.y = 57.0f;
 		themesSliderOutline[2].color = {0, 0, 0, 255};
 
 		// center
@@ -401,7 +401,7 @@ namespace Application {
 				case SDL_TEXTINPUT: {
 					if (setBGColorBtn->isEnabled || setTypographyBtn->isEnabled) {
 						if (!(SDL_GetModState() & KMOD_CTRL && (ev.text.text[0] == 'c' || ev.text.text[0] == 'C' ||
-										ev.text.text[0] == 'v' || ev.text.text[0] == 'V'))) {
+											ev.text.text[0] == 'v' || ev.text.text[0] == 'V'))) {
 							if (setBGToColor) {
 								if (setBGColorBtn->text.contains("Set Color"))
 									break;
@@ -414,6 +414,33 @@ namespace Application {
 								typographyInputBtn->text += ev.text.text;
 							}
 						}
+					}
+				} break;
+
+				case SDL_MOUSEMOTION: {
+					if (interfacePtr->cursorInBounds(colorPickerBounds, interfacePtr->getMousePos())) {
+						themesColorPicker.x = ev.motion.x - 5;
+						themesColorPicker.y = ev.motion.y - 5;
+						inColorPickerBounds = true;
+					} else {
+						inColorPickerBounds = false;
+					}
+
+					if (interfacePtr->cursorInBounds(colorSliderBounds, interfacePtr->getMousePos())) {
+						// move slider base by 5px
+						// center
+						themesSlider[0].position.y = ev.motion.y;
+						// left
+						themesSlider[1].position.y = ev.motion.y - 5;
+						// right
+						themesSlider[2].position.y = ev.motion.y + 5;
+						// move slider outline by 7px
+						// center
+						themesSliderOutline[0].position.y = ev.motion.y;
+						// left
+						themesSliderOutline[1].position.y = ev.motion.y - 7;
+						// right
+						themesSliderOutline[2].position.y = ev.motion.y + 7;
 					}
 				} break;
 			}
@@ -475,7 +502,7 @@ namespace Application {
 		SDL_SetRenderDrawBlendMode(renderer.get(), SDL_BLENDMODE_BLEND);
 		SDL_SetRenderDrawColor(renderer.get(), 255, 0, 0, 255);
 		SDL_RenderClear(renderer.get());
-		
+
 		if (scenePtr->getCurrentScene() == scenePtr->findScene("Main")) {
 			timeText = imagePtr->createTextA({timeToStr(std::chrono::system_clock::now()), typographyStr, {{0}, {0}, {255, 255, 255}}, 28}, renderer.get());
 			dateText = imagePtr->createTextA({std::format("{:%Ex}", std::chrono::current_zone()->to_local(std::chrono::system_clock::now())), dirPath + "assets/Onest.ttf", {{0}, {0}, {255, 255, 255}}, 16}, renderer.get());
@@ -584,18 +611,78 @@ namespace Application {
 				interfacePtr->setButtonTextSize(themesTCText, -15, 5);
 				interfacePtr->draw(setButtonTCBtn, themesTCText, renderer.get());
 
+				// draw a quad
+				SDL_Vertex colorPickerQuad[4] = {0};
+				// bottom left
+				colorPickerQuad[0].position.x = (float)(windowWidth / 2) + 9;
+				colorPickerQuad[0].position.y = (float)(windowWidth / 2);
+				colorPickerQuad[0].color = {0, 0, 0, 255};
+				// top left
+				colorPickerQuad[1].position.x = (float)(windowWidth / 2) + 9;
+				colorPickerQuad[1].position.y = 0;
+				colorPickerQuad[1].color = {255, 255, 255, 255};
+				// top right
+				colorPickerQuad[2].position.x = (float)(windowWidth / 2) + 80;
+				colorPickerQuad[2].position.y = 0;
+				colorPickerQuad[2].color = {255, 0, 0, 255};
+				// bottom right
+				colorPickerQuad[3].position.x = (float)(windowWidth / 2) + 80;
+				colorPickerQuad[3].position.y = (float)(windowWidth / 2);
+				colorPickerQuad[3].color = {0, 0, 0, 255};
+
+				int colorPickerIndices[] = {0, 1, 2, 0, 2, 3};
+
+				// draw a quad
+				SDL_Vertex colorSliderQuad[4] = {0};
+				// bottom left
+				colorSliderQuad[0].position.x = (float)(windowWidth / 2);
+				colorSliderQuad[0].position.y = 89.0f;
+				colorSliderQuad[0].color = {0, 0, 0, 255};
+				// top left
+				colorSliderQuad[1].position.x = (float)(windowWidth / 2);
+				colorSliderQuad[1].position.y = 0;
+				colorSliderQuad[1].color = {255, 0, 0, 255};
+				// top right
+				colorSliderQuad[2].position.x = (float)(windowWidth / 2) + 8;
+				colorSliderQuad[2].position.y = 0;
+				colorSliderQuad[2].color = {255, 0, 0, 255};
+				// bottom right
+				colorSliderQuad[3].position.x = (float)(windowWidth / 2) + 8;
+				colorSliderQuad[3].position.y = 89.0f;
+				colorSliderQuad[3].color = {0, 0, 0, 255};
+
+				int colorSliderIndices[] = {0, 1, 2, 0, 2, 3};
+
+				SDL_RenderGeometry(renderer.get(), nullptr, colorSliderQuad, 4, colorSliderIndices, 6);
+
 				interfacePtr->drawDivider({(int)windowWidth / 2, 0, 1, (int)windowHeight}, {240, 209, 189, 255}, renderer.get());
-				interfacePtr->drawDivider({((int)windowWidth / 2) + 8, 0, 1, (int)windowHeight}, {240, 209, 189, 255}, renderer.get());
+				interfacePtr->drawDivider({(int)(windowWidth / 2) + 8, 0, 1, (int)windowHeight}, {240, 209, 189, 255}, renderer.get());
 
 				SDL_RenderGeometry(renderer.get(), nullptr, themesSliderOutline, 3, nullptr, 0);
 				SDL_RenderGeometry(renderer.get(), nullptr, themesSlider, 3, nullptr, 0);
+				SDL_RenderGeometry(renderer.get(), nullptr, colorPickerQuad, 4, colorPickerIndices, 6);
+
+				if (inColorPickerBounds) {
+					SDL_SetRenderDrawColor(renderer.get(), 255, 255, 255, 255);
+					SDL_RenderDrawRect(renderer.get(), &themesColorPicker);
+				}
+
+#ifdef _DEBUG
+				/*
+				SDL_SetRenderDrawColor(renderer.get(), 0, 0, 255, 255);
+				SDL_RenderDrawRect(renderer.get(), &colorPickerBounds);
+
+				SDL_SetRenderDrawColor(renderer.get(), 0, 255, 0, 255);
+				SDL_RenderDrawRect(renderer.get(), &colorSliderBounds);
+				*/
+#endif
 
 				interfacePtr->setButtonTextSize(buttonColorInputText, -30, 5);
 				interfacePtr->draw(buttonColorInputBtn, buttonColorInputText, renderer.get());
 				// rgb colour picker here
 			}
 		}
-		
+
 		SDL_RenderPresent(renderer.get());
 
 		if (delay > deltaTime.count())
