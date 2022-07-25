@@ -23,7 +23,7 @@ namespace Application::Helper {
 		 *
 		 * \param filePath -> the location of the image file
 		 * \param ren -> the renderer to use
-		 * \param key -> the colour to be colour keyed
+		 * \param key -> the colour to be removed from the image (primarily background colours)
 		 * \return the created image or nullptr if the operation failed.
 		 */
 		IMD createImage(std::string_view filePath, SDL_Renderer *ren, SDL_Color *key = nullptr);

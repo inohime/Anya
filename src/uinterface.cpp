@@ -94,6 +94,11 @@ namespace Application::Helper {
 		}
 	}
 
+	void UInterface::drawDivider(const SDL_Rect &rect, const SDL_Color &col, SDL_Renderer *ren) {
+		SDL_SetRenderDrawColor(ren, col.r, col.g, col.b, col.a);
+		SDL_RenderDrawRect(ren, &rect);
+	}
+
 	void UInterface::draw(BUTTONPTR &button, IMD buttonText, SDL_Renderer *ren, double scaleX, double scaleY) {
 		SDL_Rect dst = {button->box.x, button->box.y, button->box.w, button->box.h};
 		SDL_Rect textDst = {};
