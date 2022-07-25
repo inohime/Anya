@@ -73,6 +73,8 @@ namespace Application::Helper {
 			std::cout << "Text texture failed to be created: " << TTF_GetError() << '\n';
 			return nullptr;
 		}
+		//TTF_SizeText(font, msg.msg.data(), &newImage->imageWidth, &newImage->imageHeight); bug
+
 		images.insert({msg.fontFile, newImage});
 
 		SDL_FreeSurface(surf);

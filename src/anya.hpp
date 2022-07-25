@@ -75,9 +75,16 @@ namespace Application {
 
 		float sceneAlpha {SDL_ALPHA_TRANSPARENT};
 
+		SDL_Rect windowBounds {0, 0, (int)windowWidth, (int)windowHeight};
+
 		SDL_Rect settingsView {0, 0, (int)windowWidth, (int)windowHeight};
 		SDL_Rect settingsThemesView {0, 0, (int)windowWidth, (int)windowHeight};
 		SDL_Rect fillBGColor {0, 0, (int)windowWidth, (int)windowHeight};
+
+		SDL_Rect themesColorPicker {0, 0, 10, 10};
+		// replace with non-filled circle
+		SDL_Vertex themesSlider[3] {0};
+		SDL_Vertex themesSliderOutline[3] {0};
 
 #ifdef _WIN32
 		HWND hwnd;
@@ -116,7 +123,6 @@ namespace Application {
 		Helper::IMD buttonColorInputText {nullptr};
 		Helper::IMD exitThemeCreatorText {nullptr};
 		////////////////////////////////
-		
 
 		// buttons
 		Helper::BUTTONPTR settingsBtn {nullptr};

@@ -51,6 +51,15 @@ namespace Application::Helper {
 		return false;
 	}
 
+	bool UInterface::cursorInBounds(SDL_Rect &area, SDL_Point &mousePos) {
+		if (mousePos.x >= area.x && mousePos.x <= (area.x + area.w) &&
+			mousePos.y >= area.y && mousePos.y <= (area.y + area.h)) {
+			return true;
+		}
+
+		return false;
+	}
+
 	// make the text in the button independent
 	void UInterface::setButtonTextSize(IMD &buttonText, int w, int h) {
 		if (buttonText != nullptr) {
