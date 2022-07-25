@@ -71,6 +71,7 @@ namespace Application {
 		bool setBGToColor {false};
 		bool minimalMode {false};
 		bool showDate {false};
+		bool setThemeIsPressed {false};
 
 		float sceneAlpha {SDL_ALPHA_TRANSPARENT};
 
@@ -105,12 +106,17 @@ namespace Application {
 		Helper::IMD openFileText {nullptr};
 		Helper::IMD setBGColorText {nullptr};
 		Helper::IMD typographyInputText {nullptr};
-		// test button theme changing
-		/*
-		Helper::IMD themesOCText {nullptr};
+
+		////////////////////////////////
+		// test for button/menu theming 
+		Helper::IMD themesMenuBGText {nullptr};
 		Helper::IMD themesBGCText {nullptr};
+		Helper::IMD themesOCText {nullptr};
 		Helper::IMD themesTCText {nullptr};
-		*/
+		Helper::IMD buttonColorInputText {nullptr};
+		Helper::IMD exitThemeCreatorText {nullptr};
+		////////////////////////////////
+		
 
 		// buttons
 		Helper::BUTTONPTR settingsBtn {nullptr};
@@ -131,16 +137,19 @@ namespace Application {
 		Helper::BUTTONPTR setTypographyBtn {nullptr};
 		Helper::BUTTONPTR typographyInputBtn {nullptr};
 		Helper::BUTTONPTR setThemeBtn {nullptr};
-		//Helper::BUTTONPTR setMenuBGBtn {nullptr};
-		// test button theme changing
-		/*
+		
+		////////////////////////////////
+		// test for button/menu theming 
+		Helper::BUTTONPTR setMenuBGBtn {nullptr};
+		Helper::BUTTONPTR setButtonBGCBtn {nullptr};
 		Helper::BUTTONPTR setButtonOCBtn {nullptr};
-		Helper::BUTTONPTR setButtonBGBtn {nullptr};
 		Helper::BUTTONPTR setButtonTCBtn {nullptr};
+		Helper::BUTTONPTR exitThemeCreatorBtn {nullptr};
 		// reuse input button for each button colour
 		// set the enter key to submit the value based on the button selected
 		Helper::BUTTONPTR buttonColorInputBtn {nullptr};
-		*/
+		////////////////////////////////
+		
 	};
 } // namespace Application
 

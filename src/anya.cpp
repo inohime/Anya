@@ -87,7 +87,7 @@ namespace Application {
 		scenePtr->createScene("Main");
 		scenePtr->createScene("Settings");
 		scenePtr->createScene("Settings-Themes");
-		scenePtr->createScene("Themes-Background-Color");
+		scenePtr->createScene("Settings-Theme-Creator");
 
 		// main
 		settingsBtn = interfacePtr->createButton("+", 5, 5, 20, 20);
@@ -116,6 +116,13 @@ namespace Application {
 		setTypographyBtn = interfacePtr->createButton("", typographyImg, 5, 5, 25, 25);
 		typographyInputBtn = interfacePtr->createButton("Set Font", setTypographyBtn->box.w / 2, 35, 120, 15);
 		setThemeBtn = interfacePtr->createButton("", setThemeImg, 5, 39, 25, 25);
+
+		// settings-theme-creator
+		exitThemeCreatorBtn = interfacePtr->createButton("x", 5, 5, 20, 20);
+		setMenuBGBtn = interfacePtr->createButton("Menu BG", 33, 5, 55, 25);
+		setButtonBGCBtn = interfacePtr->createButton("BGC", 96, 20, 47, 10);
+		setButtonOCBtn = interfacePtr->createButton("OUTL", 96, 5, 21, 10);
+		setButtonTCBtn = interfacePtr->createButton("TEXT", 122, 5, 21, 10);
 
 		for (auto &button : interfacePtr->getButtonList())
 			interfacePtr->setButtonTheme(button, {{67, 48, 46}, {168, 124, 116}, {240, 209, 189}});
@@ -217,6 +224,16 @@ namespace Application {
 
 					if (interfacePtr->cursorInBounds(typographyInputBtn, interfacePtr->getMousePos()) && typographyInputBtn->isEnabled) {
 						typographyInputBtn->text = "";
+					}
+
+					if (interfacePtr->cursorInBounds(setThemeBtn, interfacePtr->getMousePos()) && setThemeBtn->isEnabled) {
+						setThemeIsPressed = true;
+						setMenuBGBtn->isEnabled = true;
+						//setButtonBGBtn->isEnabled = true;
+						//setButtonOCBtn->isEnabled = true;
+						//setButtonTCBtn->isEnabled = true;
+					} else {
+						setThemeIsPressed = false;
 					}
 
 					if (interfacePtr->cursorInBounds(setBGColorBtn, interfacePtr->getMousePos()) && setBGColorBtn->isEnabled) {
@@ -373,6 +390,7 @@ namespace Application {
 				setBGBtn->isEnabled = true;
 				minimalBtn->isEnabled = true;
 				setTypographyBtn->isEnabled = true;
+				setThemeBtn->isEnabled = true;
 			}
 
 			// when minimalMode is false, we can keep the returnBtn from being clickable through the Settings-Theme layer
@@ -480,6 +498,27 @@ namespace Application {
 
 				interfacePtr->draw(openFileBtn, openFileText, renderer.get());
 				interfacePtr->draw(setBGColorBtn, setBGColorText, renderer.get());
+			}
+
+			if (setThemeIsPressed) {
+				exitThemeCreatorText = imagePtr->createText({exitThemeCreatorBtn->text, dirPath + "assets/Onest.ttf", exitThemeCreatorBtn->buttonColor, 96}, renderer.get());
+				themesMenuBGText = imagePtr->createText({setMenuBGBtn->text, dirPath + "assets/Onest.ttf", setMenuBGBtn->buttonColor, 96}, renderer.get());
+				themesBGCText = imagePtr->createText({setButtonBGCBtn->text, dirPath + "assets/Onest.ttf", setButtonOCBtn->buttonColor, 54}, renderer.get());
+				themesOCText = imagePtr->createText({setButtonOCBtn->text, dirPath + "assets/Onest.ttf", setButtonOCBtn->buttonColor, 8}, renderer.get());
+				themesTCText = imagePtr->createText({setButtonTCBtn->text, dirPath + "assets/Onest.ttf", setButtonOCBtn->buttonColor, 12}, renderer.get());
+
+				SDL_Rect paintingScreen = {0, 0, windowWidth, windowHeight};
+				SDL_SetRenderDrawColor(renderer.get(), 26, 17, 16, 255);
+				SDL_RenderFillRect(renderer.get(), &paintingScreen);
+
+				interfacePtr->draw(exitThemeCreatorBtn, exitThemeCreatorText, renderer.get());
+				interfacePtr->draw(setMenuBGBtn, themesMenuBGText, renderer.get());
+				interfacePtr->setButtonTextSize(themesBGCText, -20, 5);
+				interfacePtr->draw(setButtonBGCBtn, themesBGCText, renderer.get());
+				interfacePtr->draw(setButtonOCBtn, themesOCText, renderer.get());
+				interfacePtr->draw(setButtonTCBtn, themesTCText, renderer.get());
+				interfacePtr->drawDivider({0, (int)windowHeight / 2, (int)windowWidth, 1}, {240, 209, 189, 255}, renderer.get());
+				// rgb colour picker here
 			}
 		}
 		

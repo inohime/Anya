@@ -54,6 +54,7 @@ namespace Application::Helper {
 		void setButtonSize(BUTTONPTR &button, uint32_t w, uint32_t h);
 		void setButtonTexture(BUTTONPTR &button, IMD &texture);
 		void update(SDL_Event *ev, double dt);
+		void drawDivider(const SDL_Rect &rect, const SDL_Color &col, SDL_Renderer *ren);
 		void draw(BUTTONPTR &button, IMD buttonText, SDL_Renderer *ren, double sx = 0.0, double sy = 0.0);
 
 	private:
