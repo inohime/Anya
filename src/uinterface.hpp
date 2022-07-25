@@ -2,6 +2,7 @@
 
 #include <SDL.h>
 #include "data.hpp"
+#include <nfd.h>
 #include <string>
 #include <unordered_map>
 
@@ -48,6 +49,7 @@ namespace Application::Helper {
 		std::vector<BUTTONPTR> &getButtonList();
 		SDL_Point &getMousePos();
 		bool cursorInBounds(BUTTONPTR &button, SDL_Point &mousePos);
+		bool cursorInBounds(SDL_Rect &area, SDL_Point &mousePos);
 		void setButtonTextSize(IMD &buttonText, int w, int h);
 		void setButtonTheme(BUTTONPTR &button, ColorData color);
 		void setButtonPos(BUTTONPTR &button, int x, int y);
