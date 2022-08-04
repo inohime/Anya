@@ -53,10 +53,6 @@ namespace Application {
 		hwnd = wmInfo.info.win.window;
 #endif
 
-		char *const base = SDL_GetBasePath();
-		dirPath = base;
-		SDL_free(base);
-
 		// setup minimal mode window dragging
 		const auto hitTestResult = [](SDL_Window *window, const SDL_Point *pt, void *data) -> SDL_HitTestResult {
 			SDL_Rect dragRect = {0, 0, 50, 10};
@@ -65,8 +61,12 @@ namespace Application {
 
 			return SDL_HITTEST_NORMAL;
 		};
-
+	
 		SDL_SetWindowHitTest(window.get(), hitTestResult, NULL);
+
+		char *const base = SDL_GetBasePath();
+		dirPath = base;
+		SDL_free(base);
 
 		// initialize components
 		imagePtr = std::make_unique<Helper::Image>();
@@ -272,7 +272,7 @@ namespace Application {
 					if (interfacePtr->cursorInBounds(typographyInputBtn, interfacePtr->getMousePos()) && typographyInputBtn->isEnabled) {
 						typographyInputBtn->text = "";
 					}
-
+			
 					if (interfacePtr->cursorInBounds(setThemeBtn, interfacePtr->getMousePos()) && setThemeBtn->isEnabled) {
 						setThemeIsPressed = true;
 						setMenuBGBtn->isEnabled = true;
@@ -298,6 +298,8 @@ namespace Application {
 						minimalBtn->isEnabled = false;
 						setBGBtn->isEnabled = false;
 						openFileBtn->isEnabled = false;
+						setTypographyBtn->isEnabled = false;
+						typographyInputBtn->isEnabled = false;
 						SDL_SetWindowBordered(window.get(), SDL_FALSE);
 						SDL_SetWindowSize(window.get(), 120, 50);
 #ifdef _WIN32
@@ -446,7 +448,7 @@ namespace Application {
 			}
 			end = std::chrono::steady_clock::now();
 			deltaTime = std::chrono::duration<double, std::milli>(end - begin);
-			begin = end;
+			begin = end; 
 
 #ifdef _DEBUG
 			const auto getTime = [&](std::chrono::system_clock::time_point time) {
@@ -455,12 +457,6 @@ namespace Application {
 
 			//std::cout << getTime(std::chrono::system_clock::now()) << '\n';
 #endif
-			// any button hovered over while the cursor goes out of the window will be deselected
-			if (!interfacePtr->cursorInBounds(windowBounds, interfacePtr->getMousePos())) {
-				SDL_CaptureMouse(SDL_FALSE);
-			} else {
-				SDL_CaptureMouse(SDL_TRUE);
-			}
 
 			// enable these buttons when first layer's buttons are disabled
 			if (scenePtr->getCurrentScene() == scenePtr->findScene("Settings") && !settingsBtn->isEnabled) {
@@ -667,19 +663,8 @@ namespace Application {
 					SDL_RenderDrawRect(renderer.get(), &themesColorPicker);
 				}
 
-#ifdef _DEBUG
-				/*
-				SDL_SetRenderDrawColor(renderer.get(), 0, 0, 255, 255);
-				SDL_RenderDrawRect(renderer.get(), &colorPickerBounds);
-
-				SDL_SetRenderDrawColor(renderer.get(), 0, 255, 0, 255);
-				SDL_RenderDrawRect(renderer.get(), &colorSliderBounds);
-				*/
-#endif
-
 				interfacePtr->setButtonTextSize(buttonColorInputText, -30, 5);
 				interfacePtr->draw(buttonColorInputBtn, buttonColorInputText, renderer.get());
-				// rgb colour picker here
 			}
 		}
 

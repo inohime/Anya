@@ -8,6 +8,7 @@
 #include <chrono>
 #include <format>
 #include <sstream>
+#include <functional>
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <dwmapi.h>
@@ -77,7 +78,7 @@ namespace Application {
 
 		float sceneAlpha {SDL_ALPHA_TRANSPARENT};
 
-		SDL_Rect windowBounds {0, 0, (int)windowWidth, (int)windowHeight};
+		SDL_Rect dragRect {0, 0, 50, 10};
 
 		SDL_Rect settingsView {0, 0, (int)windowWidth, (int)windowHeight};
 		SDL_Rect settingsThemesView {0, 0, (int)windowWidth, (int)windowHeight};
