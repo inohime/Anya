@@ -117,7 +117,7 @@ namespace Application::Helper {
 				button->box.y - (buttonText->imageHeight / 2),
 				button->box.w + buttonText->imageWidth,
 				button->box.h + buttonText->imageHeight
-			}; // modify the text dims here
+			}; // modify the text dimensions here
 		}
 
 		if ((scaleX && scaleY) != 0) {
