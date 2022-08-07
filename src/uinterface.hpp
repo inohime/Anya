@@ -6,8 +6,6 @@
 #include <string>
 #include <unordered_map>
 
-class Scene;
-
 namespace Application::Helper {
 	struct Button {
 		SDL_Rect box {0};
@@ -79,21 +77,25 @@ namespace Application::Helper {
 		void setButtonTextSize(IMD &buttonText, int w, int h);
 		/** Changes the button colours (theme)
 		 *
-		 * \param button ->
+		 * \param button -> the button to modify
 		 * \param color -> a struct that consists of:
 		 * \param - outlineColor -> the outline colour of the button
 		 * \param - bgColor -> the background colour of the button
 		 * \param - textColor -> the text colour of the button
 		 */
 		void setButtonTheme(BUTTONPTR &button, ColorData color);
-		/** Retrieves all of the buttons created
+		/** Sets a button at the specified position 
 		 *
-		 * \return An std::vector of all of the buttons in the application
+		 * \param button -> the button being moved
+		 * \param x -> x position the button will move to
+		 * \param y -> y position the button will move to
 		 */
 		void setButtonPos(BUTTONPTR &button, int x, int y);
-		/** Retrieves all of the buttons created
+		/** Changes the size of a button
 		 *
-		 * \return An std::vector of all of the buttons in the application
+		 * \param button -> the button to modify
+		 * \param w -> new width of a button
+		 * \param h -> new height of a button
 		 */
 		void setButtonSize(BUTTONPTR &button, uint32_t w, uint32_t h);
 		/** Changes the texture of a button
@@ -102,12 +104,18 @@ namespace Application::Helper {
 		 * \param texture -> the new texture of the button
 		 */
 		void setButtonTexture(BUTTONPTR &button, IMD &texture);
-		/** Updates the mouse position and 
+		/** Updates the mouse position and button state
 		 *
-		 * \param ev -> the event to poll
-		 * \param dt -> the update of the app
+		 * \param ev -> the events to poll
+		 * \param dt -> deltaTime from the main loop
 		 */
 		void update(SDL_Event *ev, double dt);
+		/** Renders a divider to the screen
+		 * 
+		 * \param rect -> the divider (rectangle) to draw
+		 * \param col -> colour of the divider
+		 * \param ren -> the renderer to use
+		 */
 		void drawDivider(const SDL_Rect &rect, const SDL_Color &col, SDL_Renderer *ren);
 		/** Renders a button to the screen
 		 * 
