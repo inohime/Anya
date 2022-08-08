@@ -9,8 +9,9 @@ namespace Application::Helper {
 	public:
 		~Scene() { sceneList.clear(); }
 
-		void createScene(std::string_view name);
-		void setScene(std::string_view name);
+		constexpr void createScene(std::string_view name);
+		constexpr void setScene(std::string_view name);
+		constexpr void printScene();
 		constexpr uint64_t getCurrentScene();
 		constexpr uint64_t findScene(std::string_view name);
 

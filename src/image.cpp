@@ -27,7 +27,7 @@ namespace Application::Helper {
 		if (key != nullptr)
 			SDL_SetColorKey(surf, SDL_TRUE, SDL_MapRGB(surf->format, key->r, key->g, key->b));
 
-		newImage->texture = Utilities::PTR<SDL_Texture>(SDL_CreateTextureFromSurface(ren, surf));
+		newImage->texture = Utils::PTR<SDL_Texture>(SDL_CreateTextureFromSurface(ren, surf));
 		if (newImage->texture == nullptr) {
 			std::cout << "Failed to create image: " << SDL_GetError() << '\n';
 			return nullptr;
@@ -42,7 +42,7 @@ namespace Application::Helper {
 	IMD Image::createRenderTarget(SDL_Renderer *ren, unsigned int width, unsigned int height) {
 		IMD newImage = std::make_shared<ImageData>();
 
-		newImage->texture = Utilities::PTR<SDL_Texture>(SDL_CreateTexture(ren, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, width, height));
+		newImage->texture = Utils::PTR<SDL_Texture>(SDL_CreateTexture(ren, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, width, height));
 		if (newImage->texture == nullptr) {
 			std::cout << "Render Target failed to be created: " << SDL_GetError() << '\n';
 			return nullptr;
@@ -68,7 +68,7 @@ namespace Application::Helper {
 			return nullptr;
 		}
 
-		newImage->texture = Utilities::PTR<SDL_Texture>(SDL_CreateTextureFromSurface(ren, surf));
+		newImage->texture = Utils::PTR<SDL_Texture>(SDL_CreateTextureFromSurface(ren, surf));
 		if (newImage->texture == nullptr) {
 			std::cout << "Text texture failed to be created: " << TTF_GetError() << '\n';
 			return nullptr;
@@ -107,7 +107,7 @@ namespace Application::Helper {
 		SDL_Rect position = {position.x = 1, position.y = 1, fgSurf->w, fgSurf->h};
 		SDL_BlitSurface(bgSurf, nullptr, fgSurf, &position);
 
-		newImage->texture = Utilities::PTR<SDL_Texture>(SDL_CreateTextureFromSurface(ren, fgSurf));
+		newImage->texture = Utils::PTR<SDL_Texture>(SDL_CreateTextureFromSurface(ren, fgSurf));
 		if (newImage->texture == nullptr) {
 			std::cout << "Outline text texture failed to be created: " << TTF_GetError() << '\n';
 			return nullptr;

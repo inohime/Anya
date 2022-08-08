@@ -2,9 +2,8 @@
 
 #include <SDL.h>
 #include "data.hpp"
-#include <nfd.h>
 #include <string>
-#include <unordered_map>
+#include <vector>
 
 namespace Application::Helper {
 	struct Button {

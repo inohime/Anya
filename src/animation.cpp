@@ -1,5 +1,4 @@
 #include "animation.hpp"
-#include <iostream>
 
 namespace Application::Helper {
 	void Animation::addAnimation(int frames, int x, int y, int w, int h) {
@@ -29,6 +28,9 @@ namespace Application::Helper {
 		if (scale != 0) {
 			dst.w *= static_cast<int>(scale);
 			dst.h *= static_cast<int>(scale);
+		} else if (scale < 0) {
+			dst.w *= 1;
+			dst.h *= 1;
 		}
 
 		SDL_RenderCopy(ren, img->texture.get(), &clip, &dst);
