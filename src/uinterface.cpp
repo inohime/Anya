@@ -1,8 +1,5 @@
 #include "uinterface.hpp"
 #include "util.hpp"
-#include <cassert>
-#include <iostream>
-#include <format>
 
 namespace Application::Helper {
 	BUTTONPTR UInterface::createButton(std::string_view text, IMD texture, int x, int y, uint32_t w, uint32_t h) {

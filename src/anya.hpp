@@ -20,7 +20,7 @@
 // at its current state, it takes 3.6mb on debug, too high. (11mb with gif alloc)
 
 namespace Application {
-	using namespace Helper::Utilities;
+	using namespace Helper::Utils;
 
 	class Anya final {
 	public:
@@ -48,7 +48,7 @@ namespace Application {
 		uint32_t windowHeight {89};
 		std::chrono::steady_clock::time_point begin {};
 		std::chrono::steady_clock::time_point end {};
-		std::chrono::duration<double, std::milli> deltaTime {};
+		double deltaTime {};
 		int FPS {30};
 		const int delay {1000 / FPS};
 
@@ -61,29 +61,27 @@ namespace Application {
 		std::basic_string<char> typographyStr {};
 		std::basic_stringstream<char> str {};
 		// set background colour
-		int rVal {0};
-		int gVal {0};
-		int bVal {0};
+		int redViewColor {0};
+		int greenViewColor {0};
+		int blueViewColor {0};
 
 		bool setTypographyIsPressed {false};
 		// setBG button on/off
 		bool setBGIsPressed {false};
 		// setBGColor button on/off
 		bool setBGToColor {false};
+		bool setBGtoImg {false};
 		bool minimalMode {false};
 		bool showDate {false};
 		bool setThemeIsPressed {false};
-
 		bool inColorPickerBounds {false};
 
-		float sceneAlpha {SDL_ALPHA_TRANSPARENT};
-
+		// window draggable
 		SDL_Rect dragRect {0, 0, 50, 10};
-
+		// scene view separators 
 		SDL_Rect settingsView {0, 0, (int)windowWidth, (int)windowHeight};
 		SDL_Rect settingsThemesView {0, 0, (int)windowWidth, (int)windowHeight};
 		SDL_Rect fillBGColor {0, 0, (int)windowWidth, (int)windowHeight};
-
 		// add an colour alpha slider
 		SDL_Rect colorPickerBounds = {(int)(windowWidth / 2) + 9, 0, 65, (int)windowWidth / 2};
 		SDL_Rect colorSliderBounds = {(int)(windowWidth / 2), 0, 8, 89};
@@ -161,7 +159,6 @@ namespace Application {
 		// set the enter key to submit the value based on the button selected
 		Helper::BUTTONPTR buttonColorInputBtn {nullptr};
 		////////////////////////////////
-		
 	};
 } // namespace Application
 

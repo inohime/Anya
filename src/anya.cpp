@@ -1,12 +1,25 @@
 #include <SDL_syswm.h>
 #include "anya.hpp"
 #include "nfd.hpp"
+#include <array>
 #include <iostream>
 
 namespace Application {
 	Anya::Anya() {
 		if (!boot()) {
-			SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, title.c_str(), errStr.c_str(), window.get());
+			SDL_ShowSimpleMessageBox(
+				SDL_MESSAGEBOX_ERROR, 
+				"Anya App Error", 
+				"BOOT FAILURE: Window or Renderer not initialized.\n\n" 
+				"Verify these application DLLs exist:\n"
+				"SDL2.dll\n"
+				"SDL2_image.dll\n"
+				"SDL2_ttf.dll\n"
+				"libfreetype-6.dll\n"
+				"libpng16-16.dll\n"
+				"zlib1.dll",
+				window.get());
+
 		} else {
 			update();
 		}
@@ -61,7 +74,7 @@ namespace Application {
 
 			return SDL_HITTEST_NORMAL;
 		};
-	
+
 		SDL_SetWindowHitTest(window.get(), hitTestResult, NULL);
 
 		char *const base = SDL_GetBasePath();
@@ -78,7 +91,8 @@ namespace Application {
 
 		// load assets
 		backgroundGIF = imagePtr->createPack("canvas", dirPath + "assets/gif-extract/", renderer.get());
-		backgroundImg = imagePtr->createImage(dirPath + "assets/beep_1.png", renderer.get());
+		// default background image to use
+		//backgroundImg = imagePtr->createImage(dirPath + "assets/beep_1.png", renderer.get());
 		githubImg = imagePtr->createImage(dirPath + "assets/25231.png", renderer.get());
 		calendarImg = imagePtr->createImage(dirPath + "assets/calendar.png", renderer.get());
 		typographyImg = imagePtr->createImage(dirPath + "assets/typography.png", renderer.get());
@@ -245,6 +259,7 @@ namespace Application {
 					}
 
 					if (interfacePtr->cursorInBounds(openFileBtn, interfacePtr->getMousePos()) && openFileBtn->isEnabled && setBGIsPressed) {
+						// this operation increases memory usage substantially
 						NFD::UniquePath filePath = nullptr;
 						const nfdfilteritem_t filterItem[1] = {"Image formats (*.jpg, *.jpeg, *.png)", "jpg,jpeg,png"};
 						nfdresult_t result = NFD::OpenDialog(filePath, filterItem, 1, NULL);
@@ -258,6 +273,15 @@ namespace Application {
 							std::cout << "Error: " << NFD_GetError() << '\n';
 						}
 #endif
+						if (result == NFD_OKAY) {
+							if (setBGToColor)
+								setBGToColor = false;
+
+							backgroundImg = imagePtr->createImage(filePath.get(), renderer.get());
+							setBGtoImg = true;
+						} else if (result == NFD_CANCEL) {
+							break;
+						}
 					}
 
 					if (interfacePtr->cursorInBounds(setTypographyBtn, interfacePtr->getMousePos()) && setTypographyBtn->isEnabled && !setTypographyIsPressed) {
@@ -272,7 +296,7 @@ namespace Application {
 					if (interfacePtr->cursorInBounds(typographyInputBtn, interfacePtr->getMousePos()) && typographyInputBtn->isEnabled) {
 						typographyInputBtn->text = "";
 					}
-			
+
 					if (interfacePtr->cursorInBounds(setThemeBtn, interfacePtr->getMousePos()) && setThemeBtn->isEnabled) {
 						setThemeIsPressed = true;
 						setMenuBGBtn->isEnabled = true;
@@ -288,6 +312,9 @@ namespace Application {
 					}
 
 					if (interfacePtr->cursorInBounds(setBGColorBtn, interfacePtr->getMousePos()) && setBGColorBtn->isEnabled) {
+						if (setBGtoImg)
+							setBGtoImg = false;
+
 						setBGToColor = true;
 						setBGColorBtn->text = "";
 					}
@@ -339,26 +366,58 @@ namespace Application {
 								auto &bgColorText = setBGColorBtn->text;
 								// apply the colour to the background and reset the text
 								if (bgColorText.contains(',')) {
-									bgColorText.erase(std::remove(bgColorText.begin(), bgColorText.end(), ','));
-									// delete the duplicate character at the end
-									bgColorText.pop_back();
-									// find the all of the spaces
+									// if there are no spaces, append spaces
+									if (!bgColorText.contains(' ')) {
+										auto firstComma = bgColorText.find_first_of(',');
+										auto secondComma = bgColorText.find_last_of(',');
+										// the next character in the string
+										int nextCharacter = 1;
+
+										bgColorText.insert(firstComma + nextCharacter, 1, ' ');
+										bgColorText.insert(secondComma + nextCharacter, 1, ' ');
+									}
+
+									std::erase(bgColorText, ',');
+									// find all of the spaces
 									auto first = bgColorText.find_first_of(' ');
 									auto second = bgColorText.find_last_of(' ');
+									// split the string into sections and find their lengths
+									const std::array<std::basic_string<char>, 3> strSplit = {
+										bgColorText.substr(0, first + 1), // temp fix (increases string count position to get the additional space char)
+										bgColorText.substr(first, second - first),
+										bgColorText.substr(second, bgColorText.back())
+									};
+									// check if a section is greater than 3 digits or less than 1 digit
+									for (int i = 0; i < strSplit.size(); i++) {
+										if (strSplit[i].length() > 4 || strSplit[i].length() < 1) {
+											SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Text Color Error", "String input size is invalid!", window.get());
+											setBGToColor = false;
+											setBGColorBtn->text = "Set Color";
+											break;
+										}
+									}
 									// get the positions of the colour values and apply them
-									rVal = std::stoi(bgColorText.substr(0, first));
-									gVal = std::stoi(bgColorText.substr(first, second));
-									bVal = std::stoi(bgColorText.substr(second, bgColorText.back()));
+									redViewColor = std::stoi(bgColorText.substr(0, first));
+									greenViewColor = std::stoi(bgColorText.substr(first, second));
+									blueViewColor = std::stoi(bgColorText.substr(second, bgColorText.back()));
 									// 255 163 210 (demo colour)
 								} else if (bgColorText.contains('#')) {
 									char const *hexVal = bgColorText.c_str();
 									// convert the hex to rgb
-									sscanf_s(hexVal, "#%02x%02x%02x", &rVal, &gVal, &bVal);
+									sscanf_s(hexVal, "#%02x%02x%02x", &redViewColor, &greenViewColor, &blueViewColor);
+								} else if (!bgColorText.contains(',')) {
+									SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Text Color Error", "String input does not contain commas !", window.get());
 								}
 								setBGColorBtn->text = "Set Color";
 							} else if (setTypographyIsPressed) {
-								typographyStr = dirPath + "assets/" + typographyInputBtn->text;
-								typographyInputBtn->text = "Set Font";
+								// check path given
+								if (!typographyInputBtn->text.contains(".ttf")) {
+									SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Typography Error", "Font file not found!", window.get());
+									typographyInputBtn->text = "Set Font";
+								} else {
+									typographyStr = dirPath + "assets/" + typographyInputBtn->text;
+									typographyInputBtn->text = "Set Font";
+								}
 							}
 						} break;
 
@@ -366,6 +425,7 @@ namespace Application {
 							if (setBGIsPressed) {
 								if (SDL_GetModState() & KMOD_CTRL)
 									SDL_SetClipboardText(setBGColorBtn->text.c_str());
+
 							} else if (setTypographyIsPressed) {
 								if (SDL_GetModState() & KMOD_CTRL)
 									SDL_SetClipboardText(typographyInputBtn->text.c_str());
@@ -376,6 +436,7 @@ namespace Application {
 							if (setBGIsPressed) {
 								if (SDL_GetModState() & KMOD_CTRL)
 									setBGColorBtn->text = SDL_GetClipboardText();
+
 							} else if (setTypographyIsPressed) {
 								if (SDL_GetModState() & KMOD_CTRL)
 									typographyInputBtn->text = SDL_GetClipboardText();
@@ -389,6 +450,7 @@ namespace Application {
 
 								if (setBGColorBtn->text.length() > 0)
 									setBGColorBtn->text.pop_back();
+
 							} else if (setTypographyIsPressed) {
 								if (typographyInputBtn->text.contains("Set Font"))
 									break;
@@ -403,7 +465,7 @@ namespace Application {
 				case SDL_TEXTINPUT: {
 					if (setBGColorBtn->isEnabled || setTypographyBtn->isEnabled) {
 						if (!(SDL_GetModState() & KMOD_CTRL && (ev.text.text[0] == 'c' || ev.text.text[0] == 'C' ||
-											ev.text.text[0] == 'v' || ev.text.text[0] == 'V'))) {
+																ev.text.text[0] == 'v' || ev.text.text[0] == 'V'))) {
 							if (setBGToColor) {
 								if (setBGColorBtn->text.contains("Set Color"))
 									break;
@@ -431,32 +493,24 @@ namespace Application {
 					if (interfacePtr->cursorInBounds(colorSliderBounds, interfacePtr->getMousePos())) {
 						// move slider base by 5px
 						// center
-						themesSlider[0].position.y = ev.motion.y;
+						themesSlider[0].position.y = (float)ev.motion.y;
 						// left
-						themesSlider[1].position.y = ev.motion.y - 5;
+						themesSlider[1].position.y = (float)ev.motion.y - 5;
 						// right
-						themesSlider[2].position.y = ev.motion.y + 5;
+						themesSlider[2].position.y = (float)ev.motion.y + 5;
 						// move slider outline by 7px
 						// center
-						themesSliderOutline[0].position.y = ev.motion.y;
+						themesSliderOutline[0].position.y = (float)ev.motion.y;
 						// left
-						themesSliderOutline[1].position.y = ev.motion.y - 7;
+						themesSliderOutline[1].position.y = (float)ev.motion.y - 7;
 						// right
-						themesSliderOutline[2].position.y = ev.motion.y + 7;
+						themesSliderOutline[2].position.y = (float)ev.motion.y + 7;
 					}
 				} break;
 			}
 			end = std::chrono::steady_clock::now();
-			deltaTime = std::chrono::duration<double, std::milli>(end - begin);
-			begin = end; 
-
-#ifdef _DEBUG
-			const auto getTime = [&](std::chrono::system_clock::time_point time) {
-				return Anya(time).getStream()->str();
-			};
-
-			//std::cout << getTime(std::chrono::system_clock::now()) << '\n';
-#endif
+			deltaTime = (double)std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
+			begin = end;
 
 			// enable these buttons when first layer's buttons are disabled
 			if (scenePtr->getCurrentScene() == scenePtr->findScene("Settings") && !settingsBtn->isEnabled) {
@@ -485,8 +539,8 @@ namespace Application {
 				returnBtn->isEnabled = false;
 			}
 
-			imagePtr->getAnimPtr()->update(37, deltaTime.count());
-			interfacePtr->update(&ev, deltaTime.count());
+			imagePtr->getAnimPtr()->update(37, deltaTime);
+			interfacePtr->update(&ev, deltaTime);
 
 			draw();
 		}
@@ -496,7 +550,7 @@ namespace Application {
 	// usually you want this to be independent
 	void Anya::draw() {
 		SDL_SetRenderDrawBlendMode(renderer.get(), SDL_BLENDMODE_BLEND);
-		SDL_SetRenderDrawColor(renderer.get(), 255, 0, 0, 255);
+		SDL_SetRenderDrawColor(renderer.get(), 0, 0, 0, 255);
 		SDL_RenderClear(renderer.get());
 
 		if (scenePtr->getCurrentScene() == scenePtr->findScene("Main")) {
@@ -505,8 +559,10 @@ namespace Application {
 			settingsText = imagePtr->createText({settingsBtn->text, dirPath + "assets/Onest.ttf", settingsBtn->buttonColor, 96}, renderer.get());
 
 			if (setBGToColor) {
-				SDL_SetRenderDrawColor(renderer.get(), rVal, gVal, bVal, 255);
+				SDL_SetRenderDrawColor(renderer.get(), redViewColor, greenViewColor, blueViewColor, 255);
 				SDL_RenderFillRect(renderer.get(), &fillBGColor);
+			} else if (setBGtoImg) {
+				imagePtr->draw(backgroundImg, renderer.get(), 0, 0);
 			} else {
 				imagePtr->drawAnimation(backgroundGIF, renderer.get(), 0, 0);
 			}
@@ -515,7 +571,7 @@ namespace Application {
 				mainQuitText = imagePtr->createText({mainQuitBtn->text, dirPath + "assets/Onest.ttf", mainQuitBtn->buttonColor, 96}, renderer.get());
 				minimizeText = imagePtr->createText({minimizeBtn->text, dirPath + "assets/Onest.ttf", minimizeBtn->buttonColor, 96}, renderer.get());
 
-				SDL_SetRenderDrawColor(renderer.get(), 0, 0, 0, 255);
+				SDL_SetRenderDrawColor(renderer.get(), redViewColor, greenViewColor, blueViewColor, 255);
 				SDL_RenderFillRect(renderer.get(), &fillBGColor);
 
 				imagePtr->draw(timeText, renderer.get(), 0, 18);
@@ -531,7 +587,7 @@ namespace Application {
 				} else {
 					imagePtr->draw(timeText, renderer.get(), static_cast<int>(windowWidth / 10), static_cast<int>(windowHeight / 1.6));
 				}
-				// put the settings button in non minimal mode for now, resize & set button pos for minimal mode later
+		
 				interfacePtr->setButtonTextSize(settingsText, 1, 16);
 				interfacePtr->draw(settingsBtn, settingsText, renderer.get());
 			}
@@ -589,7 +645,7 @@ namespace Application {
 				themesTCText = imagePtr->createText({setButtonTCBtn->text, dirPath + "assets/Onest.ttf", setButtonTCBtn->buttonColor, 96}, renderer.get());
 				buttonColorInputText = imagePtr->createText({buttonColorInputBtn->text, dirPath + "assets/Onest.ttf", buttonColorInputBtn->buttonColor, 100}, renderer.get());
 
-				SDL_Rect paintingScreen = {0, 0, windowWidth, windowHeight};
+				SDL_Rect paintingScreen = {0, 0, (int)windowWidth, (int)windowHeight};
 				SDL_SetRenderDrawColor(renderer.get(), 26, 17, 16, 255);
 				SDL_RenderFillRect(renderer.get(), &paintingScreen);
 
@@ -670,8 +726,8 @@ namespace Application {
 
 		SDL_RenderPresent(renderer.get());
 
-		if (delay > deltaTime.count())
-			SDL_Delay(delay - static_cast<int>(deltaTime.count()));
+		if (deltaTime < delay)
+			SDL_Delay(delay - static_cast<int>(deltaTime));
 	}
 
 	void Anya::free() {
