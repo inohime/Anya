@@ -1,8 +1,6 @@
 #pragma once
 
 #include <SDL.h>
-#include <SDL_image.h>
-#include <SDL_ttf.h>
 #include "animation.hpp"
 #include "data.hpp"
 #include <string>
@@ -19,7 +17,7 @@
 namespace Application::Helper {
 	class Image {
 	public:
-		/** Create an image to be used for rendering. You can add an colour to be set transparent.
+		/** Create an image to be used for rendering. You can add a colour to be set transparent.
 		 *
 		 * \param filePath -> the location of the image file
 		 * \param ren -> the renderer to use
@@ -34,7 +32,7 @@ namespace Application::Helper {
 		 * \param height -> the height of the image
 		 * \return the image to be used as a render target or nullptr if the operation failed.
 		 */
-		IMD createRenderTarget(SDL_Renderer *ren, unsigned int width, unsigned int height);
+		IMD createRenderTarget(SDL_Renderer *ren, unsigned int w, unsigned int h);
 		/** Create a text image.
 		 *
 		 * \param msg -> a struct constructed with:
@@ -47,7 +45,7 @@ namespace Application::Helper {
 		 * \return the text image or nullptr if the operation failed.
 		 */
 		IMD createText(const MessageData &msg, SDL_Renderer *ren);
-		/** Create text with an outline.
+		/** Create text with an outline as an image.
 		 *
 		 * \param msg -> a struct constructed with:
 		 * \param - msg -> the string of text
@@ -132,7 +130,7 @@ namespace Application::Helper {
 		 * \param col -> the colour to set the image to
 		 */
 		void setTextureColor(IMD &img, SDL_Color col);
-		/** Prints the number of images in the map
+		/* Prints the number of images in the map.
 		 */
 		void printImageCount() const noexcept;
 

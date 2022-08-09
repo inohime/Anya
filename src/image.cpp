@@ -1,3 +1,5 @@
+#include <SDL_image.h>
+#include <SDL_ttf.h>
 #include "image.hpp"
 #include "data.hpp"
 #include "util.hpp"
