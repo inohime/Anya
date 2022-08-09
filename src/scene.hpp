@@ -7,12 +7,34 @@
 namespace Application::Helper {
 	class Scene {
 	public:
-		~Scene() { sceneList.clear(); }
-
+		/* Scene Destructor; clears out any scenes in the array when the object is destroyed.
+		*/
+		constexpr ~Scene() { sceneList.clear(); }
+		/** Creates new scenes to use as layers.
+		 *
+		 * \param name -> name of the scene to be created
+		 */
 		constexpr void createScene(std::string_view name);
+		/** Sets a created scene to be used as the current layer.
+		 *
+		 * \param name -> name of the scene to be set as current
+		 */
 		constexpr void setScene(std::string_view name);
+		/* Prints the current scene being shown, to the console.
+		 */
 		constexpr void printScene();
+		/** Retrieves the current scene being shown.
+		 *
+		 * \return the current scene number.
+		 */
 		constexpr uint64_t getCurrentScene();
+		/** Finds and returns the index of the scene being looked for. 
+		 *  This is primarily used to be compared against `getCurrentScene`.
+		 * 
+		 *  Example: getCurrentScene() == findScene("Menu")
+		 *
+		 * \param name -> name of the scene to find
+		 */
 		constexpr uint64_t findScene(std::string_view name);
 
 	private:
