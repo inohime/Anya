@@ -1,5 +1,4 @@
 #include "image.hpp"
-#include "data.hpp"
 #include "util.hpp"
 #include <filesystem>
 #include <iostream>

@@ -368,8 +368,8 @@ namespace Application {
 								if (bgColorText.contains(',')) {
 									// if there are no spaces, append spaces
 									if (!bgColorText.contains(' ')) {
-										auto firstComma = bgColorText.find_first_of(',');
-										auto secondComma = bgColorText.find_last_of(',');
+										const auto firstComma = bgColorText.find_first_of(',');
+										const auto secondComma = bgColorText.find_last_of(',');
 										// the next character in the string
 										int nextCharacter = 1;
 
@@ -379,8 +379,8 @@ namespace Application {
 
 									std::erase(bgColorText, ',');
 									// find all of the spaces
-									auto first = bgColorText.find_first_of(' ');
-									auto second = bgColorText.find_last_of(' ');
+									const auto first = bgColorText.find_first_of(' ');
+									const auto second = bgColorText.find_last_of(' ');
 									// split the string into sections and find their lengths
 									const std::array<std::basic_string<char>, 3> strSplit = {
 										bgColorText.substr(0, first + 1), // temp fix (increases string count position to get the additional space char)
@@ -388,9 +388,11 @@ namespace Application {
 										bgColorText.substr(second, bgColorText.back())
 									};
 									// check if a section is greater than 3 digits or less than 1 digit
+									constexpr int colorSectionMax = 4;
+									constexpr int colorSectionMin = 1;
 									for (int i = 0; i < strSplit.size(); i++) {
-										if (strSplit[i].length() > 4 || strSplit[i].length() < 1) {
-											SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Text Color Error", "String input size is invalid!", window.get());
+										if (strSplit[i].length() > colorSectionMax || strSplit[i].length() < colorSectionMin) {
+											SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Background Color Error", "String input size is invalid!", window.get());
 											setBGToColor = false;
 											setBGColorBtn->text = "Set Color";
 											break;
@@ -406,7 +408,7 @@ namespace Application {
 									// convert the hex to rgb
 									sscanf_s(hexVal, "#%02x%02x%02x", &redViewColor, &greenViewColor, &blueViewColor);
 								} else if (!bgColorText.contains(',')) {
-									SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Text Color Error", "String input does not contain commas !", window.get());
+									SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Background Color Error", "String input does not contain commas !", window.get());
 								}
 								setBGColorBtn->text = "Set Color";
 							} else if (setTypographyIsPressed) {
