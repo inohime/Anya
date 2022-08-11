@@ -8,9 +8,9 @@ namespace Application {
 	Anya::Anya() {
 		if (!boot()) {
 			SDL_ShowSimpleMessageBox(
-				SDL_MESSAGEBOX_ERROR, 
-				"Anya App Error", 
-				"BOOT FAILURE: Window or Renderer not initialized.\n\n" 
+				SDL_MESSAGEBOX_ERROR,
+				"Anya App Error",
+				"BOOT FAILURE: Window or Renderer not initialized.\n\n"
 				"Verify these application DLLs exist:\n"
 				"SDL2.dll\n"
 				"SDL2_image.dll\n"
@@ -248,7 +248,11 @@ namespace Application {
 					}
 
 					if (interfacePtr->cursorInBounds(setBGBtn, interfacePtr->getMousePos()) && setBGBtn->isEnabled && !setBGIsPressed) {
-						setTypographyIsPressed = false;
+						if (setTypographyIsPressed) {
+							setTypographyIsPressed = false;
+							typographyInputBtn->isEnabled = false;
+						}
+
 						setBGIsPressed = true;
 						openFileBtn->isEnabled = true;
 						setBGColorBtn->isEnabled = true;
@@ -256,6 +260,7 @@ namespace Application {
 						setBGIsPressed = false;
 						openFileBtn->isEnabled = false;
 						setBGColorBtn->isEnabled = false;
+						setBGColorBtn->text = "Set Color";
 					}
 
 					if (interfacePtr->cursorInBounds(openFileBtn, interfacePtr->getMousePos()) && openFileBtn->isEnabled && setBGIsPressed) {
@@ -285,12 +290,17 @@ namespace Application {
 					}
 
 					if (interfacePtr->cursorInBounds(setTypographyBtn, interfacePtr->getMousePos()) && setTypographyBtn->isEnabled && !setTypographyIsPressed) {
+						if (setBGIsPressed) {
+							setBGIsPressed = false;
+							setBGColorBtn->isEnabled = false;
+						}
+
 						setTypographyIsPressed = true;
-						setBGIsPressed = false;
 						typographyInputBtn->isEnabled = true;
 					} else if (interfacePtr->cursorInBounds(setTypographyBtn, interfacePtr->getMousePos()) && setTypographyBtn->isEnabled && setTypographyIsPressed) {
 						setTypographyIsPressed = false;
 						typographyInputBtn->isEnabled = false;
+						typographyInputBtn->text = "Set Font";
 					}
 
 					if (interfacePtr->cursorInBounds(typographyInputBtn, interfacePtr->getMousePos()) && typographyInputBtn->isEnabled) {
@@ -366,6 +376,14 @@ namespace Application {
 								auto &bgColorText = setBGColorBtn->text;
 								// apply the colour to the background and reset the text
 								if (bgColorText.contains(',')) {
+									// check if a character is alphabetical
+									const bool isAlpha = std::find_if(bgColorText.begin(), bgColorText.end(), isalpha) != bgColorText.end();
+									if (isAlpha) {
+										SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Background Color Error", "String input contains non-numerical characters!", window.get());
+										setBGToColor = false;
+										bgColorText = "Set Color";
+										break;
+									}
 									// if there are no spaces, append spaces
 									if (!bgColorText.contains(' ')) {
 										const auto firstComma = bgColorText.find_first_of(',');
@@ -376,7 +394,7 @@ namespace Application {
 										bgColorText.insert(firstComma + nextCharacter, 1, ' ');
 										bgColorText.insert(secondComma + nextCharacter, 1, ' ');
 									}
-
+									// delete all commas in the string
 									std::erase(bgColorText, ',');
 									// find all of the spaces
 									const auto first = bgColorText.find_first_of(' ');
@@ -394,7 +412,7 @@ namespace Application {
 										if (strSplit[i].length() > colorSectionMax || strSplit[i].length() < colorSectionMin) {
 											SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Background Color Error", "String input size is invalid!", window.get());
 											setBGToColor = false;
-											setBGColorBtn->text = "Set Color";
+											bgColorText = "Set Color";
 											break;
 										}
 									}
@@ -404,14 +422,16 @@ namespace Application {
 									blueViewColor = std::stoi(bgColorText.substr(second, bgColorText.back()));
 									// 255 163 210 (demo colour)
 								} else if (bgColorText.contains('#')) {
-									char const *hexVal = bgColorText.c_str();
+									const char *hexVal = bgColorText.c_str();
 									// convert the hex to rgb
 									sscanf_s(hexVal, "#%02x%02x%02x", &redViewColor, &greenViewColor, &blueViewColor);
 								} else if (!bgColorText.contains(',')) {
-									SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Background Color Error", "String input does not contain commas !", window.get());
+									SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Background Color Error", "String input does not contain commas!", window.get());
 								}
-								setBGColorBtn->text = "Set Color";
-							} else if (setTypographyIsPressed) {
+								bgColorText = "Set Color";
+							}
+
+							if (setTypographyIsPressed) {
 								// check path given
 								if (!typographyInputBtn->text.contains(".ttf")) {
 									SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Typography Error", "Font file not found!", window.get());
@@ -465,20 +485,20 @@ namespace Application {
 				} break;
 
 				case SDL_TEXTINPUT: {
-					if (setBGColorBtn->isEnabled || setTypographyBtn->isEnabled) {
-						if (!(SDL_GetModState() & KMOD_CTRL && (ev.text.text[0] == 'c' || ev.text.text[0] == 'C' ||
-																ev.text.text[0] == 'v' || ev.text.text[0] == 'V'))) {
-							if (setBGToColor) {
-								if (setBGColorBtn->text.contains("Set Color"))
-									break;
+					if (!(SDL_GetModState() & KMOD_CTRL && (ev.text.text[0] == 'c' || ev.text.text[0] == 'C' ||
+												ev.text.text[0] == 'v' || ev.text.text[0] == 'V'))) {
+						if (setBGToColor && setBGColorBtn->isEnabled) {
+							if (setBGColorBtn->text.contains("Set Color"))
+								break;
 
-								setBGColorBtn->text += ev.text.text;
-							} else if (setTypographyIsPressed) {
-								if (typographyInputBtn->text.contains("Set Font"))
-									break;
+							setBGColorBtn->text += ev.text.text;
+						}
 
-								typographyInputBtn->text += ev.text.text;
-							}
+						if (setTypographyIsPressed && setTypographyBtn->isEnabled) {
+							if (typographyInputBtn->text.contains("Set Font"))
+								break;
+
+							typographyInputBtn->text += ev.text.text;
 						}
 					}
 				} break;
@@ -589,7 +609,7 @@ namespace Application {
 				} else {
 					imagePtr->draw(timeText, renderer.get(), static_cast<int>(windowWidth / 10), static_cast<int>(windowHeight / 1.6));
 				}
-		
+
 				interfacePtr->setButtonTextSize(settingsText, 1, 16);
 				interfacePtr->draw(settingsBtn, settingsText, renderer.get());
 			}
