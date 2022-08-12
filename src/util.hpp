@@ -12,21 +12,31 @@ namespace Application::Helper::Utils {
 		void operator()(SDL_Texture *x) const { SDL_DestroyTexture(x); }
 	};
 	/** Memory deleter handle. Used to free SDL window, renderer, and/or textures without the overhead of a shared pointer.
+	 * 
 	 * \param T -> the SDL type to manage
 	 */
 	template <class T> using PTR = std::unique_ptr<T, Memory>;
 	/** Print lines to the console (works in constexpr functions).
-	* \param msg -> the msg/variable to print
-	*/
-	template <class T> constexpr void println(T &&msg) {
+	 * 
+	 * \param msg -> the msg/variable to print
+	 */
+	template <class T> constexpr void println(T &&msg) noexcept {
 		std::cout << std::forward<T>(msg) << '\n';
 	}
 	/** Print lines to the console (works in constexpr functions).
-	* \param msg -> the message/variable to print
-	* \param optMsg -> (optional) additional messages/variables to print
-	*/
-	template <class T, class... U> constexpr void println(T &&msg, U &&...optMsg) {
+	 * 
+	 * \param msg -> the message/variable to print
+	 * \param optMsg -> (optional) additional messages/variables to print
+	 */
+	template <class T, class... U> constexpr void println(T &&msg, U &&...optMsg) noexcept {
 		std::cout << std::forward<T>(msg);
 		((std::cout << ", " << std::forward<U>(optMsg)), ...);
+	}
+	/** Print lines and SDL_GetError to the console (works in constexpr functions).
+	 * 
+	 * \param errMsg -> the error message to print
+	 */
+	template <class T> constexpr void panicln(T &&errMsg) noexcept {
+		std::cout << std::forward<T>(errMsg) << ": " << SDL_GetError() << '\n';
 	}
 } // namespace Application::Helper::Utils

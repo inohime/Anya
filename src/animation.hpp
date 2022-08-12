@@ -29,7 +29,7 @@ namespace Application::Helper {
 		void update(float speed, double dt);
 		/** Renders the animation to the screen
 		 * 
-		 * \param img -> the button to draw
+		 * \param img -> the animation to draw
 		 * \param ren -> the renderer to use
 		 * \param x -> x position of the animation
 		 * \param y -> y position of the animation
