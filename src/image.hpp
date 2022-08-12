@@ -131,10 +131,10 @@ namespace Application::Helper {
 		 * \param img -> the image to modify
 		 * \param col -> the colour to set the image to
 		 */
-		void setTextureColor(IMD &img, SDL_Color col);
+		void setTextureColor(IMD &img, SDL_Color col) const noexcept;
 		/* Prints the number of images in the map.
 		 */
-		void printImageCount() const noexcept;
+		constexpr void printImageCount() const noexcept;
 
 	private:
 		std::unordered_map<std::basic_string<char>, IMD> images {};

@@ -1,4 +1,5 @@
 #include "scene.hpp"
+#include "util.hpp"
 
 namespace Application::Helper {
 	inline constexpr void Scene::createScene(std::string_view name) {
