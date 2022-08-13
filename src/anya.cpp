@@ -42,7 +42,7 @@ namespace Application {
 	bool Anya::boot() {
 		SDL_assert(SDL_Init(SDL_INIT_EVERYTHING) == 0);
 		SDL_assert(IMG_Init(IMG_INIT_PNG | IMG_INIT_JPG) != 0);
-		if (TTF_Init() == -1) return false;
+		SDL_assert(TTF_Init() != -1);
 
 		NFD::Guard nfdInit;
 
@@ -92,7 +92,6 @@ namespace Application {
 		// load assets
 		backgroundGIF = imagePtr->createPack("canvas", dirPath + "assets/gif-extract/", renderer.get());
 		// default background image to use
-		//backgroundImg = imagePtr->createImage(dirPath + "assets/beep_1.png", renderer.get());
 		githubImg = imagePtr->createImage(dirPath + "assets/25231.png", renderer.get());
 		calendarImg = imagePtr->createImage(dirPath + "assets/calendar.png", renderer.get());
 		typographyImg = imagePtr->createImage(dirPath + "assets/typography.png", renderer.get());
@@ -413,7 +412,7 @@ namespace Application {
 											SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Background Color Error", "String input size is invalid!", window.get());
 											setBGToColor = false;
 											bgColorText = "Set Color";
-											break;
+											goto breakout;
 										}
 									}
 									// get the positions of the colour values and apply them
@@ -529,6 +528,9 @@ namespace Application {
 						themesSliderOutline[2].position.y = (float)ev.motion.y + 7;
 					}
 				} break;
+
+				breakout:
+					break;
 			}
 			end = std::chrono::steady_clock::now();
 			deltaTime = (double)std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
