@@ -3,10 +3,12 @@
 #include <filesystem>
 #include <iostream>
 
+using namespace Application::Helper::Utils;
+
 namespace Application::Helper {
 	SDL_Surface *loadFile(std::string_view filePath) {
 		if (filePath.data() == nullptr) {
-			Utils::panicln("Failed to load file");
+			panicln("Failed to load file");
 			return nullptr;
 		}
 
@@ -26,9 +28,9 @@ namespace Application::Helper {
 		if (key != nullptr)
 			SDL_SetColorKey(surf, SDL_TRUE, SDL_MapRGB(surf->format, key->r, key->g, key->b));
 
-		newImage->texture = Utils::PTR<SDL_Texture>(SDL_CreateTextureFromSurface(ren, surf));
+		newImage->texture = cheesecake(SDL_CreateTextureFromSurface(ren, surf));
 		if (newImage->texture == nullptr) {
-			Utils::panicln("Failed to create image");
+			panicln("Failed to create image");
 			return nullptr;
 		}
 		images.insert({filePath.data(), newImage});
@@ -41,9 +43,9 @@ namespace Application::Helper {
 	IMD Image::createRenderTarget(SDL_Renderer *ren, unsigned int width, unsigned int height) {
 		IMD newImage = std::make_shared<ImageData>();
 
-		newImage->texture = Utils::PTR<SDL_Texture>(SDL_CreateTexture(ren, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, width, height));
+		newImage->texture = cheesecake(SDL_CreateTexture(ren, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, width, height));
 		if (newImage->texture == nullptr) {
-			Utils::panicln("Render Target failed to be created");
+			panicln("Render Target failed to be created");
 			return nullptr;
 		}
 
@@ -56,20 +58,20 @@ namespace Application::Helper {
 
 		TTF_Font *font = TTF_OpenFont(msg.fontFile.data(), msg.fontSize);
 		if (font == nullptr) {
-			Utils::panicln("TTF_OpenFont error");
+			panicln("TTF_OpenFont error");
 			return nullptr;
 		}
 
 		SDL_Surface *surf = TTF_RenderText_Blended(font, msg.msg.data(), msg.col.textColor);
 		if (surf == nullptr) {
 			TTF_CloseFont(font);
-			Utils::panicln("TTF_RenderText error");
+			panicln("TTF_RenderText error");
 			return nullptr;
 		}
 
-		newImage->texture = Utils::PTR<SDL_Texture>(SDL_CreateTextureFromSurface(ren, surf));
+		newImage->texture = cheesecake(SDL_CreateTextureFromSurface(ren, surf));
 		if (newImage->texture == nullptr) {
-			Utils::panicln("Failed to create text image");
+			panicln("Failed to create text image");
 			return nullptr;
 		}
 		//TTF_SizeText(font, msg.msg.data(), &newImage->imageWidth, &newImage->imageHeight); bug
@@ -87,13 +89,13 @@ namespace Application::Helper {
 
 		TTF_Font *font = TTF_OpenFont(msg.fontFile.data(), msg.fontSize);
 		if (font == nullptr) {
-			Utils::panicln("TTF_OpenFont error");
+			panicln("TTF_OpenFont error");
 			return nullptr;
 		}
 
 		TTF_Font *outlineFont = TTF_OpenFont(msg.fontFile.data(), msg.fontSize);
 		if (font == nullptr) {
-			Utils::panicln("TTF_OpenFont error");
+			panicln("TTF_OpenFont error");
 			return nullptr;
 		}
 
@@ -106,9 +108,9 @@ namespace Application::Helper {
 		SDL_Rect position = {position.x = 1, position.y = 1, fgSurf->w, fgSurf->h};
 		SDL_BlitSurface(bgSurf, nullptr, fgSurf, &position);
 
-		newImage->texture = Utils::PTR<SDL_Texture>(SDL_CreateTextureFromSurface(ren, fgSurf));
+		newImage->texture = cheesecake(SDL_CreateTextureFromSurface(ren, fgSurf));
 		if (newImage->texture == nullptr) {
-			Utils::panicln("Failed to create outline text image");
+			panicln("Failed to create outline text image");
 			return nullptr;
 		}
 		images.insert({msg.fontFile, newImage});
@@ -145,12 +147,12 @@ namespace Application::Helper {
 	int Image::add(std::string_view str, IMD &img) {
 		auto iter = images.find(str.data());
 		if (iter != images.end()) {
-			Utils::println("Image already exists");
+			println("Image already exists");
 			return -1;
 		} else {
 			images.insert({str.data(), img});
 			if (images.find(str.data()) != images.end())
-				Utils::println("Created image");
+				println("Created image");
 		}
 
 		return 0;
@@ -161,7 +163,7 @@ namespace Application::Helper {
 			images.erase(img->path);
 			img.reset();
 		} else {
-			Utils::println("Failed to remove image");
+			println("Failed to remove image");
 			return -1;
 		}
 
@@ -230,7 +232,7 @@ namespace Application::Helper {
 	int Image::getPackWidth(std::string_view packName) noexcept {
 		auto findPack = images.find(packName.data());
 		if (findPack == images.end()) {
-			Utils::println("Failed to get pack");
+			println("Failed to get pack");
 			return -1;
 		}
 
@@ -240,7 +242,7 @@ namespace Application::Helper {
 	int Image::getPackHeight(std::string_view packName) noexcept {
 		auto findPack = images.find(packName.data());
 		if (findPack == images.end()) {
-			Utils::println("Failed to get pack");
+			println("Failed to get pack");
 			return -1;
 		}
 
@@ -252,6 +254,6 @@ namespace Application::Helper {
 	}
 
 	constexpr void Image::printImageCount() const noexcept {
-		Utils::println("Image Size", images.size());
+		println("Image Size", images.size());
 	}
 } // namespace Application::Helper

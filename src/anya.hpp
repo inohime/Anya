@@ -7,8 +7,6 @@
 #include "scene.hpp"
 #include <chrono>
 #include <format>
-#include <sstream>
-#include <functional>
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <dwmapi.h>
@@ -25,12 +23,8 @@ namespace Application {
 	class Anya final {
 	public:
 		Anya();
-#ifdef _DEBUG
-		Anya(const std::chrono::system_clock::time_point &time);
-#endif
 
 		std::basic_string<char> timeToStr(const std::chrono::system_clock::time_point &time);
-		std::unique_ptr<std::basic_stringstream<char>> getStream();
 		bool boot();
 		void update();
 		void draw();
@@ -40,8 +34,8 @@ namespace Application {
 		// window data
 		std::basic_string<char> title {"anya"};
 		std::basic_string<char> errStr {};
-		PTR<SDL_Window> window {nullptr};
-		PTR<SDL_Renderer> renderer {nullptr};
+		SMD<SDL_Window> window {nullptr};
+		SMD<SDL_Renderer> renderer {nullptr};
 		SDL_Event ev {};
 		bool shouldRun {false};
 		uint32_t windowWidth {148};
@@ -59,7 +53,6 @@ namespace Application {
 		// directory path
 		std::basic_string<char> dirPath {};
 		std::basic_string<char> typographyStr {};
-		std::basic_stringstream<char> str {};
 		// set background colour
 		int redViewColor {0};
 		int greenViewColor {0};
@@ -155,7 +148,6 @@ namespace Application {
 		Helper::BUTTONPTR setButtonOCBtn {nullptr};
 		Helper::BUTTONPTR setButtonTCBtn {nullptr};
 		Helper::BUTTONPTR exitThemeCreatorBtn {nullptr};
-		// reuse input button for each button colour
 		// set the enter key to submit the value based on the button selected
 		Helper::BUTTONPTR buttonColorInputBtn {nullptr};
 		////////////////////////////////
