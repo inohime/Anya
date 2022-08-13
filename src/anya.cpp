@@ -25,12 +25,6 @@ namespace Application {
 		}
 	}
 
-#ifdef _DEBUG
-	Anya::Anya(const std::chrono::system_clock::time_point &time) {
-		str << timeToStr(time);
-	}
-#endif
-
 	// make this a cross platform function (void * for handle)
 #ifdef _WIN32 
 	static void setWindowShadow(HWND handle, const MARGINS &margins) {
@@ -50,11 +44,11 @@ namespace Application {
 
 		SDL_SetHintWithPriority("SDL_BORDERLESS_WINDOWED_STYLE", "1", SDL_HINT_OVERRIDE);
 
-		window = PTR<SDL_Window>(SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, windowWidth, windowHeight, 0));
-		renderer = PTR<SDL_Renderer>(SDL_CreateRenderer(window.get(), -1, SDL_RENDERER_SOFTWARE));
+		window = cheesecake(SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, windowWidth, windowHeight, 0));
+		renderer = cheesecake(SDL_CreateRenderer(window.get(), -1, SDL_RENDERER_SOFTWARE));
 		if (!window || !renderer) {
 			errStr = SDL_GetError();
-			std::cout << "failed to boot: " << errStr << '\n';
+			std::cout << "Failed to boot: " << errStr << '\n';
 			free();
 			return shouldRun;
 		}
@@ -776,10 +770,5 @@ namespace Application {
 		} else {
 			return std::format("{:%OI:%M}AM", std::chrono::current_zone()->to_local(time));
 		}
-	}
-
-	std::unique_ptr<std::basic_stringstream<char>> Anya::getStream() {
-		auto ptr = std::make_unique<std::basic_stringstream<char>>(std::move(str));
-		return ptr;
 	}
 } // namespace Application
