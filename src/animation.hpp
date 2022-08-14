@@ -18,12 +18,11 @@ namespace Application::Helper {
 		 * \param y -> y position of the image
 		 * \param w -> width of the image (pixel width)
 		 * \param h -> height of the image (pixel height)
-		 * \return void -> no return available.
 		 */
 		void addAnimation(int frames, int x, int y, int w, int h);
 		/** Updates the animation frames
 		 *
-		 * \param speed -> how fast the animation should play
+		 * \param speed -> how fast the animation should play (0 being fastest)
 		 * \param dt -> deltaTime from the main loop
 		 */
 		void update(float speed, double dt);
