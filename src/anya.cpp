@@ -592,19 +592,18 @@ namespace Application {
 				SDL_SetRenderDrawColor(renderer.get(), redViewColor, greenViewColor, blueViewColor, 255);
 				SDL_RenderFillRect(renderer.get(), &fillBGColor);
 
-				imagePtr->draw(timeText, renderer.get(), 0, 18);
+				imagePtr->draw(timeText, renderer.get(), static_cast<int>((windowWidth - timeText->imageWidth) / 6), 18);
 
 				interfacePtr->setButtonTextSize(mainQuitText, -2, 0);
 				interfacePtr->draw(mainQuitBtn, mainQuitText, renderer.get());
 				interfacePtr->draw(minimizeBtn, minimizeText, renderer.get());
 				interfacePtr->draw(returnBtn, nullptr, renderer.get());
 			} else {
-				if (showDate) {
-					imagePtr->draw(timeText, renderer.get(), static_cast<int>(windowWidth / 10), static_cast<int>(windowHeight / 1.6));
+
+				if (showDate)
 					imagePtr->draw(dateText, renderer.get(), static_cast<int>(windowWidth / 4), static_cast<int>(windowHeight / 2.1));
-				} else {
-					imagePtr->draw(timeText, renderer.get(), static_cast<int>(windowWidth / 10), static_cast<int>(windowHeight / 1.6));
-				}
+
+				imagePtr->draw(timeText, renderer.get(), static_cast<int>((windowWidth - timeText->imageWidth) / 2), static_cast<int>(windowHeight / 1.6));
 
 				interfacePtr->setButtonTextSize(settingsText, 1, 16);
 				interfacePtr->draw(settingsBtn, settingsText, renderer.get());
