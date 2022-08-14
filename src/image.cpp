@@ -74,8 +74,6 @@ namespace Application::Helper {
 			panicln("Failed to create text image");
 			return nullptr;
 		}
-		//TTF_SizeText(font, msg.msg.data(), &newImage->imageWidth, &newImage->imageHeight); bug
-
 		images.insert({msg.fontFile, newImage});
 
 		SDL_FreeSurface(surf);
@@ -105,6 +103,7 @@ namespace Application::Helper {
 		SDL_Surface *fgSurf = TTF_RenderText_Blended(outlineFont, msg.msg.data(), {0x00, 0x00, 0x00});
 
 		// destination rect that gets the size of the surface (explicit x/y for those that want to understand without digging)
+		// 1 is the offset from the outline
 		SDL_Rect position = {position.x = 1, position.y = 1, fgSurf->w, fgSurf->h};
 		SDL_BlitSurface(bgSurf, nullptr, fgSurf, &position);
 
@@ -113,6 +112,9 @@ namespace Application::Helper {
 			panicln("Failed to create outline text image");
 			return nullptr;
 		}
+		// get the size of the surface
+		TTF_SizeText(font, msg.msg.data(), &newImage->imageWidth, &newImage->imageHeight);
+
 		images.insert({msg.fontFile, newImage});
 
 		SDL_FreeSurface(bgSurf);
