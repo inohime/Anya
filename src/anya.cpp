@@ -314,15 +314,15 @@ namespace Application {
 											std::cout << "Error: " << NFD_GetError() << '\n';
 										}
 									#endif
-										if (result == NFD_OKAY) {
-											if (setBGToColor)
-												setBGToColor = false;
+									if (result == NFD_OKAY) {
+										if (setBGToColor)
+											setBGToColor = false;
 	
-											backgroundImg = imagePtr->createImage(filePath.get(), renderer.get());
-											setBGtoImg = true;
-										} else if (result == NFD_CANCEL) {
-											break;
-										}
+										backgroundImg = imagePtr->createImage(filePath.get(), renderer.get());
+										setBGtoImg = true;
+									} else if (result == NFD_CANCEL) {
+										break;
+									}
 								}
 
 								if (button == setTypographyBtn  && !setTypographyIsPressed) {
@@ -751,8 +751,11 @@ namespace Application {
 		SDL_SetRenderDrawColor(renderer.get(), 0, 0, 0, 255);
 		SDL_RenderClear(renderer.get());
 
+		//timeText = imagePtr->createTextA({timeToStr(std::chrono::system_clock::now()), typographyStr, {{0}, {0}, {255, 255, 255}}, 28}, renderer.get());
+		timeText = imagePtr->createTextA({timeToStr(std::chrono::system_clock::now()), typographyStr, {{0}, {0}, {255, 255, 255}}, 28}, renderer.get());
+
 		if (scenePtr->getCurrentScene() == scenePtr->findScene("Main")) {
-			timeText = imagePtr->createTextA({timeToStr(std::chrono::system_clock::now()), typographyStr, {{0}, {0}, {255, 255, 255}}, 28}, renderer.get());
+			//timeText = imagePtr->createTextA({timeToStr(std::chrono::system_clock::now()), typographyStr, {{0}, {0}, {255, 255, 255}}, 28}, renderer.get());
 			dateText = imagePtr->createTextA({std::format("{:%Ex}", std::chrono::current_zone()->to_local(std::chrono::system_clock::now())), dirPath + "assets/Onest.ttf", {{0}, {0}, {255, 255, 255}}, 16}, renderer.get());
 			settingsText = imagePtr->createText({settingsBtn->text, dirPath + "assets/Onest.ttf", settingsBtn->buttonColor, 96}, renderer.get());
 
@@ -764,22 +767,7 @@ namespace Application {
 			} else {
 				imagePtr->drawAnimation(backgroundGIF, renderer.get(), 0, 0);
 			}
-			/*
-			if (minimalMode) {
-				mainQuitText = imagePtr->createText({mainQuitBtn->text, dirPath + "assets/Onest.ttf", mainQuitBtn->buttonColor, 96}, renderer.get());
-				minimizeText = imagePtr->createText({minimizeBtn->text, dirPath + "assets/Onest.ttf", minimizeBtn->buttonColor, 96}, renderer.get());
 
-				SDL_SetRenderDrawColor(renderer.get(), redViewColor, greenViewColor, blueViewColor, 255);
-				SDL_RenderFillRect(renderer.get(), &fillBGColor);
-
-				imagePtr->draw(timeText, renderer.get(), static_cast<int>((windowWidth - timeText->imageWidth) / 6), 18);
-
-				interfacePtr->setButtonTextSize(mainQuitText, -2, 0);
-				interfacePtr->draw(mainQuitBtn, mainQuitText, renderer.get());
-				interfacePtr->draw(minimizeBtn, minimizeText, renderer.get());
-				interfacePtr->draw(returnBtn, nullptr, renderer.get());
-			} else {
-				*/
 			if (showDate)
 				imagePtr->draw(dateText, renderer.get(), static_cast<int>(windowWidth / 4), static_cast<int>(windowHeight / 2.1));
 
@@ -787,25 +775,22 @@ namespace Application {
 
 			interfacePtr->setButtonTextSize(settingsText, 1, 16);
 			interfacePtr->draw(settingsBtn, settingsText, renderer.get());
-			//}
 		}
 
 		if (scenePtr->getCurrentScene() == scenePtr->findScene("Minimal-Main")) {
-			//if (minimalMode) {
-			timeText = imagePtr->createTextA({timeToStr(std::chrono::system_clock::now()), typographyStr, {{0}, {0}, {255, 255, 255}}, 28}, renderer.get());
+			//timeText = imagePtr->createTextA({timeToStr(std::chrono::system_clock::now()), typographyStr, {{0}, {0}, {255, 255, 255}}, 28}, renderer.get());
 			mainQuitText = imagePtr->createText({mainQuitBtn->text, dirPath + "assets/Onest.ttf", mainQuitBtn->buttonColor, 96}, renderer.get());
 			minimizeText = imagePtr->createText({minimizeBtn->text, dirPath + "assets/Onest.ttf", minimizeBtn->buttonColor, 96}, renderer.get());
 
 			SDL_SetRenderDrawColor(renderer.get(), redViewColor, greenViewColor, blueViewColor, 255);
 			SDL_RenderFillRect(renderer.get(), &fillBGColor);
 
-			imagePtr->draw(timeText, renderer.get(), static_cast<int>((windowWidth - timeText->imageWidth) / 6), 18);
+			imagePtr->draw(timeText, renderer.get(), static_cast<int>((minWindowWidth - timeText->imageWidth) / 2), 18); //  - (windowWidth / 3.5)
 
 			interfacePtr->setButtonTextSize(mainQuitText, -2, 0);
 			interfacePtr->draw(mainQuitBtn, mainQuitText, renderer.get());
 			interfacePtr->draw(minimizeBtn, minimizeText, renderer.get());
 			interfacePtr->draw(returnBtn, nullptr, renderer.get());
-			//}
 		}
 
 		if (scenePtr->getCurrentScene() == scenePtr->findScene("Settings")) {
