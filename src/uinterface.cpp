@@ -2,7 +2,7 @@
 #include "util.hpp"
 
 namespace Application::Helper {
-	BUTTONPTR UInterface::createButton(std::string_view text, IMD texture, int x, int y, uint32_t w, uint32_t h) {
+	BUTTONPTR UInterface::createButton(std::string_view text, std::string_view layerName, IMD texture, int x, int y, uint32_t w, uint32_t h) {
 		BUTTONPTR newButton = std::make_shared<Button>();
 
 		newButton->box = {x, y, static_cast<int>(w), static_cast<int>(h)};
@@ -11,16 +11,19 @@ namespace Application::Helper {
 		if (texture != nullptr)
 			newButton->texture = *texture;
 
+		newButton->layer = layerName;
+
 		btnList.emplace_back(newButton);
 
 		return newButton;
 	}
 
-	BUTTONPTR UInterface::createButton(std::string_view text, int x, int y, uint32_t w, uint32_t h) {
+	BUTTONPTR UInterface::createButton(std::string_view text, std::string_view layerName, int x, int y, uint32_t w, uint32_t h) {
 		BUTTONPTR newButton = std::make_shared<Button>();
 
 		newButton->box = {x, y, static_cast<int>(w), static_cast<int>(h)};
 		newButton->text = text;
+		newButton->layer = layerName;
 
 		btnList.emplace_back(newButton);
 

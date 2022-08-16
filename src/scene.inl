@@ -25,6 +25,10 @@ namespace Application::Helper {
 		return currentScene;
 	}
 
+	inline constexpr std::string_view Scene::getCurrentSceneName() {
+		return sceneList[currentScene];
+	}
+
 	inline constexpr uint64_t Scene::findScene(std::string_view name) {
 		const auto it = std::find(sceneList.begin(), sceneList.end(), name);
 		const auto sceneIndex = it - sceneList.begin();
