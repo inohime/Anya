@@ -4,6 +4,7 @@
 #include "data.hpp"
 #include <string>
 #include <vector>
+#include <unordered_map>
 
 namespace Application::Helper {
 	struct Button {
@@ -13,6 +14,8 @@ namespace Application::Helper {
 		// 75% of 255
 		float colorAlpha {191.25f};
 		std::basic_string<char> text {};
+		std::basic_string<char> layer {};
+		uint32_t id {};
 		bool canMinimize {false};
 		bool canQuit {false};
 		bool isEnabled {false};
@@ -32,7 +35,7 @@ namespace Application::Helper {
 		 * \param h -> height of the button
 		 * \return button object filled with all of the essential details for a customized button.
 		 */
-		BUTTONPTR createButton(std::string_view text, IMD texture, int x, int y, uint32_t w, uint32_t h);
+		BUTTONPTR createButton(std::string_view text, std::string_view layerName, IMD texture, int x, int y, uint32_t w, uint32_t h);
 		/** Create a normal button.
 		 *
 		 * \param text -> the text within the button
@@ -42,15 +45,15 @@ namespace Application::Helper {
 		 * \param h -> height of the button
 		 * \return button object filled with all of the essential details for a customized button.
 		 */
-		BUTTONPTR createButton(std::string_view text, int x, int y, uint32_t w, uint32_t h);
+		BUTTONPTR createButton(std::string_view text, std::string_view layerName, int x, int y, uint32_t w, uint32_t h);
 		/** Gets all of the buttons created
 		 *
-		 * \return An std::vector of all of the buttons in the application.
+		 * \return an std::vector of all of the buttons in the application.
 		 */
 		std::vector<BUTTONPTR> &getButtonList();
 		/** Gets the mouse's position in the application
 		 *
-		 * \return The position of the mouse.
+		 * \return the position of the mouse.
 		 */
 		SDL_Point &getMousePos();
 		/** Checks if the cursor is inside of a button
@@ -127,7 +130,9 @@ namespace Application::Helper {
 		void draw(BUTTONPTR &button, IMD buttonText, SDL_Renderer *ren, double sx = 0.0, double sy = 0.0);
 
 	private:
+		//std::unordered_map<std::basic_string<char>, BUTTONPTR> layers;
 		std::vector<BUTTONPTR> btnList {};
 		SDL_Point mousePos {};
+		int buttonID {0};
 	};
 } // namespace Application::Helper

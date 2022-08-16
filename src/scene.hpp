@@ -28,12 +28,18 @@ namespace Application::Helper {
 		 * \return the current scene number.
 		 */
 		constexpr uint64_t getCurrentScene();
+		/** Retrieves the current scene being shown.
+		 *
+		 * \return the current scene name.
+		 */
+		constexpr std::string_view getCurrentSceneName();
 		/** Finds and returns the index of the scene being looked for. 
 		 *  This is primarily used to be compared against `getCurrentScene`.
 		 * 
 		 *  Example: getCurrentScene() == findScene("Menu")
 		 *
 		 * \param name -> name of the scene to find
+		 * \return the scene index of the scene name.
 		 */
 		constexpr uint64_t findScene(std::string_view name);
 

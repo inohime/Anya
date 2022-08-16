@@ -40,6 +40,8 @@ namespace Application {
 		bool shouldRun {false};
 		uint32_t windowWidth {148};
 		uint32_t windowHeight {89};
+		uint32_t minWindowWidth {120};
+		uint32_t minWindowHeight {50};
 		std::chrono::steady_clock::time_point begin {};
 		std::chrono::steady_clock::time_point end {};
 		double deltaTime {};
@@ -108,7 +110,7 @@ namespace Application {
 		Helper::IMD minimalText {nullptr};
 		Helper::IMD setBGText {nullptr};
 		Helper::IMD openFileText {nullptr};
-		Helper::IMD setBGColorText {nullptr};
+		Helper::IMD bgColorInputText {nullptr};
 		Helper::IMD typographyInputText {nullptr};
 
 		////////////////////////////////
@@ -136,7 +138,7 @@ namespace Application {
 		Helper::BUTTONPTR minimalBtn {nullptr};
 		Helper::BUTTONPTR setBGBtn {nullptr};
 		Helper::BUTTONPTR openFileBtn {nullptr};
-		Helper::BUTTONPTR setBGColorBtn {nullptr};
+		Helper::BUTTONPTR bgColorInputBtn {nullptr};
 		Helper::BUTTONPTR setTypographyBtn {nullptr};
 		Helper::BUTTONPTR typographyInputBtn {nullptr};
 		Helper::BUTTONPTR setThemeBtn {nullptr};

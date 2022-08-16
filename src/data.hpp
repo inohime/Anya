@@ -25,6 +25,8 @@ namespace Application::Helper {
 		std::shared_ptr<SDL_Texture> texture {nullptr};
 		int imageWidth {0};
 		int imageHeight {0};
+		int imagePos1 {0}; // x
+		int imagePos2 {0}; // y
 	};
 	// handle
 	using IMD = std::shared_ptr<ImageData>;

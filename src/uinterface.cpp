@@ -1,26 +1,37 @@
 #include "uinterface.hpp"
 #include "util.hpp"
 
+using namespace Application::Helper::Utils;
+
 namespace Application::Helper {
-	BUTTONPTR UInterface::createButton(std::string_view text, IMD texture, int x, int y, uint32_t w, uint32_t h) {
+	BUTTONPTR UInterface::createButton(std::string_view text, std::string_view layerName, IMD texture, int x, int y, uint32_t w, uint32_t h) {
 		BUTTONPTR newButton = std::make_shared<Button>();
 
 		newButton->box = {x, y, static_cast<int>(w), static_cast<int>(h)};
-
 		newButton->text = text;
+
 		if (texture != nullptr)
 			newButton->texture = *texture;
+
+		newButton->layer = layerName;
+		newButton->id = ++buttonID;
+
+		println("First", buttonID);
 
 		btnList.emplace_back(newButton);
 
 		return newButton;
 	}
 
-	BUTTONPTR UInterface::createButton(std::string_view text, int x, int y, uint32_t w, uint32_t h) {
+	BUTTONPTR UInterface::createButton(std::string_view text, std::string_view layerName, int x, int y, uint32_t w, uint32_t h) {
 		BUTTONPTR newButton = std::make_shared<Button>();
 
 		newButton->box = {x, y, static_cast<int>(w), static_cast<int>(h)};
 		newButton->text = text;
+		newButton->layer = layerName;
+		newButton->id = ++buttonID;
+
+		println("Second", buttonID);
 
 		btnList.emplace_back(newButton);
 

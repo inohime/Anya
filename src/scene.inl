@@ -1,6 +1,8 @@
 #include "scene.hpp"
 #include "util.hpp"
 
+using namespace Application::Helper::Utils;
+
 namespace Application::Helper {
 	inline constexpr void Scene::createScene(std::string_view name) {
 		sceneList.emplace_back(name);
@@ -18,11 +20,15 @@ namespace Application::Helper {
 	}
 
 	inline constexpr void Scene::printScene() {
-		Utils::println(sceneList[currentScene]);
+		println(sceneList[currentScene]);
 	}
 
 	inline constexpr uint64_t Scene::getCurrentScene() {
 		return currentScene;
+	}
+
+	inline constexpr std::string_view Scene::getCurrentSceneName() {
+		return sceneList[currentScene];
 	}
 
 	inline constexpr uint64_t Scene::findScene(std::string_view name) {

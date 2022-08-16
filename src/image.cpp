@@ -1,7 +1,6 @@
 #include "image.hpp"
 #include "util.hpp"
 #include <filesystem>
-#include <iostream>
 
 using namespace Application::Helper::Utils;
 
@@ -126,7 +125,7 @@ namespace Application::Helper {
 	}
 
 	void Image::draw(IMD &img, SDL_Renderer *ren, int x, int y, double sx, double sy, SDL_Rect *clip) noexcept {
-		SDL_Rect dst {x, y, NULL, NULL};
+		SDL_Rect dst {img->imagePos1 = x, img->imagePos2 = y, 0, 0};
 		if (clip != nullptr) {
 			dst.w = clip->w;
 			dst.h = clip->h;
