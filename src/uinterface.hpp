@@ -15,6 +15,7 @@ namespace Application::Helper {
 		float colorAlpha {191.25f};
 		std::basic_string<char> text {};
 		std::basic_string<char> layer {};
+		uint32_t id {};
 		bool canMinimize {false};
 		bool canQuit {false};
 		bool isEnabled {false};
@@ -132,5 +133,6 @@ namespace Application::Helper {
 		//std::unordered_map<std::basic_string<char>, BUTTONPTR> layers;
 		std::vector<BUTTONPTR> btnList {};
 		SDL_Point mousePos {};
+		int buttonID {0};
 	};
 } // namespace Application::Helper

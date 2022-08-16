@@ -163,7 +163,7 @@ namespace Application {
 		minimalBtn = interfacePtr->createButton("Minimal", "Settings-Themes", 39, 5, 55, 25);
 		setBGBtn = interfacePtr->createButton("Set BG", "Settings-Themes", 103, 5, 40, 25);
 		openFileBtn = interfacePtr->createButton("Open File", "Settings-Themes", 25, 35, 50, 15);
-		setBGColorBtn = interfacePtr->createButton("Set Color", "Settings-Themes", 80, 35, 50, 15);
+		bgColorInputBtn = interfacePtr->createButton("Set Color", "Settings-Themes", 80, 35, 50, 15);
 		setTypographyBtn = interfacePtr->createButton("", "Settings-Themes", typographyImg, 5, 5, 25, 25);
 		typographyInputBtn = interfacePtr->createButton("Set Font", "Settings-Themes", setTypographyBtn->box.w / 2, 35, 120, 15);
 		setThemeBtn = interfacePtr->createButton("", "Settings-Themes", setThemeImg, 5, 39, 25, 25);
@@ -233,30 +233,19 @@ namespace Application {
 				case SDL_MOUSEBUTTONDOWN: {
 					for (auto &button : interfacePtr->getButtonList()) {
 						/*
-							switch (button.id) {
-								case (id comparison)
+							switch (button->id) {
+								// example
+								case githubBtn->id:
+									break;
+
+								case settingsBtn->id:
+									break;
 							}
-						*/
-
-						// if the layer and scene are in sync, enable the buttons on this layer
-						/*
-						if (button->canMinimize && interfacePtr->cursorInBounds(button, interfacePtr->getMousePos()))
-							if (scenePtr->getCurrentScene() == scenePtr->findScene("Minimal-Main"))
-								SDL_MinimizeWindow(window.get());
-
-						if (button->canQuit && interfacePtr->cursorInBounds(button, interfacePtr->getMousePos())) {
-							if (scenePtr->getCurrentScene() == scenePtr->findScene("Settings"))
-								shouldRun = false;
-
-							if (scenePtr->getCurrentScene() == scenePtr->findScene("Minimal-Main")) {
-								println("clicked");
-								shouldRun = false;
-							}
-						}
+							
+							will need a constexpr int to handle this
 						*/
 
 						if (interfacePtr->cursorInBounds(button, interfacePtr->getMousePos())) {
-							// maybe use a button.id so we can have an easy switch case?
 							if (button->isEnabled) {
 								if (button->canMinimize)
 									if (scenePtr->getCurrentScene() == scenePtr->findScene("Minimal-Main"))
@@ -293,10 +282,16 @@ namespace Application {
 									showDate = false;
 								}
 
-								if (button == setBGBtn  && !setBGIsPressed) {
+								if (button == setBGBtn && !setBGIsPressed) {
+									if (setTypographyIsPressed) {
+										setTypographyIsPressed = false;
+									}
+
 									setBGIsPressed = true;
-								} else if (button == setBGBtn  && setBGIsPressed) {
+								} else if (button == setBGBtn && setBGIsPressed) {
 									setBGIsPressed = false;
+									setBGToColor = false;
+									bgColorInputBtn->text = "Set Color";
 								}
 
 								if (button == openFileBtn && setBGIsPressed) {
@@ -325,19 +320,49 @@ namespace Application {
 									}
 								}
 
-								if (button == setTypographyBtn  && !setTypographyIsPressed) {
+								if (button == bgColorInputBtn) {
+									if (setBGtoImg)
+										setBGtoImg = false;
+
+									setBGToColor = true;
+
+									if (!setTypographyIsPressed) {
+										bgColorInputBtn->text = "";
+									}
+								}
+
+								if (button == setTypographyBtn && !setTypographyIsPressed) {
+									if (setBGIsPressed) {
+										setBGIsPressed = false;
+									}
+
 									setTypographyIsPressed = true;
-								} else if (button == setTypographyBtn  && setTypographyIsPressed) {
+								} else if (button == setTypographyBtn && setTypographyIsPressed) {
 									setTypographyIsPressed = false;
+									typographyInputBtn->text = "Set Font";
+								}
+
+								if (button == typographyInputBtn) {
+									if (!setBGIsPressed) {
+										typographyInputBtn->text = "";
+									}
 								}
 
 								if (button == minimalBtn) {
 									SDL_SetWindowBordered(window.get(), SDL_FALSE);
-									SDL_SetWindowSize(window.get(), 120, 50);
+									SDL_SetWindowSize(window.get(), minWindowWidth, minWindowHeight);
 									#ifdef _WIN32
 										setWindowShadow(hwnd, {0, 0, 0, 1});
 									#endif
 									scenePtr->setScene("Minimal-Main");
+								}
+
+								if (button == setThemeBtn) {
+									scenePtr->setScene("Theme-Creator");
+								}
+
+								if (button == exitThemeCreatorBtn) {
+									scenePtr->setScene("Settings-Themes");
 								}
 
 								if (button == returnBtn) {
@@ -536,7 +561,7 @@ namespace Application {
 					switch (ev.key.keysym.sym) {
 						case SDLK_RETURN: {
 							if (setBGIsPressed) {
-								auto &bgColorText = setBGColorBtn->text;
+								auto &bgColorText = bgColorInputBtn->text;
 								// apply the colour to the background and reset the text
 								if (bgColorText.contains(',')) {
 									// check if a character is alphabetical
@@ -609,7 +634,7 @@ namespace Application {
 						case SDLK_c: {
 							if (setBGIsPressed) {
 								if (SDL_GetModState() & KMOD_CTRL)
-									SDL_SetClipboardText(setBGColorBtn->text.c_str());
+									SDL_SetClipboardText(bgColorInputBtn->text.c_str());
 
 							} else if (setTypographyIsPressed) {
 								if (SDL_GetModState() & KMOD_CTRL)
@@ -620,7 +645,7 @@ namespace Application {
 						case SDLK_v: {
 							if (setBGIsPressed) {
 								if (SDL_GetModState() & KMOD_CTRL)
-									setBGColorBtn->text = SDL_GetClipboardText();
+									bgColorInputBtn->text = SDL_GetClipboardText();
 
 							} else if (setTypographyIsPressed) {
 								if (SDL_GetModState() & KMOD_CTRL)
@@ -630,11 +655,11 @@ namespace Application {
 
 						case SDLK_BACKSPACE: {
 							if (setBGIsPressed) {
-								if (setBGColorBtn->text.contains("Set Color"))
+								if (bgColorInputBtn->text.contains("Set Color"))
 									break;
 
-								if (setBGColorBtn->text.length() > 0)
-									setBGColorBtn->text.pop_back();
+								if (bgColorInputBtn->text.length() > 0)
+									bgColorInputBtn->text.pop_back();
 
 							} else if (setTypographyIsPressed) {
 								if (typographyInputBtn->text.contains("Set Font"))
@@ -649,12 +674,12 @@ namespace Application {
 
 				case SDL_TEXTINPUT: {
 					if (!(SDL_GetModState() & KMOD_CTRL && (ev.text.text[0] == 'c' || ev.text.text[0] == 'C' ||
-															ev.text.text[0] == 'v' || ev.text.text[0] == 'V'))) {
-						if (setBGToColor && setBGColorBtn->isEnabled) {
-							if (setBGColorBtn->text.contains("Set Color"))
+												ev.text.text[0] == 'v' || ev.text.text[0] == 'V'))) {
+						if (setBGIsPressed && bgColorInputBtn->isEnabled) {
+							if (bgColorInputBtn->text.contains("Set Color"))
 								break;
 
-							setBGColorBtn->text += ev.text.text;
+							bgColorInputBtn->text += ev.text.text;
 						}
 
 						if (setTypographyIsPressed && setTypographyBtn->isEnabled) {
@@ -729,7 +754,7 @@ namespace Application {
 			}
 			*/
 
-			for (auto &button : interfacePtr->getButtonList()) {
+			for (const auto &button : interfacePtr->getButtonList()) {
 				if (button->layer == scenePtr->getCurrentSceneName()) {
 					button->isEnabled = true;
 				} else {
@@ -751,7 +776,6 @@ namespace Application {
 		SDL_SetRenderDrawColor(renderer.get(), 0, 0, 0, 255);
 		SDL_RenderClear(renderer.get());
 
-		//timeText = imagePtr->createTextA({timeToStr(std::chrono::system_clock::now()), typographyStr, {{0}, {0}, {255, 255, 255}}, 28}, renderer.get());
 		timeText = imagePtr->createTextA({timeToStr(std::chrono::system_clock::now()), typographyStr, {{0}, {0}, {255, 255, 255}}, 28}, renderer.get());
 
 		if (scenePtr->getCurrentScene() == scenePtr->findScene("Main")) {
@@ -771,21 +795,20 @@ namespace Application {
 			if (showDate)
 				imagePtr->draw(dateText, renderer.get(), static_cast<int>(windowWidth / 4), static_cast<int>(windowHeight / 2.1));
 
-			imagePtr->draw(timeText, renderer.get(), static_cast<int>((windowWidth - timeText->imageWidth) / 2), static_cast<int>(windowHeight / 1.6));
+			imagePtr->draw(timeText, renderer.get(), static_cast<int>((windowWidth - timeText->imageWidth) / 2), windowHeight - timeText->imageHeight);
 
 			interfacePtr->setButtonTextSize(settingsText, 1, 16);
 			interfacePtr->draw(settingsBtn, settingsText, renderer.get());
 		}
 
 		if (scenePtr->getCurrentScene() == scenePtr->findScene("Minimal-Main")) {
-			//timeText = imagePtr->createTextA({timeToStr(std::chrono::system_clock::now()), typographyStr, {{0}, {0}, {255, 255, 255}}, 28}, renderer.get());
 			mainQuitText = imagePtr->createText({mainQuitBtn->text, dirPath + "assets/Onest.ttf", mainQuitBtn->buttonColor, 96}, renderer.get());
 			minimizeText = imagePtr->createText({minimizeBtn->text, dirPath + "assets/Onest.ttf", minimizeBtn->buttonColor, 96}, renderer.get());
 
 			SDL_SetRenderDrawColor(renderer.get(), redViewColor, greenViewColor, blueViewColor, 255);
 			SDL_RenderFillRect(renderer.get(), &fillBGColor);
 
-			imagePtr->draw(timeText, renderer.get(), static_cast<int>((minWindowWidth - timeText->imageWidth) / 2), 18); //  - (windowWidth / 3.5)
+			imagePtr->draw(timeText, renderer.get(), static_cast<int>((minWindowWidth - timeText->imageWidth) / 2), (minWindowHeight - timeText->imageHeight) + 2);
 
 			interfacePtr->setButtonTextSize(mainQuitText, -2, 0);
 			interfacePtr->draw(mainQuitBtn, mainQuitText, renderer.get());
@@ -831,97 +854,97 @@ namespace Application {
 
 			if (setBGIsPressed) {
 				openFileText = imagePtr->createText({openFileBtn->text, dirPath + "assets/Onest.ttf", openFileBtn->buttonColor, 96}, renderer.get());
-				setBGColorText = imagePtr->createText({setBGColorBtn->text, dirPath + "assets/Onest.ttf", setBGColorBtn->buttonColor, 28}, renderer.get());
+				bgColorInputText = imagePtr->createText({bgColorInputBtn->text, dirPath + "assets/Onest.ttf", bgColorInputBtn->buttonColor, 28}, renderer.get());
 
 				interfacePtr->draw(openFileBtn, openFileText, renderer.get());
-				interfacePtr->draw(setBGColorBtn, setBGColorText, renderer.get());
+				interfacePtr->draw(bgColorInputBtn, bgColorInputText, renderer.get());
+			}
+		}
+
+		if (scenePtr->getCurrentScene() == scenePtr->findScene("Theme-Creator")) {
+			exitThemeCreatorText = imagePtr->createText({exitThemeCreatorBtn->text, dirPath + "assets/Onest.ttf", exitThemeCreatorBtn->buttonColor, 96}, renderer.get());
+			themesMenuBGText = imagePtr->createText({setMenuBGBtn->text, dirPath + "assets/Onest.ttf", setMenuBGBtn->buttonColor, 96}, renderer.get());
+			themesBGCText = imagePtr->createText({setButtonBGCBtn->text, dirPath + "assets/Onest.ttf", setButtonBGCBtn->buttonColor, 32}, renderer.get());
+			themesOCText = imagePtr->createText({setButtonOCBtn->text, dirPath + "assets/Onest.ttf", setButtonOCBtn->buttonColor, 96}, renderer.get());
+			themesTCText = imagePtr->createText({setButtonTCBtn->text, dirPath + "assets/Onest.ttf", setButtonTCBtn->buttonColor, 96}, renderer.get());
+			buttonColorInputText = imagePtr->createText({buttonColorInputBtn->text, dirPath + "assets/Onest.ttf", buttonColorInputBtn->buttonColor, 100}, renderer.get());
+
+			SDL_Rect paintingScreen = {0, 0, (int)windowWidth, (int)windowHeight};
+			SDL_SetRenderDrawColor(renderer.get(), 26, 17, 16, 255);
+			SDL_RenderFillRect(renderer.get(), &paintingScreen);
+
+			interfacePtr->draw(exitThemeCreatorBtn, exitThemeCreatorText, renderer.get());
+			// menu background colour
+			interfacePtr->setButtonTextSize(themesMenuBGText, 0, 5);
+			interfacePtr->draw(setMenuBGBtn, themesMenuBGText, renderer.get());
+			// button background colour 
+			interfacePtr->setButtonTextSize(themesBGCText, -15, 5);
+			interfacePtr->draw(setButtonBGCBtn, themesBGCText, renderer.get());
+			// button outline colour 
+			interfacePtr->setButtonTextSize(themesOCText, -10, 5);
+			interfacePtr->draw(setButtonOCBtn, themesOCText, renderer.get());
+			// button text colour 
+			interfacePtr->setButtonTextSize(themesTCText, -15, 5);
+			interfacePtr->draw(setButtonTCBtn, themesTCText, renderer.get());
+
+			// draw a quad
+			SDL_Vertex colorPickerQuad[4] = {0};
+			// bottom left
+			colorPickerQuad[0].position.x = (float)(windowWidth / 2) + 9;
+			colorPickerQuad[0].position.y = (float)(windowWidth / 2);
+			colorPickerQuad[0].color = {0, 0, 0, 255};
+			// top left
+			colorPickerQuad[1].position.x = (float)(windowWidth / 2) + 9;
+			colorPickerQuad[1].position.y = 0;
+			colorPickerQuad[1].color = {255, 255, 255, 255};
+			// top right
+			colorPickerQuad[2].position.x = (float)(windowWidth / 2) + 80;
+			colorPickerQuad[2].position.y = 0;
+			colorPickerQuad[2].color = {255, 0, 0, 255};
+			// bottom right
+			colorPickerQuad[3].position.x = (float)(windowWidth / 2) + 80;
+			colorPickerQuad[3].position.y = (float)(windowWidth / 2);
+			colorPickerQuad[3].color = {0, 0, 0, 255};
+
+			int colorPickerIndices[] = {0, 1, 2, 0, 2, 3};
+
+			// draw a quad
+			SDL_Vertex colorSliderQuad[4] = {0};
+			// bottom left
+			colorSliderQuad[0].position.x = (float)(windowWidth / 2);
+			colorSliderQuad[0].position.y = 89.0f;
+			colorSliderQuad[0].color = {0, 0, 0, 255};
+			// top left
+			colorSliderQuad[1].position.x = (float)(windowWidth / 2);
+			colorSliderQuad[1].position.y = 0;
+			colorSliderQuad[1].color = {255, 0, 0, 255};
+			// top right
+			colorSliderQuad[2].position.x = (float)(windowWidth / 2) + 8;
+			colorSliderQuad[2].position.y = 0;
+			colorSliderQuad[2].color = {255, 0, 0, 255};
+			// bottom right
+			colorSliderQuad[3].position.x = (float)(windowWidth / 2) + 8;
+			colorSliderQuad[3].position.y = 89.0f;
+			colorSliderQuad[3].color = {0, 0, 0, 255};
+
+			int colorSliderIndices[] = {0, 1, 2, 0, 2, 3};
+
+			SDL_RenderGeometry(renderer.get(), nullptr, colorSliderQuad, 4, colorSliderIndices, 6);
+
+			interfacePtr->drawDivider({(int)windowWidth / 2, 0, 1, (int)windowHeight}, {240, 209, 189, 255}, renderer.get());
+			interfacePtr->drawDivider({(int)(windowWidth / 2) + 8, 0, 1, (int)windowHeight}, {240, 209, 189, 255}, renderer.get());
+
+			SDL_RenderGeometry(renderer.get(), nullptr, themesSliderOutline, 3, nullptr, 0);
+			SDL_RenderGeometry(renderer.get(), nullptr, themesSlider, 3, nullptr, 0);
+			SDL_RenderGeometry(renderer.get(), nullptr, colorPickerQuad, 4, colorPickerIndices, 6);
+
+			if (inColorPickerBounds) {
+				SDL_SetRenderDrawColor(renderer.get(), 255, 255, 255, 255);
+				SDL_RenderDrawRect(renderer.get(), &themesColorPicker);
 			}
 
-			if (setThemeIsPressed) {
-				exitThemeCreatorText = imagePtr->createText({exitThemeCreatorBtn->text, dirPath + "assets/Onest.ttf", exitThemeCreatorBtn->buttonColor, 96}, renderer.get());
-				themesMenuBGText = imagePtr->createText({setMenuBGBtn->text, dirPath + "assets/Onest.ttf", setMenuBGBtn->buttonColor, 96}, renderer.get());
-				themesBGCText = imagePtr->createText({setButtonBGCBtn->text, dirPath + "assets/Onest.ttf", setButtonBGCBtn->buttonColor, 32}, renderer.get());
-				themesOCText = imagePtr->createText({setButtonOCBtn->text, dirPath + "assets/Onest.ttf", setButtonOCBtn->buttonColor, 96}, renderer.get());
-				themesTCText = imagePtr->createText({setButtonTCBtn->text, dirPath + "assets/Onest.ttf", setButtonTCBtn->buttonColor, 96}, renderer.get());
-				buttonColorInputText = imagePtr->createText({buttonColorInputBtn->text, dirPath + "assets/Onest.ttf", buttonColorInputBtn->buttonColor, 100}, renderer.get());
-
-				SDL_Rect paintingScreen = {0, 0, (int)windowWidth, (int)windowHeight};
-				SDL_SetRenderDrawColor(renderer.get(), 26, 17, 16, 255);
-				SDL_RenderFillRect(renderer.get(), &paintingScreen);
-
-				interfacePtr->draw(exitThemeCreatorBtn, exitThemeCreatorText, renderer.get());
-				// menu background colour
-				interfacePtr->setButtonTextSize(themesMenuBGText, 0, 5);
-				interfacePtr->draw(setMenuBGBtn, themesMenuBGText, renderer.get());
-				// button background colour 
-				interfacePtr->setButtonTextSize(themesBGCText, -15, 5);
-				interfacePtr->draw(setButtonBGCBtn, themesBGCText, renderer.get());
-				// button outline colour 
-				interfacePtr->setButtonTextSize(themesOCText, -10, 5);
-				interfacePtr->draw(setButtonOCBtn, themesOCText, renderer.get());
-				// button text colour 
-				interfacePtr->setButtonTextSize(themesTCText, -15, 5);
-				interfacePtr->draw(setButtonTCBtn, themesTCText, renderer.get());
-
-				// draw a quad
-				SDL_Vertex colorPickerQuad[4] = {0};
-				// bottom left
-				colorPickerQuad[0].position.x = (float)(windowWidth / 2) + 9;
-				colorPickerQuad[0].position.y = (float)(windowWidth / 2);
-				colorPickerQuad[0].color = {0, 0, 0, 255};
-				// top left
-				colorPickerQuad[1].position.x = (float)(windowWidth / 2) + 9;
-				colorPickerQuad[1].position.y = 0;
-				colorPickerQuad[1].color = {255, 255, 255, 255};
-				// top right
-				colorPickerQuad[2].position.x = (float)(windowWidth / 2) + 80;
-				colorPickerQuad[2].position.y = 0;
-				colorPickerQuad[2].color = {255, 0, 0, 255};
-				// bottom right
-				colorPickerQuad[3].position.x = (float)(windowWidth / 2) + 80;
-				colorPickerQuad[3].position.y = (float)(windowWidth / 2);
-				colorPickerQuad[3].color = {0, 0, 0, 255};
-
-				int colorPickerIndices[] = {0, 1, 2, 0, 2, 3};
-
-				// draw a quad
-				SDL_Vertex colorSliderQuad[4] = {0};
-				// bottom left
-				colorSliderQuad[0].position.x = (float)(windowWidth / 2);
-				colorSliderQuad[0].position.y = 89.0f;
-				colorSliderQuad[0].color = {0, 0, 0, 255};
-				// top left
-				colorSliderQuad[1].position.x = (float)(windowWidth / 2);
-				colorSliderQuad[1].position.y = 0;
-				colorSliderQuad[1].color = {255, 0, 0, 255};
-				// top right
-				colorSliderQuad[2].position.x = (float)(windowWidth / 2) + 8;
-				colorSliderQuad[2].position.y = 0;
-				colorSliderQuad[2].color = {255, 0, 0, 255};
-				// bottom right
-				colorSliderQuad[3].position.x = (float)(windowWidth / 2) + 8;
-				colorSliderQuad[3].position.y = 89.0f;
-				colorSliderQuad[3].color = {0, 0, 0, 255};
-
-				int colorSliderIndices[] = {0, 1, 2, 0, 2, 3};
-
-				SDL_RenderGeometry(renderer.get(), nullptr, colorSliderQuad, 4, colorSliderIndices, 6);
-
-				interfacePtr->drawDivider({(int)windowWidth / 2, 0, 1, (int)windowHeight}, {240, 209, 189, 255}, renderer.get());
-				interfacePtr->drawDivider({(int)(windowWidth / 2) + 8, 0, 1, (int)windowHeight}, {240, 209, 189, 255}, renderer.get());
-
-				SDL_RenderGeometry(renderer.get(), nullptr, themesSliderOutline, 3, nullptr, 0);
-				SDL_RenderGeometry(renderer.get(), nullptr, themesSlider, 3, nullptr, 0);
-				SDL_RenderGeometry(renderer.get(), nullptr, colorPickerQuad, 4, colorPickerIndices, 6);
-
-				if (inColorPickerBounds) {
-					SDL_SetRenderDrawColor(renderer.get(), 255, 255, 255, 255);
-					SDL_RenderDrawRect(renderer.get(), &themesColorPicker);
-				}
-
-				interfacePtr->setButtonTextSize(buttonColorInputText, -30, 5);
-				interfacePtr->draw(buttonColorInputBtn, buttonColorInputText, renderer.get());
-			}
+			interfacePtr->setButtonTextSize(buttonColorInputText, -30, 5);
+			interfacePtr->draw(buttonColorInputBtn, buttonColorInputText, renderer.get());
 		}
 
 		SDL_RenderPresent(renderer.get());

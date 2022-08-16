@@ -110,7 +110,7 @@ namespace Application {
 		Helper::IMD minimalText {nullptr};
 		Helper::IMD setBGText {nullptr};
 		Helper::IMD openFileText {nullptr};
-		Helper::IMD setBGColorText {nullptr};
+		Helper::IMD bgColorInputText {nullptr};
 		Helper::IMD typographyInputText {nullptr};
 
 		////////////////////////////////
@@ -138,7 +138,7 @@ namespace Application {
 		Helper::BUTTONPTR minimalBtn {nullptr};
 		Helper::BUTTONPTR setBGBtn {nullptr};
 		Helper::BUTTONPTR openFileBtn {nullptr};
-		Helper::BUTTONPTR setBGColorBtn {nullptr};
+		Helper::BUTTONPTR bgColorInputBtn {nullptr};
 		Helper::BUTTONPTR setTypographyBtn {nullptr};
 		Helper::BUTTONPTR typographyInputBtn {nullptr};
 		Helper::BUTTONPTR setThemeBtn {nullptr};
