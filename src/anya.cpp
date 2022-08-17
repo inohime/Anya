@@ -33,6 +33,10 @@ namespace Application {
 	};
 #endif
 
+	constexpr int f(int k) {
+
+	}
+
 	bool Anya::boot() {
 		SDL_assert(SDL_Init(SDL_INIT_EVERYTHING) == 0);
 		SDL_assert(IMG_Init(IMG_INIT_PNG | IMG_INIT_JPG) != 0);
@@ -99,44 +103,6 @@ namespace Application {
 		scenePtr->createScene("Settings");
 		scenePtr->createScene("Settings-Themes");
 		scenePtr->createScene("Theme-Creator");
-
-		/*
-				if (std::strcmp(button.layer, scenePtr->getCurrentSceneName() == 0) {
-					button.isEnabled = true;
-				}
-		*/
-
-		// idea for layering buttons
-		/*
-			create buttons with a "layerName", manage buttons in a layer by doing this
-
-			- createButton("Main", ...)
-
-			// get the current scene
-
-			// layerName = sceneName, if this layer name == scene name, enable the buttons for this layer
-
-
-			We want to run a check on the layer container. If we have (x) layer being displayed, only the buttons on that layer should be enabled.
-			All buttons in a layer should be disabled if the layer isn't the current one being displayed.
-
-			// get all of the buttons
-
-			// find the current layer that is active (compare with scene name)
-
-			// enable the buttons that are on the active layer
-
-			for (auto &button : interfacePtr->getButtonList()) {
-				if (button.layer == currentSceneName) {
-					enable button
-				} else {
-					disable button
-				}
-
-				// do the button magic like we do below, no more having to disable every last thing
-			}
-
-		*/
 
 		// main
 		settingsBtn = interfacePtr->createButton("+", "Main", 5, 5, 20, 20);
@@ -214,7 +180,6 @@ namespace Application {
 
 		// set the scene to be displayed
 		scenePtr->setScene("Main");
-		//scenePtr->setScene("Minimal-Main");
 
 		shouldRun = true;
 
@@ -232,19 +197,6 @@ namespace Application {
 
 				case SDL_MOUSEBUTTONDOWN: {
 					for (auto &button : interfacePtr->getButtonList()) {
-						/*
-							switch (button->id) {
-								// example
-								case githubBtn->id:
-									break;
-
-								case settingsBtn->id:
-									break;
-							}
-							
-							will need a constexpr int to handle this
-						*/
-
 						if (interfacePtr->cursorInBounds(button, interfacePtr->getMousePos())) {
 							if (button->isEnabled) {
 								if (button->canMinimize)
@@ -379,182 +331,6 @@ namespace Application {
 							}
 						}
 					}
-
-					/*
-					for (auto &button : interfacePtr->getButtonList()) {
-						if (button->canMinimize && interfacePtr->cursorInBounds(button, interfacePtr->getMousePos()))
-							if (scenePtr->getCurrentScene() == scenePtr->findScene("Main") && minimizeBtn->isEnabled)
-								SDL_MinimizeWindow(window.get());
-
-						if (button->canQuit && interfacePtr->cursorInBounds(button, interfacePtr->getMousePos())) {
-							if (scenePtr->getCurrentScene() == scenePtr->findScene("Settings"))
-								shouldRun = false;
-
-							if (scenePtr->getCurrentScene() == scenePtr->findScene("Main") && mainQuitBtn->isEnabled)
-								shouldRun = false;
-						}
-
-					}
-					*/
-					/*
-					if (interfacePtr->cursorInBounds(settingsBtn, interfacePtr->getMousePos()) && settingsBtn->isEnabled) {
-						scenePtr->setScene("Settings");
-						settingsBtn->isEnabled = false;
-					}
-
-					if (interfacePtr->cursorInBounds(githubBtn, interfacePtr->getMousePos()) && githubBtn->isEnabled) {
-#ifdef _WIN32
-						ShellExecute(0, 0, L"https://www.github.com/inohime", 0, 0, SW_SHOW);
-#elif defined __linux__
-						system("xdg-open https://www.github.com/inohime");
-#endif
-					}
-
-					if (interfacePtr->cursorInBounds(settingsExitBtn, interfacePtr->getMousePos()) && settingsExitBtn->isEnabled) {
-						scenePtr->setScene("Main");
-						settingsExitBtn->isEnabled = false;
-						themesBtn->isEnabled = false;
-						githubBtn->isEnabled = false;
-						calendarBtn->isEnabled = false;
-						settingsBtn->isEnabled = true;
-					}
-
-					if (interfacePtr->cursorInBounds(themesBtn, interfacePtr->getMousePos()) && themesBtn->isEnabled) {
-						scenePtr->setScene("Settings-Themes");
-						themesBtn->isEnabled = false;
-						githubBtn->isEnabled = false;
-						calendarBtn->isEnabled = false;
-						themesExitBtn->isEnabled = true;
-						settingsExitBtn->isEnabled = false;
-					}
-
-					if (interfacePtr->cursorInBounds(calendarBtn, interfacePtr->getMousePos()) && calendarBtn->isEnabled && !showDate) {
-						showDate = true;
-					} else if (interfacePtr->cursorInBounds(calendarBtn, interfacePtr->getMousePos()) && calendarBtn->isEnabled && showDate) {
-						showDate = false;
-					}
-
-					if (interfacePtr->cursorInBounds(setBGBtn, interfacePtr->getMousePos()) && setBGBtn->isEnabled && !setBGIsPressed) {
-						if (setTypographyIsPressed) {
-							setTypographyIsPressed = false;
-							typographyInputBtn->isEnabled = false;
-						}
-
-						setBGIsPressed = true;
-						openFileBtn->isEnabled = true;
-						setBGColorBtn->isEnabled = true;
-					} else if (interfacePtr->cursorInBounds(setBGBtn, interfacePtr->getMousePos()) && setBGBtn->isEnabled && setBGIsPressed) {
-						setBGIsPressed = false;
-						openFileBtn->isEnabled = false;
-						setBGColorBtn->isEnabled = false;
-						setBGColorBtn->text = "Set Color";
-					}
-
-					if (interfacePtr->cursorInBounds(openFileBtn, interfacePtr->getMousePos()) && openFileBtn->isEnabled && setBGIsPressed) {
-						// this operation increases memory usage substantially
-						NFD::UniquePath filePath = nullptr;
-						const nfdfilteritem_t filterItem[1] = {"Image formats (*.jpg, *.jpeg, *.png)", "jpg,jpeg,png"};
-						nfdresult_t result = NFD::OpenDialog(filePath, filterItem, 1, NULL);
-#ifdef _DEBUG
-						if (result == NFD_OKAY) {
-							std::cout << "Success!\n";
-							std::cout << filePath.get() << '\n';
-						} else if (result == NFD_CANCEL) {
-							std::cout << "Canceled file dialog operation\n";
-						} else {
-							std::cout << "Error: " << NFD_GetError() << '\n';
-						}
-#endif
-						if (result == NFD_OKAY) {
-							if (setBGToColor)
-								setBGToColor = false;
-
-							backgroundImg = imagePtr->createImage(filePath.get(), renderer.get());
-							setBGtoImg = true;
-						} else if (result == NFD_CANCEL) {
-							break;
-						}
-					}
-
-					if (interfacePtr->cursorInBounds(setTypographyBtn, interfacePtr->getMousePos()) && setTypographyBtn->isEnabled && !setTypographyIsPressed) {
-						if (setBGIsPressed) {
-							setBGIsPressed = false;
-							setBGColorBtn->isEnabled = false;
-						}
-
-						setTypographyIsPressed = true;
-						typographyInputBtn->isEnabled = true;
-					} else if (interfacePtr->cursorInBounds(setTypographyBtn, interfacePtr->getMousePos()) && setTypographyBtn->isEnabled && setTypographyIsPressed) {
-						setTypographyIsPressed = false;
-						typographyInputBtn->isEnabled = false;
-						typographyInputBtn->text = "Set Font";
-					}
-
-					if (interfacePtr->cursorInBounds(typographyInputBtn, interfacePtr->getMousePos()) && typographyInputBtn->isEnabled) {
-						typographyInputBtn->text = "";
-					}
-
-					if (interfacePtr->cursorInBounds(setThemeBtn, interfacePtr->getMousePos()) && setThemeBtn->isEnabled) {
-						setThemeIsPressed = true;
-						setMenuBGBtn->isEnabled = true;
-						setButtonBGCBtn->isEnabled = true;
-						setButtonOCBtn->isEnabled = true;
-						setButtonTCBtn->isEnabled = true;
-					} else {
-						setThemeIsPressed = false;
-						setMenuBGBtn->isEnabled = false;
-						setButtonBGCBtn->isEnabled = false;
-						setButtonOCBtn->isEnabled = false;
-						setButtonTCBtn->isEnabled = false;
-					}
-
-					if (interfacePtr->cursorInBounds(setBGColorBtn, interfacePtr->getMousePos()) && setBGColorBtn->isEnabled) {
-						if (setBGtoImg)
-							setBGtoImg = false;
-
-						setBGToColor = true;
-						setBGColorBtn->text = "";
-					}
-
-					if (interfacePtr->cursorInBounds(minimalBtn, interfacePtr->getMousePos()) && minimalBtn->isEnabled) {
-						minimalMode = true;
-						themesExitBtn->isEnabled = false;
-						minimalBtn->isEnabled = false;
-						setBGBtn->isEnabled = false;
-						openFileBtn->isEnabled = false;
-						setTypographyBtn->isEnabled = false;
-						typographyInputBtn->isEnabled = false;
-						SDL_SetWindowBordered(window.get(), SDL_FALSE);
-						SDL_SetWindowSize(window.get(), 120, 50);
-#ifdef _WIN32
-						setWindowShadow(hwnd, {0, 0, 0, 1});
-#endif
-						scenePtr->setScene("Main");
-					}
-
-					if (interfacePtr->cursorInBounds(returnBtn, interfacePtr->getMousePos()) && returnBtn->isEnabled && minimalMode) {
-						minimalMode = false;
-						themesExitBtn->isEnabled = true;
-						SDL_SetWindowBordered(window.get(), SDL_TRUE);
-						SDL_SetWindowSize(window.get(), windowWidth, windowHeight);
-#ifdef _WIN32
-						setWindowShadow(hwnd, {0, 0, 0, 0});
-#endif
-						scenePtr->setScene("Settings-Themes");
-					}
-
-					if (interfacePtr->cursorInBounds(themesExitBtn, interfacePtr->getMousePos()) && themesExitBtn->isEnabled) {
-						scenePtr->setScene("Settings");
-						settingsExitBtn->isEnabled = true;
-						themesExitBtn->isEnabled = false;
-						minimalBtn->isEnabled = false;
-						setBGBtn->isEnabled = false;
-						openFileBtn->isEnabled = false;
-						setTypographyBtn->isEnabled = false;
-						setBGIsPressed = false;
-						setTypographyIsPressed = false;
-					}
-					*/
 				} break;
 
 				case SDL_KEYDOWN: {
@@ -725,35 +501,7 @@ namespace Application {
 			deltaTime = (double)std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
 			begin = end;
 
-			// enable these buttons when first layer's buttons are disabled
-			/*
-			if (scenePtr->getCurrentScene() == scenePtr->findScene("Settings") && !settingsBtn->isEnabled) {
-				settingsExitBtn->isEnabled = true;
-				themesBtn->isEnabled = true;
-				githubBtn->isEnabled = true;
-				calendarBtn->isEnabled = true;
-			}
-
-			// enable these buttons when the second layer's butons are disabled
-			if (scenePtr->getCurrentScene() == scenePtr->findScene("Settings-Themes") && !themesBtn->isEnabled) {
-				setBGBtn->isEnabled = true;
-				minimalBtn->isEnabled = true;
-				setTypographyBtn->isEnabled = true;
-				setThemeBtn->isEnabled = true;
-			}
-
-			// when minimalMode is false, we can keep the returnBtn from being clickable through the Settings-Theme layer
-			if (minimalMode) {
-				mainQuitBtn->isEnabled = true;
-				minimizeBtn->isEnabled = true;
-				returnBtn->isEnabled = true;
-			} else {
-				mainQuitBtn->isEnabled = false;
-				minimizeBtn->isEnabled = false;
-				returnBtn->isEnabled = false;
-			}
-			*/
-
+			// disable buttons that are not on the current layer being displayed
 			for (const auto &button : interfacePtr->getButtonList()) {
 				if (button->layer == scenePtr->getCurrentSceneName()) {
 					button->isEnabled = true;
@@ -779,7 +527,6 @@ namespace Application {
 		timeText = imagePtr->createTextA({timeToStr(std::chrono::system_clock::now()), typographyStr, {{0}, {0}, {255, 255, 255}}, 28}, renderer.get());
 
 		if (scenePtr->getCurrentScene() == scenePtr->findScene("Main")) {
-			//timeText = imagePtr->createTextA({timeToStr(std::chrono::system_clock::now()), typographyStr, {{0}, {0}, {255, 255, 255}}, 28}, renderer.get());
 			dateText = imagePtr->createTextA({std::format("{:%Ex}", std::chrono::current_zone()->to_local(std::chrono::system_clock::now())), dirPath + "assets/Onest.ttf", {{0}, {0}, {255, 255, 255}}, 16}, renderer.get());
 			settingsText = imagePtr->createText({settingsBtn->text, dirPath + "assets/Onest.ttf", settingsBtn->buttonColor, 96}, renderer.get());
 
@@ -795,7 +542,7 @@ namespace Application {
 			if (showDate)
 				imagePtr->draw(dateText, renderer.get(), static_cast<int>(windowWidth / 4), static_cast<int>(windowHeight / 2.1));
 
-			imagePtr->draw(timeText, renderer.get(), static_cast<int>((windowWidth - timeText->imageWidth) / 2), windowHeight - timeText->imageHeight);
+			imagePtr->draw(timeText, renderer.get(), static_cast<int>((windowWidth - timeText->imageWidth) / 2), (windowHeight - timeText->imageHeight) + 2);
 
 			interfacePtr->setButtonTextSize(settingsText, 1, 16);
 			interfacePtr->draw(settingsBtn, settingsText, renderer.get());
