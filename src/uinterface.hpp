@@ -130,7 +130,6 @@ namespace Application::Helper {
 		void draw(BUTTONPTR &button, IMD buttonText, SDL_Renderer *ren, double sx = 0.0, double sy = 0.0);
 
 	private:
-		//std::unordered_map<std::basic_string<char>, BUTTONPTR> layers;
 		std::vector<BUTTONPTR> btnList {};
 		SDL_Point mousePos {};
 		int buttonID {0};

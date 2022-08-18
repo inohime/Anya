@@ -33,10 +33,6 @@ namespace Application {
 	};
 #endif
 
-	constexpr int f(int k) {
-
-	}
-
 	bool Anya::boot() {
 		SDL_assert(SDL_Init(SDL_INIT_EVERYTHING) == 0);
 		SDL_assert(IMG_Init(IMG_INIT_PNG | IMG_INIT_JPG) != 0);
