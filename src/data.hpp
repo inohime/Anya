@@ -21,12 +21,18 @@ namespace Application::Helper {
 	};
 
 	struct ImageData final {
+		// The file path of the image
 		std::basic_string<char> path;
+		// The image itself, self-managed memory
 		std::shared_ptr<SDL_Texture> texture {nullptr};
+		// The width of the image (horizontal)
 		int imageWidth {0};
+		// The height of the image (vertical)
 		int imageHeight {0};
-		int imagePos1 {0}; // x
-		int imagePos2 {0}; // y
+		// The image's X position
+		int imagePos1 {0};
+		// The image's Y position
+		int imagePos2 {0};
 	};
 	// handle
 	using IMD = std::shared_ptr<ImageData>;
