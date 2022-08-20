@@ -112,7 +112,10 @@ namespace Application::Helper {
 			return nullptr;
 		}
 		// get the size of the surface
-		TTF_SizeText(font, msg.msg.data(), &newImage->imageWidth, &newImage->imageHeight);
+		if (TTF_SizeUTF8(font, msg.msg.data(), &newImage->imageWidth, &newImage->imageHeight) != 0) {
+			panicln("Failed to retrieve text size");
+			return nullptr;
+		}
 
 		images.insert({msg.fontFile, newImage});
 
