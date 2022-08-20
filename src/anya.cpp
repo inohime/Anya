@@ -33,6 +33,23 @@ namespace Application {
 	};
 #endif
 
+	static const void drawGradientEx(SDL_Renderer *ren, float xPos1, float yPos1, float xPos2, float yPos2, const SDL_Color &c1, const SDL_Color &c2) {
+		SDL_Vertex vert[4] = {
+			{xPos1, yPos1, c1}, // top left
+			{xPos2, yPos1, c1}, // top right
+			{xPos1, yPos2, c2}, // bottom left
+			{xPos2, yPos2, c2}, // bottom right
+		};
+
+		const int indices[] = {0, 1, 3, 0, 2, 3};
+
+		SDL_RenderGeometry(ren, nullptr, vert, 4, indices, 6);
+	}
+
+	static const void drawGradient(SDL_Renderer *ren, const SDL_FRect &rect, SDL_Color &c1, SDL_Color &c2) {
+		drawGradientEx(ren, rect.x, rect.y, rect.w, rect.h, c1, c2);
+	}
+
 	bool Anya::boot() {
 		SDL_assert(SDL_Init(SDL_INIT_EVERYTHING) == 0);
 		SDL_assert(IMG_Init(IMG_INIT_PNG | IMG_INIT_JPG) != 0);
@@ -61,7 +78,7 @@ namespace Application {
 #endif
 
 		// setup minimal mode window dragging
-		const auto hitTestResult = [](SDL_Window *window, const SDL_Point *pt, void *data) -> SDL_HitTestResult {
+		constexpr auto hitTestResult = [](SDL_Window *window, const SDL_Point *pt, void *data) -> SDL_HitTestResult {
 			SDL_Rect dragRect = {0, 0, 50, 10};
 			if (SDL_PointInRect(pt, &dragRect))
 				return SDL_HITTEST_DRAGGABLE;
@@ -104,7 +121,6 @@ namespace Application {
 		settingsBtn = interfacePtr->createButton("+", "Main", 5, 5, 20, 20);
 
 		// Minimal-Main
-		//settingsBtn->isEnabled = true;
 		mainQuitBtn = interfacePtr->createButton("x", "Minimal-Main", 103, 5, 12, 12);
 		mainQuitBtn->canQuit = true;
 		minimizeBtn = interfacePtr->createButton("-", "Minimal-Main", 85, 5, 12, 12);
@@ -114,7 +130,6 @@ namespace Application {
 		// settings
 		settingsQuitBtn = interfacePtr->createButton("Quit", "Settings", 108, 5, 35, 25);
 		settingsQuitBtn->canQuit = true;
-		//settingsQuitBtn->isEnabled = true;
 		settingsExitBtn = interfacePtr->createButton("x", "Settings", 65, 60, 20, 20);
 		themesBtn = interfacePtr->createButton("Themes", "Settings", 39, 5, 60, 25);
 		githubBtn = interfacePtr->createButton("", "Settings", githubImg, 5, 5, 25, 25);
@@ -207,21 +222,21 @@ namespace Application {
 										shouldRun = false;
 								}
 
-								if (button == settingsBtn )
+								if (button == settingsBtn)
 									scenePtr->setScene("Settings");
 
-								if (button == githubBtn ) {
-									#ifdef _WIN32
-										ShellExecute(0, 0, L"https://www.github.com/inohime", 0, 0, SW_SHOW);
-									#elif defined __linux__
-										system("xdg-open https://www.github.com/inohime");
-									#endif
+								if (button == githubBtn) {
+#ifdef _WIN32
+									ShellExecute(0, 0, L"https://www.github.com/inohime", 0, 0, SW_SHOW);
+#elif defined __linux__
+									system("xdg-open https://www.github.com/inohime");
+#endif
 								}
 
-								if (button == settingsExitBtn )
+								if (button == settingsExitBtn)
 									scenePtr->setScene("Main");
 
-								if (button == themesBtn )
+								if (button == themesBtn)
 									scenePtr->setScene("Settings-Themes");
 
 								if (button == calendarBtn && !showDate) {
@@ -238,7 +253,6 @@ namespace Application {
 									setBGIsPressed = true;
 								} else if (button == setBGBtn && setBGIsPressed) {
 									setBGIsPressed = false;
-									setBGToColor = false;
 									bgColorInputBtn->text = "Set Color";
 								}
 
@@ -247,20 +261,20 @@ namespace Application {
 									NFD::UniquePath filePath = nullptr;
 									const nfdfilteritem_t filterItem[1] = {"Image formats (*.jpg, *.jpeg, *.png)", "jpg,jpeg,png"};
 									nfdresult_t result = NFD::OpenDialog(filePath, filterItem, 1, NULL);
-									#ifdef _DEBUG
-										if (result == NFD_OKAY) {
-											std::cout << "Success!\n";
-											std::cout << filePath.get() << '\n';
-										} else if (result == NFD_CANCEL) {
-											std::cout << "Canceled file dialog operation\n";
-										} else {
-											std::cout << "Error: " << NFD_GetError() << '\n';
-										}
-									#endif
+#ifdef _DEBUG
+									if (result == NFD_OKAY) {
+										std::cout << "Success!\n";
+										std::cout << filePath.get() << '\n';
+									} else if (result == NFD_CANCEL) {
+										std::cout << "Canceled file dialog operation\n";
+									} else {
+										std::cout << "Error: " << NFD_GetError() << '\n';
+									}
+#endif
 									if (result == NFD_OKAY) {
 										if (setBGToColor)
 											setBGToColor = false;
-	
+
 										backgroundImg = imagePtr->createImage(filePath.get(), renderer.get());
 										setBGtoImg = true;
 									} else if (result == NFD_CANCEL) {
@@ -272,11 +286,8 @@ namespace Application {
 									if (setBGtoImg)
 										setBGtoImg = false;
 
-									setBGToColor = true;
-
-									if (!setTypographyIsPressed) {
+									if (!setTypographyIsPressed)
 										bgColorInputBtn->text = "";
-									}
 								}
 
 								if (button == setTypographyBtn && !setTypographyIsPressed) {
@@ -291,17 +302,16 @@ namespace Application {
 								}
 
 								if (button == typographyInputBtn) {
-									if (!setBGIsPressed) {
+									if (!setBGIsPressed && setTypographyIsPressed)
 										typographyInputBtn->text = "";
-									}
 								}
 
 								if (button == minimalBtn) {
 									SDL_SetWindowBordered(window.get(), SDL_FALSE);
 									SDL_SetWindowSize(window.get(), minWindowWidth, minWindowHeight);
-									#ifdef _WIN32
-										setWindowShadow(hwnd, {0, 0, 0, 1});
-									#endif
+#ifdef _WIN32
+									setWindowShadow(hwnd, {0, 0, 0, 1});
+#endif
 									scenePtr->setScene("Minimal-Main");
 								}
 
@@ -316,14 +326,22 @@ namespace Application {
 								if (button == returnBtn) {
 									SDL_SetWindowBordered(window.get(), SDL_TRUE);
 									SDL_SetWindowSize(window.get(), windowWidth, windowHeight);
-									#ifdef _WIN32
-										setWindowShadow(hwnd, {0, 0, 0, 0});
-									#endif
+#ifdef _WIN32
+									setWindowShadow(hwnd, {0, 0, 0, 0});
+#endif
 									scenePtr->setScene("Settings-Themes");
 								}
 
-								if (button == themesExitBtn )
+								if (button == themesExitBtn) {
+									// close anything still opened
+									if (setBGIsPressed)
+										setBGIsPressed = false;
+
+									if (setTypographyIsPressed)
+										setTypographyIsPressed = false;
+
 									scenePtr->setScene("Settings");
+								}
 							}
 						}
 					}
@@ -354,6 +372,15 @@ namespace Application {
 										bgColorText.insert(firstComma + nextCharacter, 1, ' ');
 										bgColorText.insert(secondComma + nextCharacter, 1, ' ');
 									}
+
+									// check if there are special characters 
+									if (bgColorText.find_first_of("!@#$%^&*()-+={}[]|/?<>;:.\"\'\\") != bgColorText.npos) {
+										SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Background Color Error", "String input contains non-numerical characters!", window.get());
+										setBGToColor = false;
+										bgColorText = "Set Color";
+										break;
+									}
+
 									// delete all commas in the string
 									std::erase(bgColorText, ',');
 									// find all of the spaces
@@ -381,6 +408,7 @@ namespace Application {
 									greenViewColor = std::stoi(bgColorText.substr(first, second));
 									blueViewColor = std::stoi(bgColorText.substr(second, bgColorText.back()));
 									// 255 163 210 (demo colour)
+									setBGToColor = true;
 								} else if (bgColorText.contains('#')) {
 									const char *hexVal = bgColorText.c_str();
 									// convert the hex to rgb
@@ -446,7 +474,7 @@ namespace Application {
 
 				case SDL_TEXTINPUT: {
 					if (!(SDL_GetModState() & KMOD_CTRL && (ev.text.text[0] == 'c' || ev.text.text[0] == 'C' ||
-												ev.text.text[0] == 'v' || ev.text.text[0] == 'V'))) {
+													ev.text.text[0] == 'v' || ev.text.text[0] == 'V'))) {
 						if (setBGIsPressed && bgColorInputBtn->isEnabled) {
 							if (bgColorInputBtn->text.contains("Set Color"))
 								break;
@@ -475,18 +503,18 @@ namespace Application {
 					if (interfacePtr->cursorInBounds(colorSliderBounds, interfacePtr->getMousePos())) {
 						// move slider base by 5px
 						// center
-						themesSlider[0].position.y = (float)ev.motion.y;
+						themesSlider[0].position.y = static_cast<float>(ev.motion.y);
 						// left
-						themesSlider[1].position.y = (float)ev.motion.y - 5;
+						themesSlider[1].position.y = static_cast<float>(ev.motion.y - 5);
 						// right
-						themesSlider[2].position.y = (float)ev.motion.y + 5;
+						themesSlider[2].position.y = static_cast<float>(ev.motion.y + 5);
 						// move slider outline by 7px
 						// center
-						themesSliderOutline[0].position.y = (float)ev.motion.y;
+						themesSliderOutline[0].position.y = static_cast<float>(ev.motion.y);
 						// left
-						themesSliderOutline[1].position.y = (float)ev.motion.y - 7;
+						themesSliderOutline[1].position.y = static_cast<float>(ev.motion.y - 7);
 						// right
-						themesSliderOutline[2].position.y = (float)ev.motion.y + 7;
+						themesSliderOutline[2].position.y = static_cast<float>(ev.motion.y + 7);
 					}
 				} break;
 
@@ -520,9 +548,8 @@ namespace Application {
 		SDL_SetRenderDrawColor(renderer.get(), 0, 0, 0, 255);
 		SDL_RenderClear(renderer.get());
 
-		timeText = imagePtr->createTextA({timeToStr(std::chrono::system_clock::now()), typographyStr, {{0}, {0}, {255, 255, 255}}, 28}, renderer.get());
-
 		if (scenePtr->getCurrentScene() == scenePtr->findScene("Main")) {
+			timeText = imagePtr->createTextA({timeToStr(std::chrono::system_clock::now()), typographyStr, {{0}, {0}, {255, 255, 255}}, 28}, renderer.get());
 			dateText = imagePtr->createTextA({std::format("{:%Ex}", std::chrono::current_zone()->to_local(std::chrono::system_clock::now())), dirPath + "assets/Onest.ttf", {{0}, {0}, {255, 255, 255}}, 16}, renderer.get());
 			settingsText = imagePtr->createText({settingsBtn->text, dirPath + "assets/Onest.ttf", settingsBtn->buttonColor, 96}, renderer.get());
 
@@ -545,6 +572,7 @@ namespace Application {
 		}
 
 		if (scenePtr->getCurrentScene() == scenePtr->findScene("Minimal-Main")) {
+			timeText = imagePtr->createTextA({timeToStr(std::chrono::system_clock::now()), typographyStr, {{0}, {0}, {255, 255, 255}}, 28}, renderer.get());
 			mainQuitText = imagePtr->createText({mainQuitBtn->text, dirPath + "assets/Onest.ttf", mainQuitBtn->buttonColor, 96}, renderer.get());
 			minimizeText = imagePtr->createText({minimizeBtn->text, dirPath + "assets/Onest.ttf", minimizeBtn->buttonColor, 96}, renderer.get());
 
@@ -629,57 +657,56 @@ namespace Application {
 			// button text colour 
 			interfacePtr->setButtonTextSize(themesTCText, -15, 5);
 			interfacePtr->draw(setButtonTCBtn, themesTCText, renderer.get());
+			// cheat here to avoid making a "hue" and "saturation" thing
 
 			// draw a quad
-			SDL_Vertex colorPickerQuad[4] = {0};
+			SDL_Vertex colorPicker[4] = {0};
 			// bottom left
-			colorPickerQuad[0].position.x = (float)(windowWidth / 2) + 9;
-			colorPickerQuad[0].position.y = (float)(windowWidth / 2);
-			colorPickerQuad[0].color = {0, 0, 0, 255};
+			colorPicker[0].position.x = (float)(windowWidth / 2) + 9;
+			colorPicker[0].position.y = (float)(windowWidth / 2);
+			colorPicker[0].color = {0, 0, 0, 255};
 			// top left
-			colorPickerQuad[1].position.x = (float)(windowWidth / 2) + 9;
-			colorPickerQuad[1].position.y = 0;
-			colorPickerQuad[1].color = {255, 255, 255, 255};
+			colorPicker[1].position.x = (float)(windowWidth / 2) + 9;
+			colorPicker[1].position.y = 0;
+			colorPicker[1].color = {255, 255, 255, 255};
 			// top right
-			colorPickerQuad[2].position.x = (float)(windowWidth / 2) + 80;
-			colorPickerQuad[2].position.y = 0;
-			colorPickerQuad[2].color = {255, 0, 0, 255};
+			colorPicker[2].position.x = (float)(windowWidth / 2) + 80;
+			colorPicker[2].position.y = 0;
+			colorPicker[2].color = {255, 0, 0, 255};
 			// bottom right
-			colorPickerQuad[3].position.x = (float)(windowWidth / 2) + 80;
-			colorPickerQuad[3].position.y = (float)(windowWidth / 2);
-			colorPickerQuad[3].color = {0, 0, 0, 255};
+			colorPicker[3].position.x = (float)(windowWidth / 2) + 80;
+			colorPicker[3].position.y = (float)(windowWidth / 2);
+			colorPicker[3].color = {0, 0, 0, 255};
 
-			int colorPickerIndices[] = {0, 1, 2, 0, 2, 3};
+			constexpr int colorPickerIndices[] = {0, 1, 2, 0, 2, 3};
 
-			// draw a quad
-			SDL_Vertex colorSliderQuad[4] = {0};
-			// bottom left
-			colorSliderQuad[0].position.x = (float)(windowWidth / 2);
-			colorSliderQuad[0].position.y = 89.0f;
-			colorSliderQuad[0].color = {0, 0, 0, 255};
-			// top left
-			colorSliderQuad[1].position.x = (float)(windowWidth / 2);
-			colorSliderQuad[1].position.y = 0;
-			colorSliderQuad[1].color = {255, 0, 0, 255};
-			// top right
-			colorSliderQuad[2].position.x = (float)(windowWidth / 2) + 8;
-			colorSliderQuad[2].position.y = 0;
-			colorSliderQuad[2].color = {255, 0, 0, 255};
-			// bottom right
-			colorSliderQuad[3].position.x = (float)(windowWidth / 2) + 8;
-			colorSliderQuad[3].position.y = 89.0f;
-			colorSliderQuad[3].color = {0, 0, 0, 255};
+			static SDL_Color colours[7] = {
+				{255, 0, 0, 255},
+				{255, 255, 0, 255},
+				{0, 255, 0, 255},
+				{0, 255, 255, 255},
+				{0, 0, 255, 255},
+				{255, 0, 255, 255},
+				{255, 0, 0, 255}
+			};
 
-			int colorSliderIndices[] = {0, 1, 2, 0, 2, 3};
+			for (int i = 0; i < 6; ++i) {
+				const SDL_FRect colorSlider = {
+					static_cast<float>(windowWidth / 2), 
+					static_cast<float>(i * (15)), 
+					static_cast<float>((windowWidth / 2) + 8), 
+					static_cast<float>((i + 1) * 15)
+				};
 
-			SDL_RenderGeometry(renderer.get(), nullptr, colorSliderQuad, 4, colorSliderIndices, 6);
+				drawGradient(renderer.get(), colorSlider, colours[i], colours[i + 1]);
+			}
 
-			interfacePtr->drawDivider({(int)windowWidth / 2, 0, 1, (int)windowHeight}, {240, 209, 189, 255}, renderer.get());
-			interfacePtr->drawDivider({(int)(windowWidth / 2) + 8, 0, 1, (int)windowHeight}, {240, 209, 189, 255}, renderer.get());
+			interfacePtr->drawDivider({static_cast<int>(windowWidth / 2), 0, 1, static_cast<int>(windowHeight)}, {240, 209, 189, 255}, renderer.get());
+			interfacePtr->drawDivider({static_cast<int>((windowWidth / 2) + 8), 0, 1, static_cast<int>(windowHeight)}, {240, 209, 189, 255}, renderer.get());
 
 			SDL_RenderGeometry(renderer.get(), nullptr, themesSliderOutline, 3, nullptr, 0);
 			SDL_RenderGeometry(renderer.get(), nullptr, themesSlider, 3, nullptr, 0);
-			SDL_RenderGeometry(renderer.get(), nullptr, colorPickerQuad, 4, colorPickerIndices, 6);
+			SDL_RenderGeometry(renderer.get(), nullptr, colorPicker, 4, colorPickerIndices, 6);
 
 			if (inColorPickerBounds) {
 				SDL_SetRenderDrawColor(renderer.get(), 255, 255, 255, 255);

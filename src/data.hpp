@@ -12,7 +12,6 @@ namespace Application::Helper {
 	};
 
 	struct MessageData final {
-		MessageData &operator=(MessageData &) {return *this;}
 		std::basic_string<char> msg {};
 		std::basic_string<char> fontFile {};
 		ColorData col {};

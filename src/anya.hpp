@@ -40,8 +40,8 @@ namespace Application {
 		bool shouldRun {false};
 		uint32_t windowWidth {148};
 		uint32_t windowHeight {89};
-		uint32_t minWindowWidth {120};
-		uint32_t minWindowHeight {50};
+		int minWindowWidth {120};
+		int minWindowHeight {50};
 		std::chrono::steady_clock::time_point begin {};
 		std::chrono::steady_clock::time_point end {};
 		double deltaTime {};

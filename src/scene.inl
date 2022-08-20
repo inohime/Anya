@@ -4,7 +4,7 @@
 using namespace Application::Helper::Utils;
 
 namespace Application::Helper {
-	inline constexpr void Scene::createScene(std::string_view name) {
+	__forceinline constexpr void Scene::createScene(std::string_view name) {
 		sceneList.emplace_back(name);
 	}
 
@@ -14,20 +14,20 @@ namespace Application::Helper {
 
 		currentScene = sceneIndex;
 
-#ifdef _DEBUG
+		#ifdef _DEBUG
 		printScene();
-#endif
+		#endif
 	}
 
-	inline constexpr void Scene::printScene() {
+	__forceinline constexpr void Scene::printScene() {
 		println(sceneList[currentScene]);
 	}
 
-	inline constexpr uint64_t Scene::getCurrentScene() {
+	__forceinline constexpr uint64_t Scene::getCurrentScene() {
 		return currentScene;
 	}
 
-	inline constexpr std::string_view Scene::getCurrentSceneName() {
+	__forceinline constexpr std::string_view Scene::getCurrentSceneName() {
 		return sceneList[currentScene];
 	}
 

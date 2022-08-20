@@ -14,9 +14,6 @@ namespace Application::Helper {
 			newButton->texture = *texture;
 
 		newButton->layer = layerName;
-		newButton->id = ++buttonID;
-
-		println("First", buttonID);
 
 		btnList.emplace_back(newButton);
 
@@ -29,9 +26,6 @@ namespace Application::Helper {
 		newButton->box = {x, y, static_cast<int>(w), static_cast<int>(h)};
 		newButton->text = text;
 		newButton->layer = layerName;
-		newButton->id = ++buttonID;
-
-		println("Second", buttonID);
 
 		btnList.emplace_back(newButton);
 
