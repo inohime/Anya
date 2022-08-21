@@ -4,7 +4,7 @@ A cross-platform customizable clock to add more appeal to the standard and run i
 
 ![example image](assets/app-8-7-22.gif)
 
-### Available Features:
+#### Available Features:
 1. Turn date off/on 
 2. Themes:
    - Change Time & Date typography
