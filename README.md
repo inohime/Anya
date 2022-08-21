@@ -4,6 +4,18 @@ A cross-platform customizable clock to add more appeal to the standard and run i
 
 ![example image](assets/app-8-7-22.gif)
 
+### Available Features:
+1. Turn date off/on 
+2. Themes:
+   - Change Time & Date typography
+   - Minimal mode (just time)
+   - Change background to image (GIF supported) or colour
+   - Create a custom theme:
+     - Change menu background
+     - Change button background colour
+     - Change button outline colour
+     - Change button text colour
+
 Application State: currently in development.
 
 Currently Unavailable: Build
