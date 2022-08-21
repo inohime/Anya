@@ -9,37 +9,37 @@
 // TODO: redo this
 
 namespace Application::Helper {
-	class Animation {
-	public:
-		/** Quick animation creation
-		 *
-		 * \param frames -> number of frames in the gif extraction
-		 * \param x -> x position of the image
-		 * \param y -> y position of the image
-		 * \param w -> width of the image (pixel width)
-		 * \param h -> height of the image (pixel height)
-		 */
-		void addAnimation(int frames, int x, int y, int w, int h);
-		/** Updates the animation frames
-		 *
-		 * \param speed -> how fast the animation should play (0 being fastest)
-		 * \param dt -> deltaTime from the main loop
-		 */
-		void update(float speed, double dt);
-		/** Renders the animation to the screen
-		 * 
-		 * \param img -> the animation to draw
-		 * \param ren -> the renderer to use
-		 * \param x -> x position of the animation
-		 * \param y -> y position of the animation
-		 * \param scale -> scale the animation width and height up or down (0 is the lowest it can go)
-		 */
-		void draw(IMD &img, SDL_Renderer *ren, int x, int y, double scale = 0.0);
+    class Animation {
+    public:
+        /** Quick animation creation
+         *
+         * \param frames -> number of frames in the gif extraction
+         * \param x -> x position of the image
+         * \param y -> y position of the image
+         * \param w -> width of the image (pixel width)
+         * \param h -> height of the image (pixel height)
+         */
+        void addAnimation(int frames, int x, int y, int w, int h);
+        /** Updates the animation frames
+         *
+         * \param speed -> how fast the animation should play (0 being fastest)
+         * \param dt -> deltaTime from the main loop
+         */
+        void update(float speed, double dt);
+        /** Renders the animation to the screen
+         *
+         * \param img -> the animation to draw
+         * \param ren -> the renderer to use
+         * \param x -> x position of the animation
+         * \param y -> y position of the animation
+         * \param scale -> scale the animation width and height up or down (0 is the lowest it can go)
+         */
+        void draw(IMD &img, SDL_Renderer *ren, int x, int y, double scale = 0.0);
 
-	private:
-		float frameTime {0.0f};
-		int currentFrame {0};
-		std::basic_string<char> animStr {};
-		std::map<unsigned int, SDL_Rect> frames {};
-	};
+    private:
+        float frameTime {0.0f};
+        int currentFrame {0};
+        std::basic_string<char> animStr {};
+        std::map<unsigned int, SDL_Rect> frames {};
+    };
 } // namespace Application::Helper
