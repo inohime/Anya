@@ -1,0 +1,16 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg/master/scripts/vcpkg.schema.json",
+    "name": "anya",
+    "version": "0.0.1",
+    "dependencies": [
+        "sdl2", 
+        "sdl2-ttf",
+        {
+            "name": "sdl2-image",
+            "default-features": false,
+            "features": [
+                "libjpeg-turbo"
+            ]
+        }
+    ]
+}

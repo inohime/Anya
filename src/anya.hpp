@@ -46,7 +46,7 @@ namespace Application {
         std::chrono::steady_clock::time_point end;
         double deltaTime;
         int FPS {30};
-        const int delay {1000 / FPS};
+        const double delay {1000.0 / FPS};
 
     private:
         std::unique_ptr<Helper::UInterface> interfacePtr {nullptr};
