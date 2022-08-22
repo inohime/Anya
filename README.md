@@ -1,4 +1,4 @@
-# Time
+# Anya
 
 A cross-platform customizable clock to add more appeal to the standard and run in pretty mode or minimal mode.
 
@@ -15,7 +15,25 @@ A cross-platform customizable clock to add more appeal to the standard and run i
      - Change button background colour
      - Change button outline colour
      - Change button text colour
+ 
+#### How to build:
+1. Clone repository
+   ```
+   git clone https://github.com/inohime/Anya.git
+   ```
+2. [vcpkg](https://github.com/Microsoft/vcpkg)
+   ```
+   git clone https://github.com/Microsoft/vcpkg.git
+   cd vcpkg
+   ./bootstrap-vcpkg.sh
+   ./vcpkg integrate install
+   ```
+3. CMake
+   ```
+   Generate the build files with Visual Studio Code & CMake Tools
+   ```
+4. Unpack `assets.rar` into `build/Debug`
 
-Application State: currently in development.
+Application State: `currently in development`
 
-Currently Unavailable: Build
+
