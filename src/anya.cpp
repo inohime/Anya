@@ -51,9 +51,20 @@ namespace Application {
     }
 
     bool Anya::boot() {
-        SDL_assert(SDL_Init(SDL_INIT_EVERYTHING) == 0);
-        SDL_assert(IMG_Init(IMG_INIT_PNG | IMG_INIT_JPG) != 0);
-        SDL_assert(TTF_Init() != -1);
+        if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS) != 0) {
+            panicln("Failed to initialize SDL");
+            return false;
+        }
+
+        if (!IMG_Init(IMG_INIT_PNG | IMG_INIT_JPG)) {
+            panicln("Failed to initialize SDL_image");
+            return false;
+        }
+
+        if (TTF_Init() != 0) {
+            panicln("Failed to initialize SDL_ttf");
+            return false;
+        }
 
         NFD::Guard nfdInit;
 
@@ -238,7 +249,7 @@ namespace Application {
 
                                 if (button == githubBtn) {
 #ifdef _WIN32
-                                    ShellExecute(0, 0, L"https://www.github.com/inohime", 0, 0, SW_SHOW);
+                                    ShellExecuteA(0, 0, "https://www.github.com/inohime", 0, 0, SW_SHOW);
 #elif defined __linux__
                                     system("xdg-open https://www.github.com/inohime");
 #endif
@@ -784,7 +795,7 @@ namespace Application {
         SDL_RenderPresent(renderer.get());
 
         if (deltaTime < delay)
-            SDL_Delay(delay - static_cast<int>(deltaTime));
+            SDL_Delay(static_cast<int>(delay - deltaTime));
     }
 
     void Anya::free() {
