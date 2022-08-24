@@ -5,8 +5,6 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED YES)
 # platform flags
 if (WIN32)
-    set(ENABLE_DWMAPI dwmapi)
-
     if (CMAKE_BUILD_TYPE STREQUAL "Debug")
         set(CMAKE_EXE_LINKER_FLAGS /SUBSYSTEM:CONSOLE)
         message("debug")
@@ -37,7 +35,6 @@ target_link_libraries(
     SDL2::SDL2main 
     SDL2::SDL2_image 
     SDL2::SDL2_ttf 
-    ${ENABLE_DWMAPI}
-    dwmapi 
+    dwmapi
     nfd
 )
