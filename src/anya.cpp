@@ -32,30 +32,13 @@ namespace Application {
     };
 #endif
 
-    static const void drawGradientEx(SDL_Renderer *ren, float xPos1, float yPos1, float xPos2, float yPos2,
-                                     const SDL_Color &c1, const SDL_Color &c2) {
-        SDL_Vertex vert[4] = {
-            {xPos1, yPos1, c1}, // top left
-            {xPos2, yPos1, c1}, // top right
-            {xPos1, yPos2, c2}, // bottom left
-            {xPos2, yPos2, c2}, // bottom right
-        };
-
-        const int indices[] = {0, 1, 3, 0, 2, 3};
-
-        SDL_RenderGeometry(ren, nullptr, vert, 4, indices, 6);
-    }
-
-    static const void drawGradient(SDL_Renderer *ren, const SDL_FRect &rect, SDL_Color &c1, SDL_Color &c2) {
-        drawGradientEx(ren, rect.x, rect.y, rect.w, rect.h, c1, c2);
-    }
-
     bool Anya::boot() {
         if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS) != 0) {
             panicln("Failed to initialize SDL");
             return false;
         }
 
+        //int imgFlags = IMG_INIT_PNG | IMG_INIT_JPG;
         if (!IMG_Init(IMG_INIT_PNG | IMG_INIT_JPG)) {
             panicln("Failed to initialize SDL_image");
             return false;
@@ -770,7 +753,7 @@ namespace Application {
                     static_cast<float>((i + 1) * 15)
                 };
 
-                drawGradient(renderer.get(), colorSlider, colours[i], colours[i + 1]);
+                interfacePtr->drawGradient(colorSlider, colours[i], colours[i + 1], renderer.get());
             }
             // clang-format on
 
@@ -795,7 +778,7 @@ namespace Application {
         SDL_RenderPresent(renderer.get());
 
         if (deltaTime < delay)
-            SDL_Delay(static_cast<int>(delay - deltaTime));
+            SDL_Delay(delay - static_cast<int>(deltaTime));
     }
 
     void Anya::free() {

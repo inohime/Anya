@@ -45,17 +45,17 @@ namespace Application::Helper {
          * \return button object filled with all of the essential details for a customized button.
          */
         BUTTONPTR createButton(std::string_view text, std::string_view layerName, int x, int y, uint32_t w, uint32_t h);
-        /** Gets all of the buttons created
+        /** Gets all of the buttons created.
          *
          * \return an std::vector of all of the buttons in the application.
          */
         std::vector<BUTTONPTR> &getButtonList();
-        /** Gets the mouse's position in the application
+        /** Gets the mouse's position in the application.
          *
          * \return the position of the mouse.
          */
         SDL_Point &getMousePos();
-        /** Checks if the cursor is inside of a button
+        /** Checks if the cursor is inside of a button.
          *
          * \param button -> button to check
          * \param mousePos -> cursor position
@@ -76,7 +76,7 @@ namespace Application::Helper {
          * \param h -> new height of the text
          */
         void setButtonTextSize(IMD &buttonText, int w, int h);
-        /** Changes the button colours (theme)
+        /** Changes the button colours (theme).
          *
          * \param button -> the button to modify
          * \param color -> a struct that consists of:
@@ -85,39 +85,58 @@ namespace Application::Helper {
          * \param - textColor -> the text colour of the button
          */
         void setButtonTheme(BUTTONPTR &button, ColorData color);
-        /** Sets a button at the specified position
+        /** Sets a button at the specified position.
          *
          * \param button -> the button being moved
          * \param x -> x position the button will move to
          * \param y -> y position the button will move to
          */
         void setButtonPos(BUTTONPTR &button, int x, int y);
-        /** Changes the size of a button
+        /** Changes the size of a button.
          *
          * \param button -> the button to modify
          * \param w -> new width of a button
          * \param h -> new height of a button
          */
         void setButtonSize(BUTTONPTR &button, uint32_t w, uint32_t h);
-        /** Changes the texture of a button
+        /** Changes the texture of a button.
          *
          * \param button -> the button to modify
          * \param texture -> the new texture of the button
          */
         void setButtonTexture(BUTTONPTR &button, IMD &texture);
-        /** Updates the mouse position and button state
+        /** Updates the mouse position and button state.
          *
          * \param ev -> the events to poll
          * \param dt -> deltaTime from the main loop
          */
         void update(SDL_Event *ev, double dt);
-        /** Renders a divider to the screen
+        /** Renders a divider to the screen.
          *
          * \param rect -> the divider (rectangle) to draw
          * \param col -> colour of the divider
          * \param ren -> the renderer to use
          */
         void drawDivider(const SDL_Rect &rect, const SDL_Color &col, SDL_Renderer *ren);
+        /** Renders a gradient between select points to the screen.
+         *
+         * \param x1 -> x position for the top and bottom left point
+         * \param y1 -> y position for the top left and right point
+         * \param x2 -> x position for the top and bottom right point
+         * \param y2 -> y position for the bottom left and right point
+         * \param initial -> initial color of the gradient
+         * \param end -> next/end color for the gradient
+         * \param ren -> the renderer to use
+         */
+        void drawGradientEx(float x1, float y1, float x2, float y2, const SDL_Color &initial, const SDL_Color &end, SDL_Renderer *ren);
+        /** Renders a gradient inside of a box to the screen.
+         *
+         * \param rect -> the area to render the gradient to (x1, y1, x2, y2)
+         * \param initial -> initial color of the gradient
+         * \param end -> next/end color for the gradient
+         * \param ren -> the renderer to use
+         */
+        void drawGradient(const SDL_FRect &rect, SDL_Color &initial, SDL_Color &end, SDL_Renderer *ren);
         /** Renders a button to the screen
          *
          * \param button -> the button to draw

@@ -112,6 +112,23 @@ namespace Application::Helper {
         SDL_RenderDrawRect(ren, &rect);
     }
 
+    void UInterface::drawGradientEx(float x1, float y1, float x2, float y2, const SDL_Color &initial, const SDL_Color &end, SDL_Renderer *ren) {
+        SDL_Vertex vert[4] = {
+            {x1, y1, initial}, // top left
+            {x2, y1, initial}, // top right
+            {x1, y2, end}, // bottom left
+            {x2, y2, end}, // bottom right
+        };
+
+        const int indices[] = {0, 1, 3, 0, 2, 3};
+
+        SDL_RenderGeometry(ren, nullptr, vert, 4, indices, 6);
+    }
+
+    void UInterface::drawGradient(const SDL_FRect &rect, SDL_Color &initial, SDL_Color &end, SDL_Renderer *ren) {
+        drawGradientEx(rect.x, rect.y, rect.w, rect.h, initial, end, ren);
+    }
+
     void UInterface::draw(BUTTONPTR &button, IMD buttonText, SDL_Renderer *ren, double scaleX, double scaleY) {
         SDL_Rect dst = {button->box.x, button->box.y, button->box.w, button->box.h};
         SDL_Rect textDst = {};
