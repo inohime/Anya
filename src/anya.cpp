@@ -778,7 +778,7 @@ namespace Application {
         SDL_RenderPresent(renderer.get());
 
         if (deltaTime < delay)
-            SDL_Delay(delay - static_cast<int>(deltaTime));
+            SDL_Delay(static_cast<double>(delay - deltaTime));
     }
 
     void Anya::free() {
