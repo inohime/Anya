@@ -166,7 +166,7 @@ namespace Application::Helper {
     int Image::remove(IMD &img) {
         if (images.contains(img->path)) {
             images.erase(img->path);
-            img.reset();
+            img = nullptr;
         } else {
             println("Failed to remove image");
             return -1;
