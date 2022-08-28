@@ -34,6 +34,6 @@ A cross-platform customizable clock to add more appeal to the standard and run i
    ```
 4. Unpack `assets.rar` into `build/Debug`
 
-Application State: `currently in development`
+#### Application State: `currently in development`
 
 
