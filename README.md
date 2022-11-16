@@ -31,6 +31,7 @@ A cross-platform customizable clock to add more appeal to the standard and run i
 3. **CMake**
    ```
    Generate the build files with Visual Studio Code & CMake Tools
+   // not ready
    ```
 4. **Unpack `assets.rar` into `build/Debug`**
 
